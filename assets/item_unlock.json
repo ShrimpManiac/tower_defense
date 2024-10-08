@@ -1,0 +1,26 @@
+{
+  "name": "item_unlock",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 3000,
+      "stage_id": 1000,
+      "item_id": 2000
+    },
+    {
+      "id": 3001,
+      "stage_id": 1003,
+      "item_id": 2001
+    },
+    {
+      "id": 3002,
+      "stage_id": 1006,
+      "item_id": 2002
+    },
+    {
+      "id": 3003,
+      "stage_id": 1009,
+      "item_id": 2003
+    }
+  ]
+}

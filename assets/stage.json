@@ -1,0 +1,96 @@
+{
+  "name": "stage",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1000,
+      "score": 0,
+      "scorePerSecond": 1
+    },
+    {
+      "id": 1001,
+      "score": 10,
+      "scorePerSecond": 2
+    },
+    {
+      "id": 1002,
+      "score": 30,
+      "scorePerSecond": 4
+    },
+    {
+      "id": 1003,
+      "score": 70,
+      "scorePerSecond": 8
+    },
+    {
+      "id": 1004,
+      "score": 150,
+      "scorePerSecond": 16
+    },
+    {
+      "id": 1005,
+      "score": 310,
+      "scorePerSecond": 32
+    },
+    {
+      "id": 1006,
+      "score": 630,
+      "scorePerSecond": 64
+    },
+    {
+      "id": 1007,
+      "score": 1270,
+      "scorePerSecond": 128
+    },
+    {
+      "id": 1008,
+      "score": 2550,
+      "scorePerSecond": 256
+    },
+    {
+      "id": 1009,
+      "score": 5110,
+      "scorePerSecond": 512
+    },
+    {
+      "id": 1010,
+      "score": 10230,
+      "scorePerSecond": 1024
+    },
+    {
+      "id": 1011,
+      "score": 20470,
+      "scorePerSecond": 2048
+    },
+    {
+      "id": 1012,
+      "score": 40950,
+      "scorePerSecond": 4096
+    },
+    {
+      "id": 1013,
+      "score": 81910,
+      "scorePerSecond": 8192
+    },
+    {
+      "id": 1014,
+      "score": 163830,
+      "scorePerSecond": 16384
+    },
+    {
+      "id": 1015,
+      "score": 327670,
+      "scorePerSecond": 32768
+    },
+    {
+      "id": 1016,
+      "score": 655350,
+      "scorePerSecond": 65536
+    },
+    {
+      "id": 1017,
+      "score": 1310710,
+      "scorePerSecond": 131072
+    }
+  ]
+}
