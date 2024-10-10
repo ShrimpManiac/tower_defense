@@ -1,6 +1,4 @@
-import { CLIENT_VERSION } from './Constants.js';
-import { loadGameAssets } from './Assets.js';
-import { io } from 'socket.io-client';
+import { CLIENT_VERSION } from '../constants.js';
 
 const socket = io('http://localhost:3000', {
   query: {
