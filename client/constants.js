@@ -10,4 +10,24 @@ export const ASSET_TYPE = Object.freeze({
   STAGE: 'stage',
   MONSTER: 'monster',
   TOWER: 'tower',
+  TOWER_SKILL: 'tower_skill',
 });
+
+/**
+ * 업그레이드 비용
+ */
+export const UPGRADE_COST = 0;
+
+/**
+ * 타워 환불
+ */
+export const SELL_PENALTY = 0.5;
+
+/**
+ * 타워 환불
+ */
+export const UPGRADE_BONUS = [
+  { level: 1, rate: 0.3 },
+  { level: 2, rate: 0.2 },
+  { level: 3, rate: 0.1 },
+];

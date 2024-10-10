@@ -15,4 +15,5 @@ export const ASSET_TYPE = Object.freeze({
   STAGE: 'stage',
   MONSTER: 'monster',
   TOWER: 'tower',
+  TOWER_SKILL: 'tower_skill',
 });

@@ -1,5 +1,8 @@
+import { UPGRADE_BONUS } from '../constants.js';
+import { findAssetDataById } from '../init/assets.js';
+
 export class Tower {
-  constructor(x, y, cost) {
+  constructor(x, y, id, cost) {
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
@@ -11,6 +14,14 @@ export class Tower {
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
+    this.level = 1; // 타워 업그레이드 레벨
+
+    const towerAsset = findAssetDataById('tower', id);
+    this.cooldown = towerAsset.cooldown;
+
+    // SlowTower
+    const towerAsset = findAssetDataById('tower_skill', id);
+    if (towerAsset.skil_value) this.skil_value = towerAsset.skil_value;
   }
 
   draw(ctx, towerImage) {
@@ -18,11 +29,8 @@ export class Tower {
     if (this.beamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
-      ctx.lineTo(
-        this.target.x + this.target.width / 2,
-        this.target.y + this.target.height / 2
-      );
-      ctx.strokeStyle = "skyblue";
+      ctx.lineTo(this.target.x + this.target.width / 2, this.target.y + this.target.height / 2);
+      ctx.strokeStyle = 'skyblue';
       ctx.lineWidth = 10;
       ctx.stroke();
       ctx.closePath();
