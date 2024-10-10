@@ -1,12 +1,7 @@
 /**
  * 지원하는 클라이언트 버전
  */
-export const CLIENT_VERSION = ['1.0.0'];
-
-/**
- * 클라이언트 - 서버간 허용되는 시간 오차
- */
-export const DELAY_TOLERANCE = 5; // seconds
+export const CLIENT_VERSION = '1.0.0';
 
 /**
  * enum화 된 게임에셋 타입
