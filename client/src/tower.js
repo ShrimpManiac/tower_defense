@@ -20,7 +20,7 @@ export class Tower {
     this.cooldown = towerAsset.cooldown;
 
     // SlowTower
-    const towerAsset = findAssetDataById('tower_skill', id);
+    // const towerAsset = findAssetDataById('tower_skill', id);
     if (towerAsset.skil_value) this.skil_value = towerAsset.skil_value;
   }
 
