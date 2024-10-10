@@ -2,7 +2,6 @@ import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 import { createStage } from '../models/stage.model.js';
-import { getGameAssets } from '../init/assets.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -19,8 +18,7 @@ export const handleConnection = (socket, uuid) => {
 
   createStage(uuid);
 
-  const assets = getGameAssets();
-  socket.emit('connection', { uuid, assets });
+  socket.emit('connection', { uuid });
 };
 
 // Event 핸들러
