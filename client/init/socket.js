@@ -14,7 +14,6 @@ socket.on('response', (data) => {
 socket.on('connection', (data) => {
   console.log('connection: ', data);
   userId = data.uuid;
-  loadGameAssets(data.assets);
 });
 
 const sendEvent = (handlerId, payload) => {
