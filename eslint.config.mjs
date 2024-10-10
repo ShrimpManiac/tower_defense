@@ -1,13 +1,16 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
+import globals from 'globals';
+import pluginJs from '@eslint/js';
 
 export default [
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,
   {
     rules: {
-      "no-unused-vars": "warn",
-      "no-undef": "error",
+      'no-unused-vars': 'warn',
+      'no-undef': 'error',
     },
+  },
+  {
+    parser: 'babel-parser',
   },
 ];
