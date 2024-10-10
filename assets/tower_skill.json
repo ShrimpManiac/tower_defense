@@ -1,0 +1,13 @@
+{
+  "name": "tower_skil",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 2001,
+      "name": "Slow",
+      "skil_duration": 3,
+      "skil_value": 0.5,
+      "anti_air": true
+    }
+  ]
+}

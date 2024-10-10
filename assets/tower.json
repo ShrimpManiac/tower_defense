@@ -1,0 +1,25 @@
+{
+  "name": "tower",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 1001,
+      "name": "Basic_Tower",
+      "damage": 10,
+      "range": 5,
+      "cooldown": 1,
+      "cost": 100,
+      "ability": null
+    },
+    {
+      "id": 1002,
+      "name": "Slow_Tower",
+      "damage": 25,
+      "range": 10,
+      "cooldown": 0.5,
+      "cost": 200,
+      "ability": 2001
+    },
+    {}
+  ]
+}

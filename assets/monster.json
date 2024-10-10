@@ -1,0 +1,36 @@
+{
+  "name": "monster",
+  "version": "1.0.0",
+  "data": [
+    {
+      "id": 3001,
+      "hp": 50,
+      "attack": 1,
+      "defense": 1,
+      "speed": 1,
+      "goldDrop": 1,
+      "score": 1,
+      "type": "normal"
+    },
+    {
+      "id": 3002,
+      "hp": 50,
+      "attack": 1,
+      "defense": 1,
+      "speed": 1,
+      "goldDrop": 1,
+      "score": 1,
+      "type": "flying"
+    },
+    {
+      "id": 3003,
+      "hp": 50,
+      "attack": 1,
+      "defense": 1,
+      "speed": 1,
+      "goldDrop": 1,
+      "score": 1,
+      "type": "boss"
+    }
+  ]
+}

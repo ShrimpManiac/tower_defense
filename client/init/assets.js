@@ -40,8 +40,9 @@ export const loadGameAssets = async () => {
   try {
     const [stages, items, itemUnlocks] = await Promise.all([
       readFileAsync('stage.json'),
-      readFileAsync('item.json'),
-      readFileAsync('item_unlock.json'),
+      readFileAsync('monster.json'),
+      readFileAsync('tower.json'),
+      readFileAsync('tower_skill.json'),
     ]);
 
     gameAssets = { stages, items, itemUnlocks };
@@ -66,15 +67,17 @@ export const getGameAssets = () => {
  * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 1001, hp: 50 "} )
  */
 export const findAssetDataById = (assetType, id) => {
-  const { stages, items, itemUnlocks } = gameAssets;
+  const { stages, monsters, towers, towerSkills } = gameAssets;
 
   switch (assetType) {
     case ASSET_TYPE.STAGE:
       return stages.data.find((stage) => stage.id === id);
-    case ASSET_TYPE.ITEM:
-      return items.data.find((item) => item.id === id);
-    case ASSET_TYPE.ITEM_UNLOCK:
-      return itemUnlocks.data.find((itemUnlock) => itemUnlock.id === id);
+    case ASSET_TYPE.MONSTER:
+      return monsters.data.find((monster) => monster.id === id);
+    case ASSET_TYPE.TOWER:
+      return towers.data.find((tower) => tower.id === id);
+    case ASSET_TYPE.TOWER_SKILL:
+      return towerSkills.data.find((towerSkill) => towerSkill.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
