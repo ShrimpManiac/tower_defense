@@ -11,7 +11,7 @@ let gameAssets = {};
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // 최상위 경로 + assets 폴더
-const __basePath = path.join(__dirname, '../../assets');
+const __basePath = path.join(__dirname, '../../client/assets');
 
 /**
  * 파일을 비동기 병렬로 읽는 함수
