@@ -9,11 +9,11 @@ dotenv.config();
 const app = express();
 const server = createServer(app);
 
-const PORT = process.env.PORT;
+const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('public'));
+app.use(express.static('client'));
 initSocket(server);
 
 server.listen(PORT, async () => {

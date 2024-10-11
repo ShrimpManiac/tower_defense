@@ -13,11 +13,11 @@ export const handleDisconnect = (socket) => {
 
 // Connection 핸들러
 export const handleConnection = (socket, uuid) => {
-  addUser({ uuid: uuid, socketId: socket.id });
+  // addUser({ uuid: uuid, socketId: socket.id });
   console.log(`New user connected: ${uuid} with socket ID ${socket.id}`);
-  console.log('Current users: ', getUsers());
+  // console.log('Current users: ', getUsers());
 
-  createStage(uuid);
+  // createStage(uuid);
   createAccount(uuid);
 
   socket.emit('connection', { uuid });
