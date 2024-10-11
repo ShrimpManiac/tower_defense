@@ -1,5 +1,5 @@
 import { ASSET_TYPE, UPGRADE_BONUS } from '../constants.js';
-import { findAssetDataById } from '../init/assets.js';
+import { findAssetDataById } from '../utils/assets.js';
 
 export class Tower {
   constructor(x, y, id, cost) {
