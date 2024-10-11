@@ -217,6 +217,7 @@ function gameLoop() {
       monster.draw(ctx);
     } else {
       /* 몬스터가 죽었을 때 */
+      userGold += monster.goldDrop; // 코드수정
       monsters.splice(i, 1);
     }
   }
