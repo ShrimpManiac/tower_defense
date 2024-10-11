@@ -1,5 +1,5 @@
-import { UPGRADE_BONUS } from '../constants.js';
-import { findAssetDataById } from '../init/assets.js';
+import { ASSET_TYPE, UPGRADE_BONUS } from '../constants.js';
+import { findAssetDataById } from '../utils/assets.js';
 
 export class Tower {
   constructor(x, y, id, cost) {
@@ -16,12 +16,10 @@ export class Tower {
     this.target = null; // 타워 광선의 목표
     this.level = 1; // 타워 업그레이드 레벨
 
-    const towerAsset = findAssetDataById('tower', id);
-    this.cooldown = towerAsset.cooldown;
+    // this.cooldown = findAssetDataById(ASSET_TYPE.TOWER, id).cooldown;
 
-    // SlowTower
-    const towerAsset = findAssetDataById('tower_skill', id);
-    if (towerAsset.skil_value) this.skil_value = towerAsset.skil_value;
+    // // SlowTower 자식 클래스에서:
+    // this.skill_value = findAssetDataById(ASSET_TYPE.TOWER_SKILL, id).skill_value;
   }
 
   draw(ctx, towerImage) {

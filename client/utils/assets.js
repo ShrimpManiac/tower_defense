@@ -1,8 +1,8 @@
 import { ASSET_TYPE } from '../constants.js';
-import monsterData from './assets/monster.json' with { type: 'json' };
-import stageData from './assets/stage.json' with { type: 'json' };
-import towerData from './assets/tower.json' with { type: 'json' };
-import towerSkillData from './assets/tower_skill.json' with { type: 'json' };
+import monsterData from '../assets/monster.json' with { type: 'json' };
+import stageData from '../assets/stage.json' with { type: 'json' };
+import towerData from '../assets/tower.json' with { type: 'json' };
+import towerSkillData from '../assets/tower_skill.json' with { type: 'json' };
 
 /**
  * 로드한 게임에셋을 조회하는 함수
