@@ -2,6 +2,7 @@ import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 import { createStage } from '../models/stage.model.js';
+import { createAccount } from '../models/account.model.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -17,8 +18,16 @@ export const handleConnection = (socket, uuid) => {
   console.log('Current users: ', getUsers());
 
   createStage(uuid);
+  createAccount(uuid);
+  // createTower 만들기
 
   socket.emit('connection', { uuid });
+};
+
+export const handleEmitEvent = (eventId, payload) => {
+  socket.emit(eventId, {
+    payload,
+  });
 };
 
 // Event 핸들러
@@ -45,5 +54,5 @@ export const handleEvent = (io, socket, data) => {
   }
 
   // Response 전달
-  socket.emit('response', { response });
+  socket.emit(`${data.eventId}_response`, { response });
 };
