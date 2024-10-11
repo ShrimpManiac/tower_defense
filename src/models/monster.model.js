@@ -6,8 +6,7 @@ export class MonsterModel {
 
     this.id = monsterData.id;
     this.hp = monsterData.hp;
-    this.maxHp = monsterData.hp;
-    this.attackPower = monsterData.attack;
+    this.attack = monsterData.attack;
     this.defense = monsterData.defense;
     this.speed = monsterData.speed;
     this.goldDrop = monsterData.goldDrop;
@@ -35,7 +34,7 @@ export class MonsterModel {
       }
       return false; // 기지에 도달하지 않음
     } else {
-      const isDestroyed = base.takeDamage(this.attackPower); // 기지를 공격
+      const isDestroyed = base.takeDamage(this.attack); // 기지를 공격
       this.hp = 0; // 몬스터 소멸
       return isDestroyed;
     }
@@ -47,8 +46,7 @@ export class MonsterModel {
       x: this.x,
       y: this.y,
       hp: this.hp,
-      maxHp: this.maxHp,
-      attackPower: this.attackPower,
+      attack: this.attack,
       defense: this.defense,
       speed: this.speed,
       goldDrop: this.goldDrop,
