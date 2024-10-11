@@ -47,6 +47,28 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
   monsterImages.push(img);
 }
 
+// 서버와 클라이언트 골드 잔액 동기화
+async function loadGoldBalance() {
+  try {
+    const response = await sendEvent(100, {});
+
+    const balance = response.balance;
+
+    if (!balance === undefined || response.status === 'fail') {
+      alert('Fail to load Gold Balance');
+
+      location.reload();
+    }
+
+    userGold = balance;
+  } catch (err) {
+    console.error('Error loading gold balance:', err.message);
+    alert('Error loading gold balance', err.message);
+
+    location.reload();
+  }
+}
+
 let monsterPath;
 
 function generateRandomMonsterPath() {
