@@ -1,7 +1,8 @@
 const Accounts = {};
 
 export const createAccount = (uuid) => {
-  Accounts[uuid] = 0; // 새 계정 계좌를 0으로 초기화
+  Accounts[uuid] = START_GOLD; // 새 계정 계좌를 초기 지원금으로 초기화
+  console.log('created Account : ', Accounts[uuid]);
 };
 
 export const getAccount = (uuid) => {
