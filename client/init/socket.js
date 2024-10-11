@@ -1,4 +1,5 @@
 import { CLIENT_VERSION } from '../constants.js';
+import { generateEventId } from '../utils/generateEventId.js';
 
 const socket = io('http://localhost:3000', {
   query: {
@@ -17,11 +18,24 @@ socket.on('connection', (data) => {
 });
 
 const sendEvent = (handlerId, payload) => {
-  socket.emit('event', {
-    userId,
-    clientVersion: CLIENT_VERSION,
-    handlerId,
-    payload,
+  return new Promise((resolve, reject) => {
+    let eventId = generateEventId();
+    socket.emit('event', {
+      userId,
+      clientVersion: CLIENT_VERSION,
+      handlerId,
+      eventId,
+      payload,
+    });
+    // 해당 handlerId에 대한 응답을 기다림
+    socket.once(`${eventId}_response`, (data) => {
+      // 성공 시 데이터를 반환
+      if (data.status === 'success') {
+        resolve(data);
+      } else {
+        reject(`Event ${eventId} with handlerId ${handlerId} failed to execute.`);
+      }
+    });
   });
 };
 
