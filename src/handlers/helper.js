@@ -19,8 +19,15 @@ export const handleConnection = (socket, uuid) => {
 
   createStage(uuid);
   createAccount(uuid);
+  // createTower 만들기
 
   socket.emit('connection', { uuid });
+};
+
+export const handleEmitEvent = (eventId, payload) => {
+  socket.emit(eventId, {
+    payload,
+  });
 };
 
 // Event 핸들러
