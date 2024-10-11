@@ -2,6 +2,7 @@ import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 import { createStage } from '../models/stage.model.js';
+import { createAccount } from '../models/account.model.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -17,6 +18,7 @@ export const handleConnection = (socket, uuid) => {
   console.log('Current users: ', getUsers());
 
   createStage(uuid);
+  createAccount(uuid);
 
   socket.emit('connection', { uuid });
 };
