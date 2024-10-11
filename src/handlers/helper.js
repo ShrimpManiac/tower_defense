@@ -54,5 +54,5 @@ export const handleEvent = (io, socket, data) => {
   }
 
   // Response 전달
-  socket.emit(`${data.eventId}_response`, { response });
+  socket.emit(`${data.eventId}_response`, response);
 };
