@@ -15,11 +15,6 @@ export class Tower {
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
     this.level = 1; // 타워 업그레이드 레벨
-
-    // this.cooldown = findAssetDataById(ASSET_TYPE.TOWER, id).cooldown;
-
-    // // SlowTower 자식 클래스에서:
-    // this.skill_value = findAssetDataById(ASSET_TYPE.TOWER_SKILL, id).skill_value;
   }
 
   draw(ctx, towerImage) {
