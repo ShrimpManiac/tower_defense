@@ -13,13 +13,14 @@ export class Tower {
     this.height = 150; // 타워 이미지 세로 길이
     this.attackPower = 40; // 타워 공격력
     this.range = 300; // 타워 사거리
-
+    this.level = 1; // 타워 레벨
     this.cooldown = 0; // 타워 공격 쿨타임
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
 
     towerData = findAssetDataById(ASSET_TYPE.TOWER, towerType);
-    this.cost = towerData.cost; // 타워 구입 비용
+    this.buyCost = towerData.cost; // 타워 구입 비용
+    this.upgradeCost = int(buyCost * 1.5);
   }
 
   attack(monster) {
