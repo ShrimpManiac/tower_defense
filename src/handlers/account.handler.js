@@ -1,6 +1,27 @@
 import { getAccount, updateAccount } from '../models/account.model';
 
 /**
+ * 계좌 조회
+ *
+ *
+ * @param {string} uuid uuid(userId)
+ * @returns {Object} 잔액 결과를 반환하는 객체
+ */
+export const checkBalanceAccount = (uuid) => {
+  try {
+    const balance = getAccount(uuid);
+
+    if (balance === undefined) {
+      throw new Error('Account not found');
+    }
+
+    return { status: 'success', message: 'Successfully checked your account balance', balance };
+  } catch (err) {
+    return { status: 'fail', message: err.message };
+  }
+};
+
+/**
  * 계좌 입금
  *
  *
