@@ -1,7 +1,6 @@
 import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
-import { createStage } from '../models/stage.model.js';
 import { getGameAssets } from '../init/assets.js';
 
 // Disconnect 핸들러
@@ -18,9 +17,16 @@ export const handleConnection = (socket, uuid) => {
   console.log('Current users: ', getUsers());
 
   createStage(uuid);
+  // createTower 만들기
 
   const assets = getGameAssets();
   socket.emit('connection', { uuid, assets });
+};
+
+export const handleEmitEvent = (eventId, payload) => {
+  socket.emit(eventId, {
+    payload,
+  });
 };
 
 // Event 핸들러

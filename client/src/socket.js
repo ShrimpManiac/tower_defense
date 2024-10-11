@@ -13,6 +13,10 @@ socket.on('response', (data) => {
   console.log(data);
 });
 
+socket.on('money', (data) => {
+  console.log(data);
+});
+
 socket.on('connection', (data) => {
   console.log('connection: ', data);
   userId = data.uuid;
