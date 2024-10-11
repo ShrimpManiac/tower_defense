@@ -1,22 +1,23 @@
 export class MonsterModel {
-  constructor(path, level) {
+  constructor(path, monsterData) {
     if (!path || path.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
-    this.monsterNumber = Math.floor(Math.random() * 5); // 서버에서는 이미지 대신 번호만 유지
+
+    this.id = monsterData.id;
+    this.hp = monsterData.hp;
+    this.maxHp = monsterData.hp;
+    this.attackPower = monsterData.attack;
+    this.defense = monsterData.defense;
+    this.speed = monsterData.speed;
+    this.goldDrop = monsterData.goldDrop;
+    this.score = monsterData.score;
+    this.type = monsterData.type;
+
     this.path = path;
     this.currentIndex = 0;
     this.x = path[0].x;
     this.y = path[0].y;
-    this.speed = 2;
-    this.level = level;
-    this.init(level);
-  }
-
-  init(level) {
-    this.maxHp = 100 + 10 * level;
-    this.hp = this.maxHp;
-    this.attackPower = 10 + 1 * level;
   }
 
   move(base) {
@@ -32,22 +33,27 @@ export class MonsterModel {
         this.x += (deltaX / distance) * this.speed;
         this.y += (deltaY / distance) * this.speed;
       }
-      return false; // 기지에 도달하지 않았음
+      return false; // 기지에 도달하지 않음
     } else {
-      const isDestroyed = base.takeDamage(this.attackPower);
-      this.hp = 0; // 몬스터가 소멸됨
+      const isDestroyed = base.takeDamage(this.attackPower); // 기지를 공격
+      this.hp = 0; // 몬스터 소멸
       return isDestroyed;
     }
   }
 
   getMonsterData() {
     return {
+      id: this.id,
       x: this.x,
       y: this.y,
       hp: this.hp,
       maxHp: this.maxHp,
-      level: this.level,
-      monsterNumber: this.monsterNumber,
+      attackPower: this.attackPower,
+      defense: this.defense,
+      speed: this.speed,
+      goldDrop: this.goldDrop,
+      score: this.score,
+      type: this.type,
     };
   }
 }
