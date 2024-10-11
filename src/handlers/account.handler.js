@@ -10,13 +10,13 @@ import { getAccount, updateAccount } from '../models/account.model.js';
 export const checkBalanceAccount = (uuid) => {
   try {
     const balance = getAccount(uuid);
-
     if (balance === undefined) {
       throw new Error('Account not found');
     }
 
     return { status: 'success', message: 'Successfully checked your account balance', balance };
   } catch (err) {
+    console.error('Fail to check account,', err.message);
     return { status: 'fail', message: err.message };
   }
 };

@@ -2,6 +2,7 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import '../init/socket.js';
+import { sendEvent } from '../init/socket.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -19,7 +20,7 @@ let baseHp = 0; // 기지 체력
 let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
-let monsterSpawnInterval = 0; // 몬스터 생성 주기
+let monsterSpawnInterval = 3; // 몬스터 생성 주기
 const monsters = [];
 const towers = [];
 
@@ -48,6 +49,27 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
 }
 
 let monsterPath;
+
+async function loadGoldBalance() {
+  try {
+    const response = await sendEvent(100, {});
+
+    const balance = response.balance;
+
+    if (!balance === undefined || response.status === 'fail') {
+      alert('Fail to load Gold Balance');
+
+      location.reload();
+    }
+
+    userGold = balance;
+  } catch (err) {
+    console.error('Error loading gold balance:', err.message);
+    alert('Error loading gold balance', err.message);
+
+    location.reload();
+  }
+}
 
 function generateRandomMonsterPath() {
   const path = [];
@@ -224,11 +246,12 @@ function gameLoop() {
   requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
 }
 
-function initGame() {
+async function initGame() {
   if (isInitGame) {
     return;
   }
 
+  loadGoldBalance(); // 골드 잔액 불러오기
   monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
   placeInitialTowers(); // 설정된 초기 타워 개수만큼 사전에 타워 배치

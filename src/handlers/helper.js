@@ -39,7 +39,6 @@ export const handleEvent = (io, socket, data) => {
   }
 
   const response = handler(data.userId, data.payload);
-
   // Broadcast 처리
   if (response.broadcast) {
     io.emit('response', 'broadcast');
@@ -47,5 +46,5 @@ export const handleEvent = (io, socket, data) => {
   }
 
   // Response 전달
-  socket.emit(`${data.eventId}_response`, { response });
+  socket.emit(`${data.eventId}_response`, response);
 };
