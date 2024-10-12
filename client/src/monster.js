@@ -17,7 +17,7 @@ export class Monster {
 
     this.maxHp = monsterData.hp;
     this.hp = maxHp;
-    this.attack = monsterData.attack;
+    this.attackPower = monsterData.attackPower;
     this.defense = monsterData.defense;
     this.speed = monsterData.speed;
     this.goldDrop = monsterData.goldDrop;

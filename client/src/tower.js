@@ -14,7 +14,7 @@ export class Tower {
      */
     this.id = instanceId;
 
-    this.attackPower = towerData.damage; // 타워 공격력
+    this.attackPower = towerData.attackPower; // 타워 공격력
     this.range = towerData.range; // 타워 사거리
     this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
     this.cooldown = towerData.cooldown; // 타워 공격 쿨타임
