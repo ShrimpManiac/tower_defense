@@ -69,7 +69,7 @@ async function loadGoldBalance() {
   }
 }
 
-let monsterPath;
+let monsterPath; // INCOMPLETE: 복수의 몬스터 경로를 허용하도록 구현할 필요가 있음
 
 function generateRandomMonsterPath() {
   const path = [];
