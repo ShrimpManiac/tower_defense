@@ -191,8 +191,8 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-function spawnMonster() {
-  monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
+function spawnMonster(assetId, instanceId) {
+  monsters.push(new Monster(assetId, instanceId, monsterPath[0]));
 }
 
 function gameLoop() {
@@ -257,6 +257,7 @@ function initGame() {
   placeInitialTowers(); // 설정된 초기 타워 개수만큼 사전에 타워 배치
   placeBase(); // 기지 배치
 
+  // INCOMPLETE : 스테이지 로직과 연동해 spawnMonster의 파라미터를 결정할 필요가 있음
   setInterval(spawnMonster, monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
   gameLoop(); // 게임 루프 최초 실행
   isInitGame = true;
