@@ -9,7 +9,7 @@
       "range": 5,
       "cooldown": 1,
       "cost": 100,
-      "ability": null
+      "skill": null
     },
     {
       "id": 1002,
@@ -18,7 +18,7 @@
       "range": 10,
       "cooldown": 0.5,
       "cost": 200,
-      "ability": 2001
+      "skill": 2001
     },
     {}
   ]
