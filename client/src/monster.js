@@ -1,22 +1,35 @@
+import { ASSET_TYPE } from '../constants.js';
+import { findAssetDataById } from '../utils/assets.js';
+
 export class Monster {
-  constructor(monsterData, monsterImages) {
-    this.id = monsterData.id;
-    this.hp = monsterData.hp;
-    this.maxHp = monsterData.maxHp;
-    this.attackPower = monsterData.attackPower;
+  /**
+   *
+   * @param {Number} assetId 몬스터 애셋 ID (데이터테이블 조회용)
+   * @param {Number} instanceId 몬스터 인스턴스 ID (서버에서 수신)
+   * @param {{x: Number, y: Number}} spawnLocation 소환 위치 좌표
+   */
+  constructor(assetId, instanceId, spawnLocation) {
+    let monsterData = findAssetDataById(ASSET_TYPE.MONSTER, assetId);
+    /**
+     * 몬스터 인스턴스 ID
+     */
+    this.id = instanceId;
+
+    this.maxHp = monsterData.hp;
+    this.hp = maxHp;
+    this.attack = monsterData.attack;
     this.defense = monsterData.defense;
     this.speed = monsterData.speed;
     this.goldDrop = monsterData.goldDrop;
     this.score = monsterData.score;
     this.type = monsterData.type;
 
-    this.x = monsterData.x;
-    this.y = monsterData.y;
-    this.width = 80;
-    this.height = 80;
+    this.x = spawnLocation.x;
+    this.y = spawnLocation.y;
 
-    // 클라이언트에서는 이미지를 처리
-    this.image = monsterImages[monsterData.monsterNumber];
+    this.image = monsterData.image;
+    this.width = monsterData.width;
+    this.height = monsterData.height;
   }
 
   draw(ctx) {
