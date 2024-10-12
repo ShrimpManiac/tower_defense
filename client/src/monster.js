@@ -6,7 +6,7 @@ export class Monster {
    *
    * @param {Number} assetId 몬스터 애셋 ID (데이터테이블 조회용)
    * @param {Number} instanceId 몬스터 인스턴스 ID (서버에서 수신)
-   * @param {[x: Number, y: Number]} spawnLocation 소환 위치 좌표
+   * @param {{x: Number, y: Number}} spawnLocation 소환 위치 좌표
    */
   constructor(assetId, instanceId, spawnLocation) {
     let monsterData = findAssetDataById(ASSET_TYPE.MONSTER, assetId);
