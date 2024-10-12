@@ -2,19 +2,34 @@ import { ASSET_TYPE, UPGRADE_BONUS } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
 
 export class Tower {
-  constructor(x, y, id, cost) {
-    // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
-    this.x = x; // 타워 이미지 x 좌표
-    this.y = y; // 타워 이미지 y 좌표
-    this.width = 78; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
-    this.height = 150; // 타워 이미지 세로 길이
-    this.attackPower = 40; // 타워 공격력
-    this.range = 300; // 타워 사거리
-    this.cost = cost; // 타워 구입 비용
-    this.cooldown = 0; // 타워 공격 쿨타임
-    this.beamDuration = 0; // 타워 광선 지속 시간
+  /**
+   * @param {Number} assetId 타워 애셋 ID (데이터테이블 조회용)
+   * @param {Number} instanceId 타워 인스턴스 ID (서버에서 수신)
+   * @param {{x: Number, y: Number}} spawnLocation 설치 좌표
+   */
+  constructor(assetId, instanceId, spawnLocation) {
+    let towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
+    /**
+     * 타워 인스턴스 ID
+     */
+    this.id = instanceId;
+
+    this.attackPower = towerData.damage; // 타워 공격력
+    this.range = towerData.range; // 타워 사거리
+    this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
+    this.cooldown = towerData.cooldown; // 타워 공격 쿨타임
+    this.cost = towerData.cost; // 타워 구입 비용
+    this.skill = towerData.skill; // 타워 타입
+
     this.target = null; // 타워 광선의 목표
     this.level = 1; // 타워 업그레이드 레벨
+
+    this.x = spawnLocation.x; // 타워 x 위치
+    this.y = spawnLocation.y; // 타워 y 위치
+
+    this.image = towerData.image; // 타워 이미지
+    this.width = towerData.width; // 타워 이미지 가로 크기
+    this.height = towerData.height; // 타워 이미지 세로 크기
   }
 
   draw(ctx, towerImage) {

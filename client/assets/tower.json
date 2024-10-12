@@ -6,19 +6,27 @@
       "id": 1001,
       "name": "Basic_Tower",
       "damage": 10,
-      "range": 5,
+      "range": 300,
+      "beamDuration": 1,
       "cooldown": 1,
       "cost": 100,
-      "ability": null
+      "skill": null,
+      "image": "images/tower.png",
+      "width": 80,
+      "height": 80
     },
     {
       "id": 1002,
       "name": "Slow_Tower",
       "damage": 25,
-      "range": 10,
+      "range": 300,
+      "beamDuration": 1,
       "cooldown": 0.5,
       "cost": 200,
-      "ability": 2001
+      "skill": 2001,
+      "image": "images/tower.png",
+      "width": 80,
+      "height": 80
     },
     {}
   ]
