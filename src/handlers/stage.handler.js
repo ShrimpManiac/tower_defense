@@ -10,14 +10,13 @@ import { createStage, getStage, setStage } from '../models/stage.model.js';
  * @returns {Object} 성공 여부를 알리는 상태와 메세지
  */
 export const initializeStage = (uuid) => {
-  const { stage } = getGameAssets();
   try {
+    const { stage } = getGameAssets();
     // stage asset에서 첫번째 스테이지 id 가져옴
 
     const createResult = createStage(uuid).status;
     if (createResult !== 'success') throw new Error('Failed to create stage');
 
-    console.log(Array.isArray(stage.data));
     const initialStageId = stage.data.sort((a, b) => a.id - b.id)[0].id;
 
     // 최초 스테이지 설정
@@ -40,14 +39,19 @@ export const initializeStage = (uuid) => {
  */
 export const getCurrentStage = (uuid) => {
   try {
+    const { stage } = getGameAssets();
+
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
     if (currentStage === undefined) throw new Error('Failed to get stage');
     // 최근 스테이지 ID 획득
-    currentStage.sort((a, b) => a.id - b.id);
-    const currentStageId = currentStage[currentStage.length - 1].id;
+    const currentStageId = currentStage.id;
     // 스테이지 넘버 획득
-    const stageNumber = currentStage.length;
+    const stageData = stage.data.sort((a, b) => a.id - b.id);
+    const stageDataIndex = stageData.findIndex((stage) => stage.id === currentStageId);
+    if (stageDataIndex === -1) throw new Error('Not found stage');
+    const stageNumber = stageDataIndex + 1;
+
     return {
       status: 'success',
       message: 'Successfully retrieved stage',
@@ -101,9 +105,7 @@ export const getMonstersByStage = (uuid) => {
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
     if (currentStage === undefined) throw new Error('Failed to get stage');
-    // 최근 스테이지 획득
-    currentStage.sort((a, b) => a.id - b.id);
-    const { monsterIds } = currentStage[currentStage.length - 1];
+    const { monsterIds } = currentStage;
     if (monsterIds === undefined) throw new Error('Failed to load monstersId');
     return monsterIds;
   } catch (err) {
@@ -124,9 +126,7 @@ export const getMonsterCountByStage = (uuid) => {
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
     if (currentStage === undefined) throw new Error('Failed to get stage');
-    // 최근 스테이지 획득
-    currentStage.sort((a, b) => a.id - b.id);
-    const { numMonsters } = currentStage[currentStage.length - 1];
+    const { numMonsters } = currentStage;
     if (numMonsters === undefined) throw new Error('Failed to load numMonsters');
     return numMonsters;
   } catch (err) {
@@ -147,9 +147,8 @@ export const getStartTimeByStage = (uuid) => {
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
     if (currentStage === undefined) throw new Error('Failed to get stage');
-    // 최근 스테이지 획득
-    currentStage.sort((a, b) => a.id - b.id);
-    const { timestamp } = currentStage[currentStage.length - 1];
+
+    const { timestamp } = currentStage;
     if (timestamp === undefined) throw new Error('Failed to load timestamp');
     return timestamp;
   } catch (err) {
