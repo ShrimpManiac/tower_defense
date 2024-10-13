@@ -10,7 +10,7 @@
       "beamDuration": 1,
       "cooldown": 1,
       "cost": 100,
-      "skill": null,
+      "skillId": null,
       "image": "images/tower.png",
       "width": 80,
       "height": 80
@@ -23,7 +23,7 @@
       "beamDuration": 1,
       "cooldown": 0.5,
       "cost": 200,
-      "skill": 2001,
+      "skillId": 2001,
       "image": "images/tower.png",
       "width": 80,
       "height": 80
