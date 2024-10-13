@@ -34,7 +34,7 @@ const sendEvent = (handlerId, payload) => {
       if (data.status === 'success') {
         resolve(data);
       } else {
-        reject(`Event ${eventId} with handlerId ${handlerId} failed to execute.`);
+        reject(data);
       }
     });
   });
