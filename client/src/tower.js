@@ -19,7 +19,7 @@ export class Tower {
     this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
     this.cooldown = towerData.cooldown; // 타워 공격 쿨타임
     this.cost = towerData.cost; // 타워 구입 비용
-    this.skill = towerData.skill; // 타워 타입
+    this.skillId = towerData.skillId; // 타워 타입
 
     this.target = null; // 타워 광선의 목표
     this.level = 1; // 타워 업그레이드 레벨
