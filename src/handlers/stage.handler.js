@@ -126,9 +126,9 @@ export const getMonsterCountByStage = (uuid) => {
     if (currentStage === undefined) throw new Error('Failed to get stage');
     // 최근 스테이지 획득
     currentStage.sort((a, b) => a.id - b.id);
-    const { numMonster } = currentStage[currentStage.length - 1];
-    if (numMonster === undefined) throw new Error('Failed to load numMonster');
-    return numMonster;
+    const { numMonsters } = currentStage[currentStage.length - 1];
+    if (numMonsters === undefined) throw new Error('Failed to load numMonsters');
+    return numMonsters;
   } catch (err) {
     console.error(err.message);
     return { status: 'fail', message: err.message };
