@@ -7,7 +7,7 @@ const stages = {};
 
 // 초기화
 export const createStage = (uuid) => {
-  stages[uuid] = [];
+  stages[uuid] = 0;
   return { status: 'success', message: 'Stage create successful' };
 };
 
@@ -19,7 +19,7 @@ export const getStage = (uuid) => {
 export const setStage = (uuid, stageId, timestamp) => {
   if (stages[uuid] === undefined) throw new Error('Stage Not Found'); // 스테이지 존재 여부 확인
   const { id, monsterIds, numMonsters } = findAssetDataById(ASSET_TYPE.STAGE, stageId);
-  stages[uuid].push({ id, monsterIds, numMonsters, timestamp });
+  stages[uuid] = { id, monsterIds, numMonsters, timestamp };
 
   return { status: 'success', message: 'Stage successfully set.' };
 };
