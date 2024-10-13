@@ -16,7 +16,7 @@ export class Monster {
     this.id = instanceId;
 
     this.maxHp = monsterData.maxHp;
-    this.maxp = this.maxHp;
+    this.hp = this.maxHp;
     this.attackPower = monsterData.attackPower;
     this.defense = monsterData.defense;
     this.speed = monsterData.speed;
@@ -33,7 +33,9 @@ export class Monster {
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    const img = new Image();
+    img.src = this.image;
+    ctx.drawImage(img, this.x, this.y, this.width, this.height);
     ctx.font = '12px Arial';
     ctx.fillStyle = 'white';
     ctx.fillText(`(HP: ${this.hp}/${this.maxHp})`, this.x, this.y - 5);
