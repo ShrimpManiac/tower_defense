@@ -1,5 +1,5 @@
-import { ASSET_TYPE } from '../constants';
-import { findAssetDataById } from '../init/assets';
+import { ASSET_TYPE } from '../constants.js';
+import { findAssetDataById } from '../init/assets.js';
 
 export class Tower {
   static id = 0;
