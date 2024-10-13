@@ -15,7 +15,7 @@ export class Monster {
      */
     this.id = instanceId;
 
-    this.maxHp = monsterData.hp;
+    this.maxHp = monsterData.maxHp;
     this.maxp = this.maxHp;
     this.attackPower = monsterData.attackPower;
     this.defense = monsterData.defense;

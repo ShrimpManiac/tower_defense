@@ -4,7 +4,7 @@
   "data": [
     {
       "id": 3001,
-      "hp": 50,
+      "maxHp": 50,
       "attackPower": 1,
       "defense": 1,
       "speed": 1,
@@ -17,7 +17,7 @@
     },
     {
       "id": 3002,
-      "hp": 50,
+      "maxHp": 50,
       "attackPower": 1,
       "defense": 1,
       "speed": 1,
@@ -30,7 +30,7 @@
     },
     {
       "id": 3003,
-      "hp": 50,
+      "maxHp": 50,
       "attack": 1,
       "defense": 1,
       "speed": 1,
@@ -43,7 +43,7 @@
     },
     {
       "id": 3004,
-      "hp": 50,
+      "maxHp": 50,
       "attack": 1,
       "defense": 1,
       "speed": 1,
@@ -56,7 +56,7 @@
     },
     {
       "id": 3005,
-      "hp": 50,
+      "maxHp": 50,
       "attack": 1,
       "defense": 1,
       "speed": 1,
