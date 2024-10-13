@@ -338,18 +338,26 @@ async function stageInit(currentStageId) {
 }
 
 async function endStage() {
-  isStageActive = false; // 스테이지 비활성화
-  alert(`스테이지 ${currentStageNumber} 완료!`);
-  const stageEndResult = await sendEvent(202);
-  loadGoldBalance(); // 골드 잔액 동기화
-  loadCurrentStage();
-  console.log(stageEndResult);
-  if (stageEndResult.status === 'fail' && stageEndResult.message === 'Last_Stage') {
-    cancelAnimationFrame(animationFrameId);
-    alert(`스테이지를 모두 완료하셨습니다.!`);
-    location.reload(); // 게임 재시작
+  try {
+    isStageActive = false; // 스테이지 비활성화
+    alert(`스테이지 ${currentStageNumber} 완료!`);
+    const stageEndResult = await sendEvent(202);
+    loadGoldBalance(); // 골드 잔액 동기화
+    loadCurrentStage();
+    console.log(stageEndResult);
+
+    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
+  } catch (err) {
+    if (err.message === 'Last_Stage') {
+      cancelAnimationFrame(animationFrameId);
+      alert(`스테이지를 모두 완료하셨습니다.!`);
+      location.reload(); // 게임 재시작
+    } else {
+      cancelAnimationFrame(animationFrameId);
+      alert(`게임 오류`);
+      location.reload(); // 게임 재시작
+    }
   }
-  startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
 }
 
 function endGame() {
