@@ -4,48 +4,28 @@
   "data": [
     {
       "id": 4001,
-      "monsterIds": [
-        3001
-      ],
-      "numMonster": [
-        15
-      ]
+      "monsterIds": [3001],
+      "numMonsters": [15]
     },
     {
       "id": 4002,
-      "monsterIds": [
-        3001
-      ],
-      "numMonster": [
-        15
-      ]
+      "monsterIds": [3001],
+      "numMonsters": [15]
     },
     {
       "id": 4003,
-      "monsterIds": [
-        3001
-      ],
-      "numMonster": [
-        15
-      ]
+      "monsterIds": [3001],
+      "numMonsters": [15]
     },
     {
       "id": 4004,
-      "monsterIds": [
-        3001
-      ],
-      "numMonster": [
-        15
-      ]
+      "monsterIds": [3001],
+      "numMonsters": [15]
     },
     {
       "id": 4005,
-      "monsterIds": [
-        3001
-      ],
-      "numMonster": [
-        15
-      ]
+      "monsterIds": [3001],
+      "numMonsters": [15]
     }
   ]
 }
