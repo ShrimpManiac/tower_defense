@@ -92,7 +92,6 @@ export const moveToNextStage = (uuid) => {
     return { status: 'fail', message: err.message };
   }
 };
-
 /**
  * 현 스테이지에서 나오는 몬스터 종류 가져오기
  *
@@ -155,4 +154,26 @@ export const getStartTimeByStage = (uuid) => {
     console.error(err.message);
     return { status: 'fail', message: err.message };
   }
+};
+
+export const stageStart = (uuid) => {
+  // 기본 틀만 구성, 아직 미완성
+
+  const currentStage = getStage(uuid);
+  // 현재 스테이지에서 생성할 몬스터 함수
+  // 준비가 완료되면 success 신호를 날림
+  return { status: 'success', message: 'success init' };
+};
+
+export const stageEnd = (uuid) => {
+  // 기본 틀만 구성, 아직 미완성
+
+  // 현재 스테이지 몬스터 정보 날림
+
+  const result = moveToNextStage(uuid);
+  console.log(result);
+  if (result.status === 'fail') return { status: 'fail', message: 'Last_Stage' };
+
+  return { status: 'success', message: 'success init' };
+  // 완료되면 success 신호를 날림
 };
