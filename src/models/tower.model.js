@@ -27,11 +27,11 @@ export class Tower {
     // 기본스탯
     this.attackPower = towerData.attackPower; // 공격력
     this.range = towerData.range; // 사거리
-    this.beamDuration = towerData.beamDuration; // 광선 애니메이션 지속 시간
 
     // 공격 쿨타임
     this.cooldown = towerData.cooldown; // 공격 쿨타임
     this.cooldownLeft = 0; // 남은 쿨타임
+    this.beamDuration = 0; // 광선 애니메이션 남은 지속 시간
 
     // 특수타워 스킬
     this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
