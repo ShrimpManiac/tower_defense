@@ -19,7 +19,8 @@ export const clearTowers = (uuid) => {
  * @returns {Tower[]} 유저의 타워 보유목록
  */
 export const getTowers = (uuid) => {
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower`);
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
   return towers[uuid];
 };
 
@@ -40,15 +41,11 @@ export const setTower = (uuid, tower) => {
  * @returns {Tower} 삭제한 타워 객체
  */
 export const deleteTower = (uuid, towerId) => {
-  // 삭제할 타워의 인덱스 검색
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
-  if (towerIndex === -1) throw new Error(`Tower not found`);
-  // 삭제할 타워 저장
+  if (towerIndex === -1) throw new Error(`Tower not found.`);
   const deletedTower = towers[uuid][towerIndex];
-  // 타워 삭제
-  towers[uuid].splice(towerIndex, 1);
-  // 삭제한 타워 반환
+  towers[uuid].splice(towerIndex, 1); // 타워 삭제
   return deletedTower;
 };
 
@@ -60,11 +57,9 @@ export const deleteTower = (uuid, towerId) => {
  */
 export function getTowerById(uuid, towerId) {
   // 예외처리: 타워 목록이 없거나 비어있음
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower`);
-  // 타워 검색
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
   let tower = towers[uuid].find((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
-  if (!tower) throw new Error(`Tower not found`);
-  // 찾은 타워를 반환
+  if (!tower) throw new Error(`Tower not found.`);
   return tower;
 }

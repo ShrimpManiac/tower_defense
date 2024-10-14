@@ -1,4 +1,4 @@
-import { ASSET_TYPE } from '../constants';
+import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants';
 import { findAssetDataById } from '../init/assets';
 
 export class Tower {
@@ -37,11 +37,13 @@ export class Tower {
     this.skillValue = skillData.skillValue; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
     this.antiAir = skillData.anti_air; // 공중 유닛 공격 가능 여부
 
-    // 업그레이드 레벨 및 비용
-    this.level = 1;
+    // 구매, 판매, 업그레이드 비용
     this.buyCost = towerData.cost; // 구매 비용
-    this.upgradeCost = Math.floor(this.buyCost * 1.5); // 업그레이드 비용
-    // INCOMPLETE : 판매 가격
+    this.sellPrice = Math.floor(this.buyCost * SELL_PENALTY); // 판매 가격
+    this.upgradeCost = Math.floor(this.buyCost * UPGRADE_COST_SCALER); // 업그레이드 비용
+
+    // 현재 업그레이드 레벨
+    this.level = 1;
 
     // 현재 타겟
     this.target = null; // 타워 광선의 목표
@@ -53,6 +55,13 @@ export class Tower {
       console.log(`Tower ${this.id} 대공 공격 실패`);
       return;
     }
+
+    // 사거리 체크
+    // INCOMPLETE : withinRange 함수 미구현
+    if (!withinRange(tower, monster)) {
+      return { status: 'failure', message: 'Monster not within range' };
+    }
+
     // 쿨타임 체크
     if (this.cooldownLeft > 0) {
       console.log(`Tower ${this.id} 공격 쿨타임`);
@@ -69,5 +78,20 @@ export class Tower {
     if (this.cooldownLeft > 0) {
       this.cooldownLeft--;
     }
+  }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }

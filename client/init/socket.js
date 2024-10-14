@@ -23,7 +23,7 @@ socket.on('event', (data) => {
   // 핸들러ID 체크
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Handler not found' });
+    socket.emit(`${data.eventId}_response`, { status: 'failure', message: 'Handler not found' });
     return;
   }
 

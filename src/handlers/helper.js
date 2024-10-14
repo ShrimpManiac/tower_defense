@@ -23,14 +23,17 @@ export const handleConnection = (socket, uuid) => {
 export const handleEvent = (io, socket, data) => {
   // 클라이언트 버전 체크
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Client version mismatch' });
+    socket.emit(`${data.eventId}_response`, {
+      status: 'failure',
+      message: 'Client version mismatch',
+    });
     return;
   }
 
   // 핸들러ID 체크
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Handler not found' });
+    socket.emit(`${data.eventId}_response`, { status: 'failure', message: 'Handler not found' });
     return;
   }
 

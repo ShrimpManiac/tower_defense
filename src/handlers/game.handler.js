@@ -14,7 +14,7 @@ export const gameStart = (uuid) => {
     console.log(`[INIT] game execution completed - ${uuid}`);
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 
   return { status: 'success', message: `Game started` };
@@ -32,7 +32,7 @@ export const gameEnd = (uuid) => {
     //INCOMPLETE: 몬스터, 타워 삭제 추가해야 함.
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 
   return { status: 'success', message: 'Game ended' };
