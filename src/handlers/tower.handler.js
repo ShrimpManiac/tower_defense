@@ -7,7 +7,7 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { getTowers, setTowers, Tower } from '../models/tower.model.js';
+import { getTowers, setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
 // 타워 구매(설치) 핸들러
@@ -32,7 +32,7 @@ export const buyTower = (uuid, payload) => {
     return { status: 'fail', message: withdrawalResult.message };
   }
 
-  setTowers(uuid, newTower);
+  setTower(uuid, newTower);
   // 나중에 stringify와 비교해서 발표 때 고민한 내용 말하기
 
   console.log(`Buy tower successful for UUID: ${uuid}`);

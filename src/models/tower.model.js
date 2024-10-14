@@ -16,7 +16,7 @@ export const getTowers = (uuid) => {
 };
 
 // 타워 Setter
-export const setTowers = (uuid, tower) => {
+export const setTower = (uuid, tower) => {
   return towers[uuid].push(tower);
 };
 
