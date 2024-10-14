@@ -149,3 +149,16 @@ export const getFirstAsset = (assetType) => {
       throw new Error('Invalid asset type: ' + assetType);
   }
 };
+
+/**
+ * 스테이지ID를 받아 스테이지 넘버를 리턴하는 함수 (1부터 시작)
+ * @param {number} stageId 스테이지 ID ( 예시: 4001 )
+ * @returns {number} 스테이지 넘버 ( 예시: 1 )
+ */
+export const getStageNumber = (stageId) => {
+  const stages = gameAssets;
+  const stageDataIndex = stages.findIndex((stage) => stage.id === stageId);
+  if (stageDataIndex === -1) throw new Error('Not found stage');
+  const stageNumber = stageDataIndex + 1;
+  return stageNumber;
+};
