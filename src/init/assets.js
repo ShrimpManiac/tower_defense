@@ -34,6 +34,8 @@ const readFileAsync = (filename) => {
 
 /**
  * 게임에셋을 불러오는 함수
+ *
+ * 게임 시작시 실행
  * @returns
  */
 export const loadGameAssets = async () => {
@@ -62,6 +64,8 @@ export const getGameAssets = () => {
 
 /**
  * 게임에셋의 특정 항목을 id로 조회하는 함수
+ *
+ * 호출 예시: const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
  * @param {number} id 조회할 항목의 id
  * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 1001, hp: 50 "} )
@@ -85,6 +89,8 @@ export const findAssetDataById = (assetType, id) => {
 
 /**
  * 특정 게임에셋의 다음 항목을 조회하는 함수
+ *
+ * 호출 예시: const nextStage = getNextAsset(ASSET_TYPE.STAGE, stageId);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
  * @param {number} id 현재 항목의 id
  * @returns {JSON} 다음 id의 항목 ( 예시: { "id: 1002, hp: 60 "} )
