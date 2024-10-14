@@ -9,7 +9,6 @@ export class Tower {
     this.towerType = assetId;
     this.x = spawnLocation.x; // 타워 이미지 x 좌표
     this.y = spawnLocation.y; // 타워 이미지 y 좌표
-    this.level = 1; // 타워 레벨
     this.target = null; // 타워 광선의 목표
 
     const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
@@ -23,7 +22,6 @@ export class Tower {
     this.buyCost = towerData.cost; // 타워 구입 비용
     this.upgradeCost = Math.floor(cost * 1.5);
     this.skillId = towerData.skillId;
-    this.image = towerData.image;
 
     const skillData = findAssetDataById(ASSET_TYPE.TOWER_SKILL, skillId);
     this.skillDuration = skillData.skill_duration; // 스킬 지속 시간
