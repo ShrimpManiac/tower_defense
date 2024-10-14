@@ -29,8 +29,8 @@ export class Tower {
     this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
 
     // 공격 쿨타임
-    this.initialCooldown = towerData.cooldown; // 공격 쿨타임
-    this.cooldown = 0; // 남은 쿨타임
+    this.cooldown = towerData.cooldown; // 공격 쿨타임
+    this.cooldownLeft = 0; // 남은 쿨타임
 
     // 특수타워 스킬
     this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
@@ -52,17 +52,17 @@ export class Tower {
       return;
     }
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    if (this.cooldown <= 0) {
+    if (this.cooldownLeft <= 0) {
       monster.hp -= this.attackPower;
-      this.cooldown = this.initialCooldown; // 3초 쿨타임 (초당 60프레임)
+      this.cooldownLeft = this.cooldown; // 3초 쿨타임 (초당 60프레임)
       this.beamDuration = 30; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
     }
   }
 
   updateCooldown() {
-    if (this.cooldown > 0) {
-      this.cooldown--;
+    if (this.cooldownLeft > 0) {
+      this.cooldownLeft--;
     }
   }
 }
@@ -81,7 +81,7 @@ export class SlowTower extends Tower {
   }
 
   attack(monster) {
-    if (this.cooldown <= 0) {
+    if (this.cooldownLeft <= 0) {
       this.target = monster;
       this.beamDuration = 30;
 
@@ -99,7 +99,7 @@ export class SlowTower extends Tower {
         }, this.skillDuration * 1000); // 초 단위로
       }
 
-      this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
+      this.cooldownLeft = this.cooldown; // 공격 후 쿨타임 초기화
     }
   }
 }
@@ -111,7 +111,7 @@ export class MultiTower extends Tower {
   }
 
   attack(monster) {
-    if (this.cooldown <= 0) {
+    if (this.cooldownLeft <= 0) {
       this.target = monster;
       this.beamDuration = 30;
 
@@ -124,7 +124,7 @@ export class MultiTower extends Tower {
         this.applySkillEffect(monster);
       }
 
-      this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
+      this.cooldownLeft = this.cooldown; // 공격 후 쿨타임 초기화
     }
   }
 
