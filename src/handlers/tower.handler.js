@@ -127,3 +127,16 @@ export const upgradeTower = (uuid, payload) => {
     towerPacketInfo: towerPacketInfo,
   };
 };
+
+/**
+ * 클라이언트로부터의 몬스터 공격 요청을 처리하는 핸들러
+ *
+ * 공격 로직 (monster.attack) 처리 후 몬스터 사망여부 판단
+ *
+ * 생존 시 몬스터 정보수정 명령 패킷 전송 / 사망 시 몬스터 삭제 명령 패킷 전송
+ * @param {uuid} number userId
+ * @param {*} payload 데이터
+ */
+export const attackMonster = (uuid, payload) => {
+  const { monsterId, towerId } = payload;
+};
