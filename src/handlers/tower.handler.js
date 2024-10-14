@@ -7,7 +7,7 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { setTowers, Tower } from '../models/tower.model.js';
+import { getTowers, setTowers, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
 // 타워 구매(설치) 핸들러
@@ -44,9 +44,9 @@ export const buyTower = (uuid, payload) => {
 export const sellTower = (uuid, payload) => {
   const { towerId } = payload;
 
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
-  }
+  // if (!getTowers(uuid) || getTowers(uuid).length === 0) {
+  //   return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
+  // }
 
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
   if (towerIndex === -1) {
