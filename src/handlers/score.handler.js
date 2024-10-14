@@ -29,6 +29,7 @@ const initScore = (uuid) => {
 
 const getHighScore = (uuid) => {
   try {
+    //INCOMPLETE: DB 구성 완료되면 구현가능
     const fetchedScore = 0; // 해당 위치에 db에 저장된 score 불러옴
     if (fetchedScore === undefined || !fetchedScore) throw new Error('Failed to fetch DB Score');
     return {
@@ -102,7 +103,7 @@ const saveHighScore = (uuid, score) => {
 
     const highScore = Math.max(currentScore, currentHighScore.highScore);
     if (isNaN(highScore)) throw new Error('Failed to update high score');
-
+    //INCOMPLETE: DB 구성 완료되면 구현가능
     // db 처리(highScore 넘김)
     const dbResult = { status: 'success', message: 'Successfully updated high score' }; // 해당 위치에 db에 저장된 결과 불러옴
     return { status: dbResult.status, message: dbResult.message };
