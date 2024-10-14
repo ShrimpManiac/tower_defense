@@ -38,9 +38,9 @@ function getTowerById(uuid, towerId) {
 // 타워 구매(배치) 핸들러
 // Payload: { towerType, x, y }
 export const buyTower = (uuid, payload) => {
-  const { towerType, x, y } = payload;
+  const { towerId, spawnLocation } = payload;
 
-  const newTower = new Tower(towerType, x, y);
+  const newTower = new Tower(towerId, spawnLocation);
   const cost = newTower.cost;
   const id = newTower.id;
 
