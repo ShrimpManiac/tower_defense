@@ -4,9 +4,23 @@
   "data": [
     {
       "id": 2001,
+      "name": "Normal",
+      "skill_duration": 3,
+      "skill_value": 0.5,
+      "anti_air": false
+    },
+    {
+      "id": 2002,
       "name": "Slow",
       "skill_duration": 3,
       "skill_value": 0.5,
+      "anti_air": true
+    },
+    {
+      "id": 2003,
+      "name": "Multi",
+      "skill_duration": 3,
+      "skill_value": 3,
       "anti_air": true
     }
   ]
