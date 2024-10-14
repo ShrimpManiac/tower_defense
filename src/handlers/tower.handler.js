@@ -7,11 +7,11 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { Tower } from '../models/tower.model.js';
+import { getTowers, setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
-// 타워 구매(배치) 핸들러
-// Payload: { towerType, x, y }
+// 타워 구매(설치) 핸들러
+// Payload: { towerId, spawnLocation }
 export const buyTower = (uuid, payload) => {
   const { towerId, spawnLocation } = payload;
 
@@ -24,7 +24,7 @@ export const buyTower = (uuid, payload) => {
   }
 
   const withdrawalResult = withdrawAccount(uuid, cost);
-  const remainingGold = 0;
+  let remainingGold = 0;
   if (withdrawalResult.status === 'success') {
     remainingGold = withdrawalResult.balance;
   } else {
@@ -32,12 +32,11 @@ export const buyTower = (uuid, payload) => {
     return { status: 'fail', message: withdrawalResult.message };
   }
 
-  towers[uuid].push(newTower);
-  const towerPacketInfo = `${id},${towerType},${remainingGold}`;
+  setTower(uuid, newTower);
   // 나중에 stringify와 비교해서 발표 때 고민한 내용 말하기
 
   console.log(`Buy tower successful for UUID: ${uuid}`);
-  return { status: 'success', message: 'Tower purchased', towerPacketInfo: towerPacketInfo };
+  return { status: 'success', message: 'Tower purchased', id };
 };
 
 // 타워 판매 핸들러
@@ -45,9 +44,9 @@ export const buyTower = (uuid, payload) => {
 export const sellTower = (uuid, payload) => {
   const { towerId } = payload;
 
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
-  }
+  // if (!getTowers(uuid) || getTowers(uuid).length === 0) {
+  //   return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
+  // }
 
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
   if (towerIndex === -1) {
