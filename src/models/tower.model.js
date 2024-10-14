@@ -2,10 +2,10 @@ import { ASSET_TYPE } from '../constants';
 import { findAssetDataById } from '../init/assets';
 
 export class Tower {
-  static id = 0;
+  static instanceId = 0;
 
   constructor(towerType, x, y) {
-    this.id = id++;
+    this.id = instanceId++;
     this.towerType = towerType;
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
