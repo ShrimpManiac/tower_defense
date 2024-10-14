@@ -1,7 +1,3 @@
-import { ASSET_TYPE } from '../constants';
-import { findAssetDataById } from '../init/assets';
-import { Tower } from '../classes/tower.class';
-
 let towers = {}; // 타워 목록을 관리
 
 // 타워 초기화
