@@ -10,31 +10,6 @@
 import { Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
-let towers = {}; // 타워 목록을 관리
-
-// 타워 초기화
-export const clearTowers = (uuid) => {
-  towers[uuid] = [];
-};
-
-export const getTowers = (uuid) => {
-  return towers[uuid];
-};
-
-export const setTowers = (uuid, tower) => {
-  return towers[uuid].push(tower);
-};
-
-// Id로 타워 찾기
-function getTowerById(uuid, towerId) {
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return null;
-  }
-
-  let tower = towers[uuid].find((tower) => tower.id === towerId);
-  return tower;
-}
-
 // 타워 구매(배치) 핸들러
 // Payload: { towerType, x, y }
 export const buyTower = (uuid, payload) => {
@@ -126,4 +101,17 @@ export const upgradeTower = (uuid, payload) => {
     message: 'Tower upgraded',
     towerPacketInfo: towerPacketInfo,
   };
+};
+
+/**
+ * 클라이언트로부터의 몬스터 공격 요청을 처리하는 핸들러
+ *
+ * 공격 로직 (monster.attack) 처리 후 몬스터 사망여부 판단
+ *
+ * 생존 시 몬스터 정보수정 명령 패킷 전송 / 사망 시 몬스터 삭제 명령 패킷 전송
+ * @param {uuid} number userId
+ * @param {*} payload 데이터
+ */
+export const attackMonster = (uuid, payload) => {
+  const { monsterId, towerId } = payload;
 };
