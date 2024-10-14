@@ -31,7 +31,7 @@ export class Tower {
     // 공격 쿨타임
     this.cooldown = towerData.cooldown; // 공격 쿨타임
     this.cooldownLeft = 0; // 남은 쿨타임
-    this.beamDuration = 0; // 광선 애니메이션 남은 지속 시간
+    this.remainingBeamDuration = 0; // 광선 애니메이션 남은 지속 시간
 
     // 특수타워 스킬
     this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
@@ -50,7 +50,7 @@ export class Tower {
 
   draw(ctx, towerImage) {
     ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
-    if (this.beamDuration > 0 && this.target) {
+    if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
       ctx.lineTo(this.target.x + this.target.width / 2, this.target.y + this.target.height / 2);
@@ -58,7 +58,7 @@ export class Tower {
       ctx.lineWidth = 10;
       ctx.stroke();
       ctx.closePath();
-      this.beamDuration--;
+      this.remainingBeamDuration--;
     }
   }
 
@@ -67,7 +67,7 @@ export class Tower {
     if (this.cooldown <= 0) {
       monster.hp -= this.attackPower;
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
-      this.beamDuration = 30; // 광선 지속 시간 (0.5초)
+      this.remainingBeamDuration = 30; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
     }
   }
