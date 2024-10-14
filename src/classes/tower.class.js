@@ -14,7 +14,7 @@ export class Tower {
     /**
      * 타워 인스턴스 ID
      */
-    this.id = instanceId++;
+    this.id = Tower.instanceId++;
 
     // 타워 위치
     this.x = spawnLocation.x; // x 좌표
@@ -40,7 +40,7 @@ export class Tower {
     // 업그레이드 레벨 및 비용
     this.level = 1;
     this.buyCost = towerData.cost; // 구매 비용
-    this.upgradeCost = Math.floor(cost * 1.5); // 업그레이드 비용
+    this.upgradeCost = Math.floor(this.buyCost * 1.5); // 업그레이드 비용
     // INCOMPLETE : 판매 가격
 
     // 현재 타겟

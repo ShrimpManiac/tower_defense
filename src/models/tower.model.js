@@ -1,6 +1,6 @@
 import { ASSET_TYPE } from '../constants';
 import { findAssetDataById } from '../init/assets';
-import { Tower } from '../classes/towers/tower.class';
+import { Tower } from '../classes/tower.class';
 
 let towers = {}; // 타워 목록을 관리
 
