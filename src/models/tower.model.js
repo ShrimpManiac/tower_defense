@@ -4,6 +4,10 @@ import { findAssetDataById } from '../init/assets';
 export class Tower {
   static instanceId = 0;
 
+  /**
+   * @param {Number} assetId 타워 애셋 ID (데이터테이블 조회용)
+   * @param {{x: Number, y: Number}} spawnLocation 설치 좌표
+   */
   constructor(assetId, spawnLocation) {
     this.id = instanceId++;
     this.towerType = assetId;
