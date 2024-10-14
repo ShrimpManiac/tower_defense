@@ -38,14 +38,14 @@ const readFileAsync = (filename) => {
  */
 export const loadGameAssets = async () => {
   try {
-    const [stages, items, itemUnlocks] = await Promise.all([
+    const [stage, monster, tower, tower_skill] = await Promise.all([
       readFileAsync('stage.json'),
       readFileAsync('monster.json'),
       readFileAsync('tower.json'),
       readFileAsync('tower_skill.json'),
     ]);
 
-    gameAssets = { stages, items, itemUnlocks };
+    gameAssets = { stage, monster, tower, tower_skill };
     return gameAssets;
   } catch (e) {
     throw new Error('Failed to load game assets: ' + e.message);
@@ -67,17 +67,17 @@ export const getGameAssets = () => {
  * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 1001, hp: 50 "} )
  */
 export const findAssetDataById = (assetType, id) => {
-  const { stages, monsters, towers, towerSkills } = gameAssets;
+  const { stage, monster, tower, tower_Skill } = gameAssets;
 
   switch (assetType) {
     case ASSET_TYPE.STAGE:
-      return stages.data.find((stage) => stage.id === id);
+      return stage.data.find((stage) => stage.id === id);
     case ASSET_TYPE.MONSTER:
-      return monsters.data.find((monster) => monster.id === id);
+      return monster.data.find((monster) => monster.id === id);
     case ASSET_TYPE.TOWER:
-      return towers.data.find((tower) => tower.id === id);
+      return tower.data.find((tower) => tower.id === id);
     case ASSET_TYPE.TOWER_SKILL:
-      return towerSkills.data.find((towerSkill) => towerSkill.id === id);
+      return tower_Skill.data.find((towerSkill) => towerSkill.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
@@ -90,5 +90,7 @@ export const findAssetDataById = (assetType, id) => {
  * @returns {JSON} 다음 id의 항목 ( 예시: { "id: 1002, hp: 60 "} )
  */
 export const getNextAsset = (assetType, id) => {
-  return findAssetDataById(assetType, id + 1);
+  const result = findAssetDataById(assetType, id + 1);
+  if (result === undefined) throw new Error('Not Found Asset');
+  return result;
 };

@@ -1,6 +1,7 @@
 // import { moveStageHandler } from './stage.handler.js';
 import { gameStart, gameEnd } from './game.handler.js';
 import { checkBalanceAccount, hasSufficientBalance } from './account.handler.js';
+import { getCurrentStage, stageEnd, stageStart } from './stage.handler.js';
 
 const handlerMappings = {
   2: gameStart,
@@ -8,6 +9,9 @@ const handlerMappings = {
   // 11: moveStageHandler,
   100: checkBalanceAccount,
   101: hasSufficientBalance,
+  200: getCurrentStage,
+  201: stageStart,
+  202: stageEnd,
 };
 
 export default handlerMappings;

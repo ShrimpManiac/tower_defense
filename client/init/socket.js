@@ -30,7 +30,7 @@ const sendEvent = (handlerId, payload) => {
     // 해당 handlerId에 대한 응답을 기다림
     socket.once(`${eventId}_response`, (data) => {
       // 성공 시 데이터를 반환
-      if (data.status === 'success') {
+      if (data.status) {
         resolve(data);
       } else {
         reject(`Event ${eventId} with handlerId ${handlerId} failed to execute.`);

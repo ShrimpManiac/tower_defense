@@ -1,13 +1,11 @@
 import { getGameAssets } from '../init/assets.js';
 
-import { clearStage, getStage, setStage } from '../models/stage.model.js';
+import { getStage, setStage } from '../models/stage.model.js';
 // import { calculateScore, verifyScore } from './../utils/score.js';
 
 // Payload: { timestamp }
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
-
-  clearStage(uuid);
 
   // stages 배열에서 0번째 = 첫번째 스테이지
   setStage(uuid, stages.data[0].id, payload.timestamp);

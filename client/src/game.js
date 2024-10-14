@@ -8,19 +8,22 @@ import { sendEvent } from '../init/socket.js';
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
 */
 
+let serverSocket; // 서버 웹소켓 객체
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
+let currentStageId = 0;
+let currentStageNumber = 0;
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 0; // 기지 체력
+let baseHp = 70; // 기지 체력
 
 let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
-let monsterSpawnInterval = 3; // 몬스터 생성 주기
+let monsterSpawnInterval = 3000; // 몬스터 생성 주기
 const monsters = [];
 const towers = [];
 
@@ -48,15 +51,14 @@ for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
   monsterImages.push(img);
 }
 
-let monsterPath;
-
+// 서버와 클라이언트 골드 잔액 동기화
 async function loadGoldBalance() {
   try {
     const response = await sendEvent(100, {});
 
     const balance = response.balance;
 
-    if (!balance === undefined || response.status === 'fail') {
+    if (balance === undefined || response.status === 'fail') {
       alert('Fail to load Gold Balance');
 
       location.reload();
@@ -70,6 +72,32 @@ async function loadGoldBalance() {
     location.reload();
   }
 }
+
+// 서버와 클라이언트 스테이지 동기화
+async function loadCurrentStage() {
+  try {
+    const response = await sendEvent(200);
+
+    const stageId = response.stageId;
+    const stageNumber = response.stageNumber;
+
+    if (!stageId === undefined || !stageNumber === undefined || response.status === 'fail') {
+      alert('Fail to load current stage');
+
+      location.reload();
+    }
+
+    currentStageId = stageId;
+    currentStageNumber = stageNumber;
+  } catch (err) {
+    console.error('Error loading gold balance:', err.message);
+    alert('Error loading gold balance', err.message);
+
+    location.reload();
+  }
+}
+
+let monsterPath; // INCOMPLETE: 복수의 몬스터 경로를 허용하도록 구현할 필요가 있음
 
 function generateRandomMonsterPath() {
   const path = [];
@@ -168,8 +196,7 @@ function placeInitialTowers() {
   */
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
-    const tower = new Tower(x, y, towerCost);
-    towers.push(tower);
+    const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
     tower.draw(ctx, towerImage);
   }
 }
@@ -180,7 +207,7 @@ function placeNewTower() {
     빠진 코드들을 채워넣어주세요! 
   */
   const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(x, y);
+  const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
   towers.push(tower);
   tower.draw(ctx, towerImage);
 }
@@ -195,71 +222,70 @@ function spawnMonster() {
   monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
 }
 
-function gameLoop() {
-  // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다! 그래야 다른 이미지들이 배경 이미지 위에 그려져요!
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
-  drawPath(monsterPath); // 경로 다시 그리기
-
+function displayInfo() {
   ctx.font = '25px Times New Roman';
   ctx.fillStyle = 'skyblue';
   ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillStyle = 'skyblue';
+  ctx.fillText(`현재 스테이지: ${currentStageNumber}`, 100, 100); // 최고 기록 표시
   ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${score}`, 100, 100); // 현재 스코어 표시
+  ctx.fillText(`점수: ${score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${userGold}`, 100, 150); // 골드 표시
+  ctx.fillText(`골드: ${userGold}`, 100, 200); // 골드 표시
   ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 200); // 최고 기록 표시
+  ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 250); // 최고 기록 표시
+}
+let isStageActive = false; // 스테이지 진행 중 여부
+let animationFrameId;
 
-  // 타워 그리기 및 몬스터 공격 처리
+function gameLoop() {
+  // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다!
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+  drawPath(monsterPath); // 경로 다시 그리기
+  displayInfo(); // 게임 정보 표시
+
+  // 타워 그리기 및 공격 처리
   towers.forEach((tower) => {
     tower.draw(ctx, towerImage);
     tower.updateCooldown();
-    monsters.forEach((monster) => {
-      const distance = Math.sqrt(
-        Math.pow(tower.x - monster.x, 2) + Math.pow(tower.y - monster.y, 2),
-      );
-      if (distance < tower.range) {
-        tower.attack(monster);
-      }
-    });
+    if (isStageActive) {
+      monsters.forEach((monster) => {
+        const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
+        if (distance < tower.range) {
+          tower.attack(monster);
+        }
+      });
+    }
   });
 
-  // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
+  // 기지 상태 갱신 및 그리기
   base.draw(ctx, baseImage);
 
-  for (let i = monsters.length - 1; i >= 0; i--) {
-    const monster = monsters[i];
-    if (monster.hp > 0) {
-      const isDestroyed = monster.move(base);
-      if (isDestroyed) {
-        /* 게임 오버 */
-        alert('게임 오버. 스파르타 본부를 지키지 못했다...ㅠㅠ');
-        location.reload();
+  if (isStageActive) {
+    // 활성 스테이지에만 몬스터 이동 및 게임 오버 체크
+    for (let i = monsters.length - 1; i >= 0; i--) {
+      const monster = monsters[i];
+      if (monster.hp > 0) {
+        const isDestroyed = monster.move(base);
+        if (isDestroyed) {
+          alert('게임 오버! 기지를 지키지 못했습니다...');
+          cancelAnimationFrame(animationFrameId); // 애니메이션 루프 중지
+          endGame();
+        }
+        monster.draw(ctx);
+      } else {
+        userGold += monster.goldDrop; // 몬스터 죽을 때 골드 추가
+        monsters.splice(i, 1); // 몬스터 제거
       }
-      monster.draw(ctx);
-    } else {
-      /* 몬스터가 죽었을 때 */
-      monsters.splice(i, 1);
+    }
+
+    if (monsters.length === 0) {
+      endStage(); // 모든 몬스터 제거 시 스테이지 종료
     }
   }
 
-  requestAnimationFrame(gameLoop); // 지속적으로 다음 프레임에 gameLoop 함수 호출할 수 있도록 함
-}
-
-async function initGame() {
-  if (isInitGame) {
-    return;
-  }
-
-  loadGoldBalance(); // 골드 잔액 불러오기
-  monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
-  initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
-  placeInitialTowers(); // 설정된 초기 타워 개수만큼 사전에 타워 배치
-  placeBase(); // 기지 배치
-
-  setInterval(spawnMonster, monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
-  gameLoop(); // 게임 루프 최초 실행
-  isInitGame = true;
+  // 루프를 유지하기 위해 다음 프레임 요청
+  animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
@@ -270,24 +296,69 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  /* 서버 접속 코드 (여기도 완성해주세요!) */
-  // let somewhere;
-  // serverSocket = io('서버주소', {
-  //   auth: {
-  //     token: somewhere, // 토큰이 저장된 어딘가에서 가져와야 합니다!
-  //   },
-  // });
-  console.log('Asset loaded');
   if (!isInitGame) {
     initGame();
   }
-  /* 
-    서버의 이벤트들을 받는 코드들은 여기다가 쭉 작성해주시면 됩니다! 
-    e.g. serverSocket.on("...", () => {...});
-    이 때, 상태 동기화 이벤트의 경우에 아래의 코드를 마지막에 넣어주세요! 최초의 상태 동기화 이후에 게임을 초기화해야 하기 때문입니다! 
-    
-  */
 });
+
+function initGame() {
+  if (isInitGame) return;
+
+  loadGoldBalance(); // 골드 잔액 동기화
+  loadCurrentStage(); // 현재 스테이지 동기화
+
+  monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+  initMap(); // 맵 초기화
+  placeBase(); // 기지 배치
+  startStageButton.style.display = 'block'; // 준비 완료 버튼 표시
+  gameLoop(); // 게임 루프 시작
+
+  isInitGame = true;
+}
+
+async function startStage() {
+  loadCurrentStage(); // 서버에서 스테이지 받아옴
+
+  alert(`${currentStageNumber} 스테이지 시작!`);
+  isStageActive = true; // 스테이지 활성화
+  await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
+  gameLoop();
+}
+
+async function stageInit(currentStageId) {
+  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
+  spawnMonster(currentStageId); // 몬스터 생성
+
+  const result = await sendEvent(201); // 스테이지 시작 신호
+  // 스테이지 신호 서버로 날림
+  if (result.status === 'fail') {
+    cancelAnimationFrame(animationFrameId);
+    alert('게임 오류 발생');
+    location.reload(); // 게임 재시작
+  }
+}
+
+async function endStage() {
+  isStageActive = false; // 스테이지 비활성화
+  alert(`스테이지 ${currentStageNumber} 완료!`);
+  const stageEndResult = await sendEvent(202);
+  loadGoldBalance(); // 골드 잔액 동기화
+  loadCurrentStage();
+  console.log(stageEndResult);
+  if (stageEndResult.status === 'fail' && stageEndResult.message === 'Last_Stage') {
+    cancelAnimationFrame(animationFrameId);
+    alert(`스테이지를 모두 완료하셨습니다.!`);
+    location.reload(); // 게임 재시작
+  }
+  startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
+}
+
+function endGame() {
+  isStageActive = false;
+  cancelAnimationFrame(animationFrameId);
+  alert('게임 오버! 다시 도전해보세요.');
+  location.reload(); // 게임 재시작
+}
 
 const buyTowerButton = document.createElement('button');
 buyTowerButton.textContent = '타워 구입';
@@ -301,3 +372,20 @@ buyTowerButton.style.cursor = 'pointer';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+const startStageButton = document.createElement('button');
+startStageButton.textContent = '준비 완료';
+startStageButton.style.position = 'absolute';
+startStageButton.style.top = '50px';
+startStageButton.style.right = '10px';
+startStageButton.style.padding = '10px 20px';
+startStageButton.style.fontSize = '16px';
+startStageButton.style.cursor = 'pointer';
+
+// 준비 완료 버튼을 누르면 스테이지 시작
+startStageButton.addEventListener('click', () => {
+  startStage(); // 스테이지 시작 함수 호출
+  startStageButton.style.display = 'none'; // 버튼 숨기기
+});
+
+document.body.appendChild(startStageButton);
