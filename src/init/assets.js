@@ -79,7 +79,7 @@ export const getGameAsset = (assetType) => {
     case ASSET_TYPE.TOWER_SKILL:
       return gameAssets.towerSkills;
     case ASSET_TYPE.PATH:
-      return gameAssets.path;
+      return gameAssets.paths;
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
@@ -94,7 +94,7 @@ export const getGameAsset = (assetType) => {
  * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 3004, maxHp: 50, ..."} )
  */
 export const findAssetDataById = (assetType, id) => {
-  const { stages, monsters, towers, towerSkills } = gameAssets;
+  const { stages, monsters, towers, towerSkills, paths } = gameAssets;
 
   switch (assetType) {
     case ASSET_TYPE.STAGE:
@@ -106,7 +106,7 @@ export const findAssetDataById = (assetType, id) => {
     case ASSET_TYPE.TOWER_SKILL:
       return towerSkills.data.find((towerSkill) => towerSkill.id === id);
     case ASSET_TYPE.PATH:
-      return pathData.data.find((path) => path.id === id);
+      return paths.data.find((path) => path.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
@@ -132,7 +132,7 @@ export const getNextAsset = (assetType, id) => {
  * @returns {JSON} 지정한 게임애셋의 첫 항목 ( 예시: { "id: 4001, monsterIds: [...], ..."} )
  */
 export const getFirstAsset = (assetType) => {
-  const { stages, monsters, towers, towerSkills } = gameAssets;
+  const { stages, monsters, towers, towerSkills, paths } = gameAssets;
 
   switch (assetType) {
     case ASSET_TYPE.STAGE:
@@ -144,7 +144,7 @@ export const getFirstAsset = (assetType) => {
     case ASSET_TYPE.TOWER_SKILL:
       return towerSkills.data[0].id;
     case ASSET_TYPE.PATH:
-      return pathData.data[0].id;
+      return paths.data[0].id;
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }

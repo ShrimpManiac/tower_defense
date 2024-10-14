@@ -71,7 +71,7 @@ export const getNextAsset = (assetType, id) => {
  *
  * 호출 예시: const firstStage = getFirstAsset(ASSET_TYPE.STAGE);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
- * @returns {JSON} 게임애셋의 첫 항목 ( 예시: { "id: 4001, monsterIds: [...], ..."} )
+ * @returns {JSON} 지정한 게임애셋의 첫 항목 ( 예시: { "id: 4001, monsterIds: [...], ..."} )
  */
 export const getFirstAsset = (assetType) => {
   switch (assetType) {
