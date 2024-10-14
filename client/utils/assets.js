@@ -3,6 +3,7 @@ import monsterData from '../assets/monster.json' with { type: 'json' };
 import stageData from '../assets/stage.json' with { type: 'json' };
 import towerData from '../assets/tower.json' with { type: 'json' };
 import towerSkillData from '../assets/tower_skill.json' with { type: 'json' };
+import pathData from '../assets/path.json' with {type: 'json'};
 
 /**
  * 로드한 게임에셋을 조회하는 함수
@@ -19,6 +20,8 @@ export const getGameAssets = (assetType) => {
       return towerData;
     case ASSET_TYPE.TOWER_SKILL:
       return towerSkillData;
+    case ASSET_TYPE.PATH:
+      return pathData;
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
@@ -42,6 +45,8 @@ export const findAssetDataById = (assetType, id) => {
       return towerData.data.find((tower) => tower.id === id);
     case ASSET_TYPE.TOWER_SKILL:
       return towerSkillData.data.find((towerSkill) => towerSkill.id === id);
+    case ASSET_TYPE.PATH:
+      return pathData.data.find((path)=> path.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
