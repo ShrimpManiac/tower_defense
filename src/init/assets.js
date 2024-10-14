@@ -40,14 +40,15 @@ const readFileAsync = (filename) => {
  */
 export const loadGameAssets = async () => {
   try {
-    const [stages, monsters, towers, towerSkills] = await Promise.all([
+    const [stages, monsters, towers, towerSkills, paths] = await Promise.all([
       readFileAsync('stage.json'),
       readFileAsync('monster.json'),
       readFileAsync('tower.json'),
       readFileAsync('tower_skill.json'),
+      readFileAsync('path.json'),
     ]);
 
-    gameAssets = { stages, monsters, towers, towerSkills };
+    gameAssets = { stages, monsters, towers, towerSkills, paths };
     return gameAssets;
   } catch (e) {
     throw new Error('Failed to load game assets: ' + e.message);
@@ -82,6 +83,8 @@ export const findAssetDataById = (assetType, id) => {
       return towers.data.find((tower) => tower.id === id);
     case ASSET_TYPE.TOWER_SKILL:
       return towerSkills.data.find((towerSkill) => towerSkill.id === id);
+    case ASSET_TYPE.PATH:
+      return pathData.data.find((path) => path.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
