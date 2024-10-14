@@ -355,6 +355,12 @@ async function endStage() {
     loadCurrentStage();
     console.log(stageEndResult);
 
+    if (stageEndResult.message === 'Last_Stage') {
+      cancelAnimationFrame(animationFrameId);
+      alert(`스테이지를 모두 완료하셨습니다.!`);
+      location.reload(); // 게임 재시작
+    }
+
     startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
   } catch (err) {
     if (err.message === 'Last_Stage') {
