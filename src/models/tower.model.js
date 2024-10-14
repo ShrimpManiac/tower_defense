@@ -6,6 +6,7 @@ export class Tower {
 
   constructor(towerType, x, y) {
     this.id = id++;
+    this.towerType = towerType;
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
     this.level = 1; // 타워 레벨
@@ -60,6 +61,36 @@ export class NormalTower extends Tower {
 
 // 슬로우 타워 클래스
 export class SlowTower extends Tower {
+  constructor(towerType, x, y) {
+    super(towerType, x, y);
+  }
+
+  attack(monster) {
+    if (this.cooldown <= 0) {
+      this.target = monster;
+      this.beamDuration = 30;
+
+      // 몬스터 이동 속도 감소 적용
+      if (monster.speed && !monster.isSlowed) {
+        monster.speed *= this.skillValue; // 몬스터의 이동 속도를 감소시킴
+        monster.isSlowed = true; // 슬로우 효과를 받고 있음을 표시
+
+        // 일정 시간 후 몬스터의 속도 원상 복구
+        setTimeout(() => {
+          if (monster.isSlowed) {
+            monster.speed /= this.skillValue;
+            monster.isSlowed = false;
+          }
+        }, this.skillDuration * 1000); // 초 단위로
+      }
+
+      this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
+    }
+  }
+}
+
+// 슬로우 타워 클래스 생성 예시 쓰기 new MultiTower('2003', x, y)
+export class MultiTower extends Tower {
   constructor(towerType, x, y) {
     super(towerType, x, y);
   }

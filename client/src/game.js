@@ -248,12 +248,31 @@ function gameLoop() {
     tower.draw(ctx, towerImage);
     tower.updateCooldown();
     if (isStageActive) {
-      monsters.forEach((monster) => {
-        const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
-        if (distance < tower.range) {
-          tower.attack(monster);
+      if (tower.type === 1003) {
+        // MultiTower의 경우 사거리 내에서 최대 3개의 몬스터를 공격
+        const targets = [];
+        for (let i = 0; i < monsters.length; i++) {
+          const monster = monsters[i];
+          const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
+          if (distance < tower.range) {
+            targets.push(monster);
+          }
+          if (targets.length >= tower.skillValue) {
+            break; // 타겟이 3개 채워지면 그만 찾음
+          }
         }
-      });
+        // 각 몬스터 한번에 공격
+        targets.forEach((target) => {
+          tower.attack(target);
+        });
+      } else {
+        monsters.forEach((monster) => {
+          const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
+          if (distance < tower.range) {
+            tower.attack(monster);
+          }
+        });
+      }
     }
   });
 

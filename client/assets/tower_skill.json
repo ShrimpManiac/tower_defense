@@ -18,9 +18,9 @@
     },
     {
       "id": 2003,
-      "name": "AntiAir",
+      "name": "Multi",
       "skill_duration": 3,
-      "skill_value": 0.5,
+      "skill_value": 3,
       "anti_air": true
     }
   ]
