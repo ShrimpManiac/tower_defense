@@ -7,36 +7,54 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { getTowers, setTower, Tower } from '../models/tower.model.js';
+import { setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
-// 타워 구매(설치) 핸들러
-// Payload: { towerId, spawnLocation }
+/**
+ * 타워 구매(설치) 핸들러
+ *
+ * 수신 payload : { assetId, spawnLocation }
+ *
+ * 발신 payload : { instanceId }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const buyTower = (uuid, payload) => {
-  const { towerId, spawnLocation } = payload;
+  try {
+    const { towerId, spawnLocation } = payload;
 
-  const newTower = new Tower(towerId, spawnLocation);
-  const cost = newTower.cost;
-  const id = newTower.id;
+    // INCOMPLETE: 설치 좌표가 적합한지 검증
 
-  if (!hasSufficientBalance(uuid, cost)) {
-    return { status: 'fail', message: 'Not enough gold' };
+    // 타워 생성
+    const newTower = new Tower(towerId, spawnLocation);
+
+    // 골드가 충분한지 검증
+    if (!hasSufficientBalance(uuid, newTower.buyCost)) {
+      return { status: 'fail', message: 'Not enough gold' };
+    }
+
+    // 골드 차감
+    const withdrawalResult = withdrawAccount(uuid, newTower.buyCost);
+
+    // 예외처리: 출금 실패
+    if (withdrawalResult.status != 'success') {
+      console.log(withdrawalResult.message);
+      return { status: 'fail', message: withdrawalResult.message };
+    }
+
+    // (서버) 타워 설치
+    setTower(uuid, newTower);
+
+    // 결과 반환
+    console.log(`Tower Purchase successful for UUID: ${uuid}`);
+    return { status: 'success', message: 'Tower successfully purchased', payload: newTower.id };
+
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'fail', message: err.message };
   }
-
-  const withdrawalResult = withdrawAccount(uuid, cost);
-  let remainingGold = 0;
-  if (withdrawalResult.status === 'success') {
-    remainingGold = withdrawalResult.balance;
-  } else {
-    console.log(withdrawalResult.message);
-    return { status: 'fail', message: withdrawalResult.message };
-  }
-
-  setTower(uuid, newTower);
-  // 나중에 stringify와 비교해서 발표 때 고민한 내용 말하기
-
-  console.log(`Buy tower successful for UUID: ${uuid}`);
-  return { status: 'success', message: 'Tower purchased', id };
 };
 
 // 타워 판매 핸들러
