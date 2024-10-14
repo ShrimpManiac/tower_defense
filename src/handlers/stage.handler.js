@@ -1,5 +1,5 @@
 import { ASSET_TYPE } from '../constants.js';
-import { getGameAsset, getNextAsset } from '../init/assets.js';
+import { getFirstAsset, getGameAsset, getNextAsset } from '../init/assets.js';
 import { createStage, getStage, setStage } from '../models/stage.model.js';
 
 /**
@@ -17,13 +17,13 @@ export const initializeStage = (uuid) => {
     const createResult = createStage(uuid).status;
     if (createResult !== 'success') throw new Error('Failed to create stage');
 
-    const initialStageId = stages.data.sort((a, b) => a.id - b.id)[0].id;
+    const firstStageId = getFirstAsset(ASSET_TYPE.STAGE).id;
 
     // 최초 스테이지 설정
-    const setResult = setStage(uuid, initialStageId, Date.now());
+    const setResult = setStage(uuid, firstStageId, Date.now());
     if (setResult.status !== 'success') throw new Error(setResult.message);
 
-    console.log(`[Stage] ${uuid} : Successfully initialized ${initialStageId} stage`);
+    console.log(`[Stage] ${uuid} : Successfully initialized ${firstStageId} stage`);
     return { status: 'success', message: 'Successfully initialized stage' };
   } catch (err) {
     console.error(err.message);
