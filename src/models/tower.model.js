@@ -49,19 +49,23 @@ export class Tower {
   }
 
   attack(monster) {
-    // 대공 확인
+    // 대공 체크
     if (monster.type === 'flying' && this.antiAir === false) {
-      console.log(`Tower 대공 공격 실패 ${this.id}`);
+      console.log(`Tower ${this.id} 대공 공격 실패`);
       return;
     }
-    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    if (this.cooldownLeft <= 0) {
-      // INCOMPLETE: sendEvent 필요
-      monster.hp -= this.attackPower;
-      this.cooldownLeft = this.cooldown; // 3초 쿨타임 (초당 60프레임)
-      this.beamDuration = 30; // 광선 지속 시간 (0.5초)
-      this.target = monster; // 광선의 목표 설정
+    // 쿨타임 체크
+    if (this.cooldownLeft > 0) {
+      console.log(`Tower ${this.id} 공격 쿨타임`);
+      return;
     }
+
+    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
+    // INCOMPLETE: sendEvent 필요
+    monster.hp -= this.attackPower;
+    this.cooldownLeft = this.cooldown; // 3초 쿨타임 (초당 60프레임)
+    this.beamDuration = 30; // 광선 지속 시간 (0.5초)
+    this.target = monster; // 광선의 목표 설정
   }
 
   updateCooldown() {
