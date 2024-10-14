@@ -9,27 +9,41 @@ export class Tower {
    * @param {{x: Number, y: Number}} spawnLocation 설치 좌표
    */
   constructor(assetId, spawnLocation) {
-    this.id = instanceId++;
-    this.x = spawnLocation.x; // 타워 이미지 x 좌표
-    this.y = spawnLocation.y; // 타워 이미지 y 좌표
-    this.target = null; // 타워 광선의 목표
-
     const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
+    const skillData = findAssetDataById(ASSET_TYPE.TOWER_SKILL, towerData.skillId);
+
+    // 인스턴스 ID
+    this.id = instanceId++;
+
+    // 타워 위치
+    this.x = spawnLocation.x; // x 좌표
+    this.y = spawnLocation.y; // y 좌표
+
+    // 타워 크기
     this.width = towerData.width; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
     this.height = towerData.height; // 타워 이미지 세로 길이
+
+    // 기본스탯
     this.attackPower = towerData.attackPower; // 타워 공격력
     this.range = towerData.range; // 타워 사거리
-    this.cooldown = 0; // 타워 공격 쿨타임
-    this.initialCooldown = towerData.cooldown;
     this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
-    this.buyCost = towerData.cost; // 타워 구입 비용
-    this.upgradeCost = Math.floor(cost * 1.5);
-    this.skillId = towerData.skillId;
 
-    const skillData = findAssetDataById(ASSET_TYPE.TOWER_SKILL, skillId);
-    this.skillDuration = skillData.skill_duration; // 스킬 지속 시간
-    this.skillValue = skillData.skill_value; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
+    // 공격 쿨타임
+    this.initialCooldown = towerData.cooldown; // 공격 쿨타임
+    this.cooldown = 0; // 남은 쿨타임
+
+    // 특수타워 스킬
+    this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
+    this.skillValue = skillData.skillValue; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
     this.antiAir = skillData.anti_air; // 공중 유닛 공격 가능 여부
+
+    // 비용
+    this.buyCost = towerData.cost; // 타워 구입 비용
+    this.upgradeCost = Math.floor(cost * 1.5); // 타워 업그레이드 비용
+    // INCOMPLETE : 판매 가격
+
+    // 현재 타겟
+    this.target = null; // 타워 광선의 목표
   }
 
   attack(monster) {
