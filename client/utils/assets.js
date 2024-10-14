@@ -7,6 +7,8 @@ import pathData from '../assets/path.json' with {type: 'json'};
 
 /**
  * 로드한 게임에셋을 조회하는 함수
+ * 
+ * 호출 예시: const towers = getGameAsset(ASSET_TYPE.TOWER);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
  * @returns {JSON} JSON화된 게임에셋
  */
