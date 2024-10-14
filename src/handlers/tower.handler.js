@@ -7,7 +7,7 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { deleteTower, setTower, Tower } from '../models/tower.model.js';
+import { deleteTower, getTowerById, setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
 /**
@@ -94,42 +94,56 @@ export const sellTower = (uuid, payload) => {
   }
 };
 
-// 타워 업그레이드 핸들러
-// Payload: { towerId, upgradeCost }
+/**
+ * 타워 업그레이드 핸들러
+ *
+ * 수신 payload : { instanceId }
+ *
+ * 발신 payload : { towerInfo string }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const upgradeTower = (uuid, payload) => {
-  const { towerId } = payload;
+  try {
+    const { towerId } = payload;
 
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return { status: 'fail', message: 'No towers available to upgrade' };
+    // 업그레이드할 타워 검색
+    const tower = getTowerById(uuid, towerId);
+
+    // 골드가 충분한지 검증
+    const upgradeCost = this.upgradeCost;
+    if (!hasSufficientBalance(uuid, upgradeCost)) {
+      return { status: 'fail', message: 'Not enough gold' };
+    }
+
+    // 골드 차감
+    const withdrawalResult = withdrawAccount(uuid, upgradeCost);
+
+    // 예외처리: 출금 실패
+    if (withdrawalResult.status != 'success') {
+      console.log(withdrawalResult.message);
+      return { status: 'fail', message: withdrawalResult.message };
+    }
+
+    // 타워 업그레이드
+    tower.applyUpgrades();
+
+    // 결과 반환
+    const updatedTowerInfo = `${tower.level},${tower.attackPower},${tower.range},${tower.upgradeCost},${tower.sellCost},${tower.skillDuration},${tower.skillValue}`;
+    const message = `Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    console.log(message);
+    return {
+      status: 'success',
+      message: message,
+      payload: { towerInfo: updatedTowerInfo },
+    };
+
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'fail', message: err.message };
   }
-
-  // 보유중인 타워에서 찾기
-  const tower = towers[uuid].find((tower) => tower.id === towerId);
-  if (!tower) {
-    return { status: 'fail', message: 'Tower not found' };
-  }
-
-  const upgradeCost = tower.upgradeCost;
-  if (!hasSufficientBalance(uuid, upgradeCost)) {
-    return { status: 'fail', message: 'Not enough gold' };
-  }
-
-  // 타워 업그레이드 (예: 공격력 및 범위 증가) 함수화 고민
-  const id = tower.id;
-  tower.attackPower *= 1.5;
-  tower.range *= 1.2;
-  tower.level += 1; // 타워 레벨 증가
-  tower.upgradeCost *= 1.5;
-
-  const remainingGold = withdrawAccount(uuid, upgradeCost);
-  const towerPacketInfo = `${id},${tower.attackPower},${tower.range},${tower.level},${tower.cost},${remainingGold}`; // 노션 패킷정보 수정 (타워정보 + 남은골드 한번에 보내는걸로)
-
-  console.log(`Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}`);
-  return {
-    status: 'success',
-    message: 'Tower upgraded',
-    towerPacketInfo: towerPacketInfo,
-  };
 };
 
 /**

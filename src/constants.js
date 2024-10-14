@@ -20,6 +20,23 @@ export const ASSET_TYPE = Object.freeze({
 });
 
 /**
- * 타워 환불
+ * 업그레이드 비용 증가율
+ */
+export const UPGRADE_COST_SCALER = 1.5;
+
+/**
+ * 업그레이드 스탯 보너스
+ *
+ * @key 타워 레벨
+ * @value [공격력 보너스, 사거리 보너스]
+ */
+export const UPGRADE_BONUS = Object.freeze({
+  1: { attack_bonus: 1.5, range_bonus: 1.2 },
+  2: { attack_bonus: 1.35, range_bonus: 1.15 },
+  3: { attack_bonus: 1.2, range_bonus: 1.1 },
+});
+
+/**
+ * 타워 환불 가격비율
  */
 export const SELL_PENALTY = 0.5;

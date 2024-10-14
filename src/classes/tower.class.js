@@ -1,4 +1,4 @@
-import { ASSET_TYPE, SELL_PENALTY } from '../constants';
+import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants';
 import { findAssetDataById } from '../init/assets';
 
 export class Tower {
@@ -40,7 +40,7 @@ export class Tower {
     // 구매, 판매, 업그레이드 비용
     this.buyCost = towerData.cost; // 구매 비용
     this.sellPrice = Math.floor(this.buyCost * SELL_PENALTY); // 판매 가격
-    this.upgradeCost = Math.floor(this.buyCost * 1.5); // 업그레이드 비용
+    this.upgradeCost = Math.floor(this.buyCost * UPGRADE_COST_SCALER); // 업그레이드 비용
 
     // 현재 업그레이드 레벨
     this.level = 1;
@@ -71,5 +71,20 @@ export class Tower {
     if (this.cooldownLeft > 0) {
       this.cooldownLeft--;
     }
+  }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }
