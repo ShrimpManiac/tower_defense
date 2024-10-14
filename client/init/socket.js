@@ -33,6 +33,12 @@ socket.on('event', (data) => {
   socket.emit(`${data.eventId}_response`, response);
 });
 
+/**
+ * 사용 예시: const response = await sendEvent(23, {towerId});
+ * @param {number} handlerId 핸들러 ID (src\handlers\handlerMapping)
+ * @param {json} payload 서버로 보낼 데이터
+ * @returns
+ */
 const sendEvent = (handlerId, payload) => {
   return new Promise((resolve, reject) => {
     let eventId = generateEventId();
