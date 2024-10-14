@@ -1,5 +1,5 @@
 import { ASSET_TYPE } from '../constants.js';
-import { getFirstAsset, getGameAsset, getNextAsset } from '../init/assets.js';
+import { getFirstAsset, getGameAsset, getNextAsset, getStageNumber } from '../init/assets.js';
 import { createStage, getStage, setStage } from '../models/stage.model.js';
 
 /**
@@ -47,10 +47,7 @@ export const getCurrentStage = (uuid) => {
     // 최근 스테이지 ID 획득
     const currentStageId = currentStage.id;
     // 스테이지 넘버 획득
-    const stageData = stages.data.sort((a, b) => a.id - b.id);
-    const stageDataIndex = stageData.findIndex((stage) => stage.id === currentStageId);
-    if (stageDataIndex === -1) throw new Error('Not found stage');
-    const stageNumber = stageDataIndex + 1;
+    const stageNumber = getStageNumber(currentStageId);
 
     return {
       status: 'success',
