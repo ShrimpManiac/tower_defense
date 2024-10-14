@@ -20,7 +20,7 @@ export const clearTowers = (uuid) => {
  */
 export const getTowers = (uuid) => {
   // 예외처리: 타워 목록이 없거나 비어있음
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower`);
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
   return towers[uuid];
 };
 
@@ -43,7 +43,7 @@ export const setTower = (uuid, tower) => {
 export const deleteTower = (uuid, towerId) => {
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
-  if (towerIndex === -1) throw new Error(`Tower not found`);
+  if (towerIndex === -1) throw new Error(`Tower not found.`);
   const deletedTower = towers[uuid][towerIndex];
   towers[uuid].splice(towerIndex, 1); // 타워 삭제
   return deletedTower;
@@ -57,9 +57,9 @@ export const deleteTower = (uuid, towerId) => {
  */
 export function getTowerById(uuid, towerId) {
   // 예외처리: 타워 목록이 없거나 비어있음
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower`);
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
   let tower = towers[uuid].find((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
-  if (!tower) throw new Error(`Tower not found`);
+  if (!tower) throw new Error(`Tower not found.`);
   return tower;
 }

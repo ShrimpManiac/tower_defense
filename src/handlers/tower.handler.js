@@ -9,6 +9,8 @@
 
 import { deleteTower, getTowerById, setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
+import { updateIncreaseScore } from './score.handler.js';
+// INCOMPLETE: import monster (몬스터 클래스가 미구현)
 
 /**
  * 타워 구매(설치) 핸들러
@@ -31,7 +33,7 @@ export const buyTower = (uuid, payload) => {
 
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
-      return { status: 'fail', message: 'Not enough gold' };
+      return { status: 'fail', message: 'Not enough gold.' };
     }
 
     // 골드 차감
@@ -47,7 +49,7 @@ export const buyTower = (uuid, payload) => {
     setTower(uuid, newTower);
 
     // 결과 반환
-    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
     console.log(message);
     return {
       status: 'success',
@@ -83,7 +85,7 @@ export const sellTower = (uuid, payload) => {
     depositAccount(uuid, soldTower.sellPrice);
 
     // 결과 반환
-    const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
     console.log(message);
     return { status: 'success', message: message };
 
@@ -114,7 +116,7 @@ export const upgradeTower = (uuid, payload) => {
     // 골드가 충분한지 검증
     const upgradeCost = this.upgradeCost;
     if (!hasSufficientBalance(uuid, upgradeCost)) {
-      return { status: 'fail', message: 'Not enough gold' };
+      return { status: 'fail', message: 'Not enough gold.' };
     }
 
     // 골드 차감
@@ -131,7 +133,7 @@ export const upgradeTower = (uuid, payload) => {
 
     // 결과 반환
     const updatedTowerInfo = `${tower.level},${tower.attackPower},${tower.range},${tower.upgradeCost},${tower.sellCost},${tower.skillDuration},${tower.skillValue}`;
-    const message = `Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    const message = `Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
     console.log(message);
     return {
       status: 'success',
@@ -147,14 +149,59 @@ export const upgradeTower = (uuid, payload) => {
 };
 
 /**
- * 클라이언트로부터의 몬스터 공격 요청을 처리하는 핸들러
+ * 몬스터 공격 핸들러
  *
- * 공격 로직 (monster.attack) 처리 후 몬스터 사망여부 판단
+ * 수신 payload : { monsterId, towerId }
  *
- * 생존 시 몬스터 정보수정 명령 패킷 전송 / 사망 시 몬스터 삭제 명령 패킷 전송
+ * 발신 payload : { killed, monsterInfo string }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
  * @param {uuid} number userId
- * @param {*} payload 데이터
+ * @param {json} payload 데이터
  */
 export const attackMonster = (uuid, payload) => {
   const { monsterId, towerId } = payload;
+
+  // 공격할 타워 검색
+  const tower = getTowerById(uuid, towerId);
+
+  // 공격받을 몬스터 검색
+  // INCOMPLETE : getMonsterById 함수 미구현
+  const monster = getMonsterById(uuid, monsterId);
+
+  // 공격 로직 처리
+  tower.attack(monster);
+
+  // 몬스터 사망시:
+  if (monster.hp <= 0) {
+    // 몬스터 사망처리
+    // INCOMPLETE: deleteMonster 함수 미구현
+    deleteMonster(uuid, monsterId);
+
+    // 유저 점수 가산
+    updateIncreaseScore(uuid, monster.score);
+
+    // 유저 골드 가산
+    depositAccount(uuid, monster.goldDrop);
+
+    // 결과 반환
+    const message = `Monster ${monsterId} was killed by tower ${towerId}.`;
+    return {
+      status: 'success',
+      message: message,
+      payload: { killed: true },
+    };
+
+    // 몬스터 생존시:
+  } else {
+    // 결과 반환
+    const updatedMonsterInfo = `${monster.maxHp},${monster.defense},${monster.speed}`;
+    const message = `Monster ${monsterId} was attacked by tower ${towerId}.`;
+    return {
+      status: 'success',
+      message: message,
+      payload: { killed: false, monsterInfo: updatedMonsterInfo },
+    };
+  }
 };

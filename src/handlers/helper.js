@@ -23,7 +23,10 @@ export const handleConnection = (socket, uuid) => {
 export const handleEvent = (io, socket, data) => {
   // 클라이언트 버전 체크
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Client version mismatch' });
+    socket.emit(`${data.eventId}_response`, {
+      status: 'fail',
+      message: 'Client version mismatch',
+    });
     return;
   }
 

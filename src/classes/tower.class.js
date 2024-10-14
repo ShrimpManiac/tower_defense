@@ -55,6 +55,13 @@ export class Tower {
       console.log(`Tower ${this.id} 대공 공격 실패`);
       return;
     }
+
+    // 사거리 체크
+    // INCOMPLETE : withinRange 함수 미구현
+    if (!withinRange(tower, monster)) {
+      return { status: 'fail', message: 'Monster not within range' };
+    }
+
     // 쿨타임 체크
     if (this.cooldownLeft > 0) {
       console.log(`Tower ${this.id} 공격 쿨타임`);
