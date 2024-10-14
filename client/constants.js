@@ -32,3 +32,10 @@ export const UPGRADE_BONUS = [
   { level: 2, rate: 0.2 },
   { level: 3, rate: 0.1 },
 ];
+
+/**
+ * 타워 광선 애니메이션 지속시간
+ *
+ * 30프레임 = 0.5초 (1초당 60프레임)
+ */
+export const BEAM_DURATION = 30;
