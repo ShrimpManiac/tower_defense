@@ -3,12 +3,13 @@ import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
+import { findAssetDataById, getGameAsset } from '../utils/assets.js';
+import { ASSET_TYPE } from '../constants.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
 */
 
-let serverSocket; // 서버 웹소켓 객체
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -30,6 +31,11 @@ const towers = [];
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
+
+// 몬스터 경로
+let monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
+let monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
+let monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -97,8 +103,6 @@ async function loadCurrentStage() {
   }
 }
 
-let monsterPath; // INCOMPLETE: 복수의 몬스터 경로를 허용하도록 구현할 필요가 있음
-
 function generateRandomMonsterPath() {
   const path = [];
   let currentX = 0;
@@ -130,13 +134,15 @@ function generateRandomMonsterPath() {
 
 function initMap() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 그리기
-  drawPath();
+  drawPath(monsterPath1);
+  drawPath(monsterPath2);
+  drawPath(monsterPath3);
 }
 
-function drawPath() {
+function drawPath(monsterPath) {
   const segmentLength = 20; // 몬스터 경로 세그먼트 길이
   const imageWidth = 60; // 몬스터 경로 이미지 너비
-  const imageHeight = 60; // 몬스터 경로 이미지 높이
+  const imageHeight = 80; // 몬스터 경로 이미지 높이
   const gap = 5; // 몬스터 경로 이미지 겹침 방지를 위한 간격
 
   for (let i = 0; i < monsterPath.length - 1; i++) {
@@ -213,13 +219,13 @@ function placeNewTower() {
 }
 
 function placeBase() {
-  const lastPoint = monsterPath[monsterPath.length - 1];
+  const lastPoint = monsterPath1[monsterPath1.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
 }
 
 function spawnMonster() {
-  monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
+  monsters.push(new Monster(monsterPath1, monsterImages, monsterLevel));
 }
 
 function displayInfo() {
@@ -241,7 +247,9 @@ let animationFrameId;
 function gameLoop() {
   // 렌더링 시에는 항상 배경 이미지부터 그려야 합니다!
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-  drawPath(monsterPath); // 경로 다시 그리기
+  drawPath(monsterPath1); // 경로 다시 그리기
+  drawPath(monsterPath2);
+  drawPath(monsterPath3);
   displayInfo(); // 게임 정보 표시
 
   // 타워 그리기 및 공격 처리
@@ -307,7 +315,7 @@ function initGame() {
   loadGoldBalance(); // 골드 잔액 동기화
   loadCurrentStage(); // 현재 스테이지 동기화
 
-  monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
+  // monsterPath = generateRandomMonsterPath(); // 몬스터 경로 생성
   initMap(); // 맵 초기화
   placeBase(); // 기지 배치
   startStageButton.style.display = 'block'; // 준비 완료 버튼 표시
@@ -339,18 +347,26 @@ async function stageInit(currentStageId) {
 }
 
 async function endStage() {
-  isStageActive = false; // 스테이지 비활성화
-  alert(`스테이지 ${currentStageNumber} 완료!`);
-  const stageEndResult = await sendEvent(202);
-  loadGoldBalance(); // 골드 잔액 동기화
-  loadCurrentStage();
-  console.log(stageEndResult);
-  if (stageEndResult.status === 'fail' && stageEndResult.message === 'Last_Stage') {
-    cancelAnimationFrame(animationFrameId);
-    alert(`스테이지를 모두 완료하셨습니다.!`);
-    location.reload(); // 게임 재시작
+  try {
+    isStageActive = false; // 스테이지 비활성화
+    alert(`스테이지 ${currentStageNumber} 완료!`);
+    const stageEndResult = await sendEvent(202);
+    loadGoldBalance(); // 골드 잔액 동기화
+    loadCurrentStage();
+    console.log(stageEndResult);
+
+    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
+  } catch (err) {
+    if (err.message === 'Last_Stage') {
+      cancelAnimationFrame(animationFrameId);
+      alert(`스테이지를 모두 완료하셨습니다.!`);
+      location.reload(); // 게임 재시작
+    } else {
+      cancelAnimationFrame(animationFrameId);
+      alert(`게임 오류`);
+      location.reload(); // 게임 재시작
+    }
   }
-  startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
 }
 
 function endGame() {
