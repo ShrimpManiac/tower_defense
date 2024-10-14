@@ -47,8 +47,13 @@ export const buyTower = (uuid, payload) => {
     setTower(uuid, newTower);
 
     // 결과 반환
-    console.log(`Tower Purchase successful for UUID: ${uuid}`);
-    return { status: 'success', message: 'Tower successfully purchased', payload: newTower.id };
+    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    console.log(message);
+    return {
+      status: 'success',
+      message: message,
+      payload: { towerId: newTower.id },
+    };
 
     // 예외처리: 상정하지 못한 오류
   } catch (err) {
@@ -57,22 +62,36 @@ export const buyTower = (uuid, payload) => {
   }
 };
 
-// 타워 판매 핸들러
-// Payload: { towerId }
+/**
+ * 타워 판매 핸들러
+ *
+ * 수신 payload : { instanceId }
+ *
+ * 발신 payload : { }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const sellTower = (uuid, payload) => {
-  const { towerId } = payload;
+  try {
+    const { towerId } = payload;
 
-  // 타워 삭제
-  const soldTower = deleteTower(uuid, towerId);
+    // 타워 삭제
+    const soldTower = deleteTower(uuid, towerId);
 
-  const refundGold = soldTower.sellPrice;
+    // 골드 가산
+    depositAccount(uuid, soldTower.sellPrice);
 
-  const remainingGold = depositAccount(uuid, refundGold); // 유저 골드에 추가하고 보유골드 반환
+    // 결과 반환
+    const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}`;
+    console.log(message);
+    return { status: 'success', message: message };
 
-  const towerPacketInfo = `${remainingGold}`;
-
-  console.log(`Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}`);
-  return { status: 'success', message: 'Tower sold', towerPacketInfo: towerPacketInfo };
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'fail', message: err.message };
+  }
 };
 
 // 타워 업그레이드 핸들러
