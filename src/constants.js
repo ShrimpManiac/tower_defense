@@ -18,7 +18,4 @@ export const ASSET_TYPE = Object.freeze({
   TOWER_SKILL: 'tower_skill',
 });
 
-/**
- * 게임 시작 시 지급할 골드
- */
-export const START_GOLD = 300;
+// 타워 관련 상수 추가하기
