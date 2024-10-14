@@ -31,7 +31,6 @@ export class Tower {
     // 공격 쿨타임
     this.cooldown = towerData.cooldown; // 공격 쿨타임
     this.cooldownLeft = 0; // 남은 쿨타임
-    this.beamDuration = 0; // 광선 애니메이션 남은 지속 시간
 
     // 특수타워 스킬
     this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
@@ -64,7 +63,6 @@ export class Tower {
     // INCOMPLETE: sendEvent 필요
     monster.hp -= this.attackPower;
     this.cooldownLeft = this.cooldown; // 3초 쿨타임 (초당 60프레임)
-    this.beamDuration = 30; // 광선 지속 시간 (0.5초)
     this.target = monster; // 광선의 목표 설정
   }
 
@@ -91,7 +89,6 @@ export class SlowTower extends Tower {
   attack(monster) {
     if (this.cooldownLeft <= 0) {
       this.target = monster;
-      this.beamDuration = 30;
 
       // 몬스터 이동 속도 감소 적용
       if (monster.speed && !monster.isSlowed) {
@@ -121,7 +118,6 @@ export class MultiTower extends Tower {
   attack(monster) {
     if (this.cooldownLeft <= 0) {
       this.target = monster;
-      this.beamDuration = 30;
 
       // 몬스터 이동 속도 감소 적용
       if (monster.speed && !monster.isSlowed) {
