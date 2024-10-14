@@ -1,4 +1,4 @@
-import { ASSET_TYPE, UPGRADE_BONUS } from '../constants.js';
+import { ASSET_TYPE, BEAM_DURATION, UPGRADE_BONUS } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
 
 export class Tower {
@@ -67,7 +67,7 @@ export class Tower {
     if (this.cooldown <= 0) {
       monster.hp -= this.attackPower;
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
-      this.remainingBeamDuration = 30; // 광선 지속 시간 (0.5초)
+      this.remainingBeamDuration = BEAM_DURATION; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
     }
   }
