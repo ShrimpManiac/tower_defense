@@ -1,4 +1,4 @@
-import { ASSET_TYPE, BEAM_DURATION, UPGRADE_BONUS } from '../constants.js';
+import { ASSET_TYPE, BEAM_DURATION, SELL_PENALTY } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
 
 export class Tower {
@@ -38,11 +38,13 @@ export class Tower {
     this.skillValue = skillData.skillValue; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
     this.antiAir = skillData.anti_air; // 공중 유닛 공격 가능 여부
 
-    // 업그레이드 레벨 및 비용
-    this.level = 1;
+    // 구매, 판매, 업그레이드 비용
     this.buyCost = towerData.cost; // 구매 비용
-    this.upgradeCost = Math.floor(cost * 1.5); // 업그레이드 비용
-    // INCOMPLETE : 판매 가격
+    this.sellPrice = this.buyCost * SELL_PENALTY; // 판매 가격
+    this.upgradeCost = Math.floor(this.buyCost * 1.5); // 업그레이드 비용
+
+    // 현재 업그레이드 레벨
+    this.level = 1;
 
     // 현재 타겟
     this.target = null;

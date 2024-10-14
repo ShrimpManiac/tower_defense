@@ -7,7 +7,7 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { setTower, Tower } from '../models/tower.model.js';
+import { deleteTower, setTower, Tower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 
 /**
@@ -62,17 +62,10 @@ export const buyTower = (uuid, payload) => {
 export const sellTower = (uuid, payload) => {
   const { towerId } = payload;
 
-  // if (!getTowers(uuid) || getTowers(uuid).length === 0) {
-  //   return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
-  // }
+  // 타워 삭제
+  const soldTower = deleteTower(uuid, towerId);
 
-  const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
-  if (towerIndex === -1) {
-    return { status: 'fail', message: 'Tower not found' };
-  }
-
-  const [soldTower] = towers[uuid].splice(towerIndex, 1); // 구조 분해 할당
-  const refundGold = Math.floor(soldTower.upgradeCost / 2); // 판매 시 원가의 절반 회수
+  const refundGold = soldTower.sellPrice;
 
   const remainingGold = depositAccount(uuid, refundGold); // 유저 골드에 추가하고 보유골드 반환
 

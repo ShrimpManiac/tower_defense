@@ -19,4 +19,7 @@ export const ASSET_TYPE = Object.freeze({
   PATH: 'path',
 });
 
-// 타워 관련 상수 추가하기
+/**
+ * 타워 환불
+ */
+export const SELL_PENALTY = 0.5;
