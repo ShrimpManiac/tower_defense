@@ -16,6 +16,7 @@ export const ASSET_TYPE = Object.freeze({
   MONSTER: 'monster',
   TOWER: 'tower',
   TOWER_SKILL: 'tower_skill',
+  PATH: 'path',
 });
 
 // 타워 관련 상수 추가하기

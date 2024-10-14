@@ -1,5 +1,5 @@
 import { ASSET_TYPE } from '../constants.js';
-import { getGameAssets, getNextAsset } from '../init/assets.js';
+import { getFirstAsset, getGameAsset, getNextAsset, getStageNumber } from '../init/assets.js';
 import { createStage, getStage, setStage } from '../models/stage.model.js';
 
 /**
@@ -11,19 +11,19 @@ import { createStage, getStage, setStage } from '../models/stage.model.js';
  */
 export const initializeStage = (uuid) => {
   try {
-    const { stage } = getGameAssets();
+    const stages = getGameAsset(ASSET_TYPE.STAGE);
     // stage asset에서 첫번째 스테이지 id 가져옴
 
     const createResult = createStage(uuid).status;
     if (createResult !== 'success') throw new Error('Failed to create stage');
 
-    const initialStageId = stage.data.sort((a, b) => a.id - b.id)[0].id;
+    const firstStageId = getFirstAsset(ASSET_TYPE.STAGE).id;
 
     // 최초 스테이지 설정
-    const setResult = setStage(uuid, initialStageId, Date.now());
+    const setResult = setStage(uuid, firstStageId, Date.now());
     if (setResult.status !== 'success') throw new Error(setResult.message);
 
-    console.log(`[Stage] ${uuid} : Successfully initialized ${initialStageId} stage`);
+    console.log(`[Stage] ${uuid} : Successfully initialized ${firstStageId} stage`);
     return { status: 'success', message: 'Successfully initialized stage' };
   } catch (err) {
     console.error(err.message);
@@ -39,7 +39,7 @@ export const initializeStage = (uuid) => {
  */
 export const getCurrentStage = (uuid) => {
   try {
-    const { stage } = getGameAssets();
+    const stages = getGameAsset(ASSET_TYPE.STAGE);
 
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
@@ -47,10 +47,7 @@ export const getCurrentStage = (uuid) => {
     // 최근 스테이지 ID 획득
     const currentStageId = currentStage.id;
     // 스테이지 넘버 획득
-    const stageData = stage.data.sort((a, b) => a.id - b.id);
-    const stageDataIndex = stageData.findIndex((stage) => stage.id === currentStageId);
-    if (stageDataIndex === -1) throw new Error('Not found stage');
-    const stageNumber = stageDataIndex + 1;
+    const stageNumber = getStageNumber(currentStageId);
 
     return {
       status: 'success',
