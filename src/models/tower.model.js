@@ -4,15 +4,15 @@ import { findAssetDataById } from '../init/assets';
 export class Tower {
   static instanceId = 0;
 
-  constructor(towerType, x, y) {
+  constructor(assetId, spawnLocation) {
     this.id = instanceId++;
-    this.towerType = towerType;
-    this.x = x; // 타워 이미지 x 좌표
-    this.y = y; // 타워 이미지 y 좌표
+    this.towerType = assetId;
+    this.x = spawnLocation.x; // 타워 이미지 x 좌표
+    this.y = spawnLocation.y; // 타워 이미지 y 좌표
     this.level = 1; // 타워 레벨
     this.target = null; // 타워 광선의 목표
 
-    const towerData = findAssetDataById(ASSET_TYPE.TOWER, towerType);
+    const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
     this.width = towerData.width; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
     this.height = towerData.height; // 타워 이미지 세로 길이
     this.attackPower = towerData.attackPower; // 타워 공격력
@@ -54,15 +54,15 @@ export class Tower {
 
 // 일반 타워 클래스
 export class NormalTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 }
 
 // 슬로우 타워 클래스
 export class SlowTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 
   attack(monster) {
@@ -91,8 +91,8 @@ export class SlowTower extends Tower {
 
 // 슬로우 타워 클래스 생성 예시 쓰기 new MultiTower('2003', x, y)
 export class MultiTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 
   attack(monster) {
