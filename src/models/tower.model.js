@@ -29,7 +29,7 @@ export class Tower {
     this.range = towerData.range; // 사거리
 
     // 공격 쿨타임
-    this.cooldown = towerData.cooldown; // 공격 쿨타임
+    this.cooldown = towerData.cooldown; // 공격 쿨타임 (180프레임 = 3초)
     this.cooldownLeft = 0; // 남은 쿨타임
 
     // 특수타워 스킬
@@ -58,9 +58,8 @@ export class Tower {
       console.log(`Tower ${this.id} 공격 쿨타임`);
       return;
     }
-
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    // INCOMPLETE: sendEvent 필요
+    //
     monster.hp -= this.attackPower;
     this.cooldownLeft = this.cooldown; // 3초 쿨타임 (초당 60프레임)
     this.target = monster; // 광선의 목표 설정
