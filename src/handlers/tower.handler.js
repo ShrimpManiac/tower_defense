@@ -33,7 +33,7 @@ export const buyTower = (uuid, payload) => {
 
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
-      return { status: 'fail', message: 'Not enough gold.' };
+      return { status: 'failure', message: 'Not enough gold.' };
     }
 
     // 골드 차감
@@ -42,7 +42,7 @@ export const buyTower = (uuid, payload) => {
     // 예외처리: 출금 실패
     if (withdrawalResult.status != 'success') {
       console.log(withdrawalResult.message);
-      return { status: 'fail', message: withdrawalResult.message };
+      return { status: 'failure', message: withdrawalResult.message };
     }
 
     // (서버) 타워 설치
@@ -60,7 +60,7 @@ export const buyTower = (uuid, payload) => {
     // 예외처리: 상정하지 못한 오류
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -92,7 +92,7 @@ export const sellTower = (uuid, payload) => {
     // 예외처리: 상정하지 못한 오류
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -116,7 +116,7 @@ export const upgradeTower = (uuid, payload) => {
     // 골드가 충분한지 검증
     const upgradeCost = this.upgradeCost;
     if (!hasSufficientBalance(uuid, upgradeCost)) {
-      return { status: 'fail', message: 'Not enough gold.' };
+      return { status: 'failure', message: 'Not enough gold.' };
     }
 
     // 골드 차감
@@ -125,7 +125,7 @@ export const upgradeTower = (uuid, payload) => {
     // 예외처리: 출금 실패
     if (withdrawalResult.status != 'success') {
       console.log(withdrawalResult.message);
-      return { status: 'fail', message: withdrawalResult.message };
+      return { status: 'failure', message: withdrawalResult.message };
     }
 
     // 타워 업그레이드
@@ -144,7 +144,7 @@ export const upgradeTower = (uuid, payload) => {
     // 예외처리: 상정하지 못한 오류
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 

@@ -59,7 +59,7 @@ export class Tower {
     // 사거리 체크
     // INCOMPLETE : withinRange 함수 미구현
     if (!withinRange(tower, monster)) {
-      return { status: 'fail', message: 'Monster not within range' };
+      return { status: 'failure', message: 'Monster not within range' };
     }
 
     // 쿨타임 체크

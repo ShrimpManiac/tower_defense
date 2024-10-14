@@ -64,7 +64,7 @@ async function loadGoldBalance() {
 
     const balance = response.balance;
 
-    if (balance === undefined || response.status === 'fail') {
+    if (balance === undefined || response.status === 'failure') {
       alert('Fail to load Gold Balance');
 
       location.reload();
@@ -87,7 +87,7 @@ async function loadCurrentStage() {
     const stageId = response.stageId;
     const stageNumber = response.stageNumber;
 
-    if (stageId === undefined || stageNumber === undefined || response.status === 'fail') {
+    if (stageId === undefined || stageNumber === undefined || response.status === 'failure') {
       alert('Fail to load current stage');
 
       location.reload();
@@ -348,7 +348,7 @@ function initGame() {
 async function startStage() {
   try {
     const startStageResult = await sendEvent(201);
-    if (startStageResult.status === 'fail') {
+    if (startStageResult.status === 'failure') {
       throw new Error(startStageResult.message);
     }
     loadCurrentStage(); // 서버에서 스테이지 받아옴

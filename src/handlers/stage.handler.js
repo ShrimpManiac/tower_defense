@@ -30,7 +30,7 @@ export const initializeStage = (uuid) => {
     return { status: 'success', message: 'Successfully initialized stage' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -60,7 +60,7 @@ export const getCurrentStage = (uuid) => {
     };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -80,16 +80,16 @@ export const moveToNextStage = (uuid) => {
     // 다음 스테이지 아이디 획득
     const { id: nextStageId } = getNextAsset(ASSET_TYPE.STAGE, stageId);
     if (nextStageId === undefined) {
-      return { status: 'fail', message: 'Last Stage' };
+      return { status: 'failure', message: 'Last Stage' };
     }
     // 다음 스테이지 설정
     const nextStageResult = setStage(uuid, nextStageId, Date.now());
 
-    if (nextStageResult.status === 'fail') throw new Error(nextStageResult.message);
+    if (nextStageResult.status === 'failure') throw new Error(nextStageResult.message);
     return { status: 'success', message: nextStageResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -109,7 +109,7 @@ export const getMonstersByStage = (uuid) => {
     return monsterIds;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -130,7 +130,7 @@ export const getMonsterCountByStage = (uuid) => {
     return numMonsters;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -152,7 +152,7 @@ export const getStartTimeByStage = (uuid) => {
     return timestamp;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -170,7 +170,7 @@ export const stageStart = (uuid) => {
     return { status: 'success', message: 'Successfully stage started' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -183,11 +183,11 @@ export const stageEnd = (uuid) => {
 
     const result = moveToNextStage(uuid);
 
-    if (result.status === 'fail') return { status: 'fail', message: 'Last_Stage' };
+    if (result.status === 'failure') return { status: 'failure', message: 'Last_Stage' };
 
     return { status: 'success', message: 'Successfully stage ended' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };

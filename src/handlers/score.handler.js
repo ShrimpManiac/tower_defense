@@ -15,7 +15,7 @@ export const initScore = (uuid) => {
     return { status: initResult.status, message: 'Successfully initialized Score' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -39,7 +39,7 @@ export const getHighScore = (uuid) => {
     };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -57,7 +57,7 @@ export const getCurrentScore = (uuid) => {
     return { status: 'success', message: 'Successfully retrieved current score', currentScore };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -81,7 +81,7 @@ export const updateIncreaseScore = (uuid, increaseScore) => {
     return { status: setScoreResult.status, message: setScoreResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -109,6 +109,6 @@ export const saveHighScore = (uuid, score) => {
     return { status: dbResult.status, message: dbResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };

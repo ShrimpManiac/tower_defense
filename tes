@@ -5,7 +5,7 @@ export const sellTower = (uuid, payload) => {
   const towerIndex = towers.findIndex((tower) => tower.id === towerId);
 
   if (towerIndex === -1) {
-    return { status: 'fail', message: 'Tower not found' };
+    return { status: 'failure', message: 'Tower not found' };
   }
 
   const [soldTower] = towers.splice(towerIndex, 1);
@@ -22,11 +22,11 @@ export const upgradeTower = (uuid, payload) => {
   const tower = towers.find((tower) => tower.id === towerId);
 
   if (!tower) {
-    return { status: 'fail', message: 'Tower not found' };
+    return { status: 'failure', message: 'Tower not found' };
   }
 
   if (!hasEnoughGold(uuid, upgradeCost)) {
-    return { status: 'fail', message: 'Not enough gold to upgrade' };
+    return { status: 'failure', message: 'Not enough gold to upgrade' };
   }
 
   tower.attackPower += 20; // 업그레이드 시 공격력 증가
