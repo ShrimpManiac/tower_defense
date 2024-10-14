@@ -3,6 +3,8 @@ import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
+import { findAssetDataById } from '../utils/assets.js';
+import { ASSET_TYPE } from '../constants.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -24,7 +26,8 @@ let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 3000; // 몬스터 생성 주기
-const monsters = [];
+const spawnedMonsters = []; // 소환된 몬스터 목록
+let monstersToSpawn = []; // 소환할 몬스터 목록
 const towers = [];
 
 let score = 0; // 게임 점수
@@ -218,9 +221,45 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-function spawnMonster() {
-  monsters.push(new Monster(monsterPath, monsterImages, monsterLevel));
+export function spawnMonster(instanceid) {
+  for (let i = 0; i < monstersToSpawn.length; i++) {
+    let monsterId = monstersToSpawn[i];
+    spawnedMonsters.push(new Monster(monsterId, instanceid, monsterPath));
+  }
 }
+
+function initSpawnQueue(StageId) {
+  monstersToSpawn = [];
+  let stageData = findAssetDataById(ASSET_TYPE.STAGE, StageId);
+  console.log('스테이지 데이터: ', stageData);
+  // 변수 설정
+  let monsterIds = stageData.monsterIds;
+  let numMonsters = stageData.numMonsters;
+  let monsterProbabilitys = stageData.monsterProbabilitys;
+
+  //랜덤으로 monstersToSpawn에 monseterId를 넣는 반복문
+  for (let i = 0; i < numMonsters; i++) {
+    const rand = Math.random(); // 랜덤함수
+    let cumulativeRate = 0; // 누적확률
+    // monsterProbabilitys에 따라 몬스터 선택
+    for (let j = 0; j < monsterIds.length; j++) {
+      cumulativeRate += monsterProbabilitys[j];
+      if (rand < cumulativeRate) {
+        let monsterId = monsterIds[j];
+        monstersToSpawn.push(monsterId);
+        break;
+      }
+    }
+  }
+  // 마지막 스테이지 보스 출현
+  if (StageId === 4005) {
+    monstersToSpawn.push(3004);
+  }
+  console.log('몬스터toSpawn: ', monstersToSpawn);
+}
+// function spawnMonster(assetId, instanceId) {
+//   spawnedMonsters.push(new Monster(assetId, instanceId, monsterPath[0]));
+// }
 
 function displayInfo() {
   ctx.font = '25px Times New Roman';
@@ -249,7 +288,7 @@ function gameLoop() {
     tower.draw(ctx, towerImage);
     tower.updateCooldown();
     if (isStageActive) {
-      monsters.forEach((monster) => {
+      spawnedMonsters.forEach((monster) => {
         const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
         if (distance < tower.range) {
           tower.attack(monster);
@@ -263,8 +302,8 @@ function gameLoop() {
 
   if (isStageActive) {
     // 활성 스테이지에만 몬스터 이동 및 게임 오버 체크
-    for (let i = monsters.length - 1; i >= 0; i--) {
-      const monster = monsters[i];
+    for (let i = spawnedMonsters.length - 1; i >= 0; i--) {
+      const monster = spawnedMonsters[i];
       if (monster.hp > 0) {
         const isDestroyed = monster.move(base);
         if (isDestroyed) {
@@ -274,12 +313,11 @@ function gameLoop() {
         }
         monster.draw(ctx);
       } else {
-        userGold += monster.goldDrop; // 몬스터 죽을 때 골드 추가
-        monsters.splice(i, 1); // 몬스터 제거
+        spawnedMonsters.splice(i, 1); // 몬스터 제거
       }
     }
 
-    if (monsters.length === 0) {
+    if (spawnedMonsters.length === 0) {
       endStage(); // 모든 몬스터 제거 시 스테이지 종료
     }
   }
@@ -327,7 +365,9 @@ async function startStage() {
 
 async function stageInit(currentStageId) {
   // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
-  spawnMonster(currentStageId); // 몬스터 생성
+  console.log('currentStageId: ', currentStageId);
+  initSpawnQueue(currentStageId); // 몬스터 소환 큐 초기화
+  setInterval(); //
 
   const result = await sendEvent(201); // 스테이지 시작 신호
   // 스테이지 신호 서버로 날림
