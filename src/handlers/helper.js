@@ -24,7 +24,7 @@ export const handleConnection = (socket, uuid) => {
   socket.emit('connection', { uuid });
 };
 
-export const handleEmitEvent = (eventId, payload) => {
+export const sendEventToClient = (eventId, payload) => {
   socket.emit(eventId, {
     payload,
   });
