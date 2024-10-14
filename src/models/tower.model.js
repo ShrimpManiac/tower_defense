@@ -10,7 +10,6 @@ export class Tower {
    */
   constructor(assetId, spawnLocation) {
     this.id = instanceId++;
-    this.towerType = assetId;
     this.x = spawnLocation.x; // 타워 이미지 x 좌표
     this.y = spawnLocation.y; // 타워 이미지 y 좌표
     this.target = null; // 타워 광선의 목표
