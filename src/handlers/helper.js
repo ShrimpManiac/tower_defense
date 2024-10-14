@@ -3,6 +3,7 @@ import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 import { createStage } from '../models/stage.model.js';
 import { createAccount } from '../models/account.model.js';
+import { generateEventId } from '../utils/generateEventId.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -24,24 +25,18 @@ export const handleConnection = (socket, uuid) => {
   socket.emit('connection', { uuid });
 };
 
-export const handleEmitEvent = (eventId, payload) => {
-  socket.emit(eventId, {
-    payload,
-  });
-};
-
 // Event 핸들러
 export const handleEvent = (io, socket, data) => {
   // 클라이언트 버전 체크
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit('response', { status: 'fail', message: 'Client version mismatch' });
+    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Client version mismatch' });
     return;
   }
 
   // 핸들러ID 체크
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit('response', { status: 'fail', message: 'Handler not found' });
+    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Handler not found' });
     return;
   }
 
@@ -55,4 +50,32 @@ export const handleEvent = (io, socket, data) => {
 
   // Response 전달
   socket.emit(`${data.eventId}_response`, response);
+};
+
+/**
+ * 서버에서 클라이언트로 보내는 sendEvent
+ *
+ * 사용 예시: const response = await sendEvent(11, {monsterId});
+ * @param {number} handlerId 클라이언트 이벤트 핸들러 ID (client/handlers/handlerMappings)
+ * @param {json} payload 클라이언트로 보낼 데이터
+ * @returns
+ */
+export const sendEventToClient = (handlerId, payload) => {
+  return new Promise((resolve, reject) => {
+    let eventId = generateEventId();
+    socket.emit('event', {
+      handlerId,
+      eventId,
+      payload,
+    });
+    // 해당 handlerId에 대한 응답을 기다림
+    socket.once(`${eventId}_response`, (data) => {
+      // 성공 시 데이터를 반환
+      if (data.status === 'success') {
+        resolve(data);
+      } else {
+        reject(data);
+      }
+    });
+  });
 };

@@ -39,7 +39,7 @@ export const buyTower = (uuid, payload) => {
     return { status: 'fail', message: 'Not enough gold' };
   }
 
-  const remainingGold = deductGold(uuid, cost); // 바로 handleEmitEvent
+  const remainingGold = deductGold(uuid, cost); // 바로 sendEventToClient
 
   towers[uuid].push(newTower);
   const towerPacketInfo = `${id},${towerType},${remainingGold}`; // 노션의 패킷 정보 수정해야함 towerId, dataId, 남은 골드 => json.stringify
