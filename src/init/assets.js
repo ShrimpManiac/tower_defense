@@ -57,10 +57,24 @@ export const loadGameAssets = async () => {
 
 /**
  * 로드한 게임에셋을 조회하는 함수
- * @returns {JSON} JSON화된 전체 게임에셋
+ * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
+ * @returns {JSON} JSON화된 게임에셋
  */
-export const getGameAssets = () => {
-  return gameAssets;
+export const getGameAssets = (assetType) => {
+  switch (assetType) {
+    case ASSET_TYPE.MONSTER:
+      return gameAssets.monsters;
+    case ASSET_TYPE.STAGE:
+      return gameAssets.stages;
+    case ASSET_TYPE.TOWER:
+      return gameAssets.towers;
+    case ASSET_TYPE.TOWER_SKILL:
+      return gameAssets.towerSkills;
+    case ASSET_TYPE.PATH:
+      return gameAssets.path;
+    default:
+      throw new Error('Invalid asset type: ' + assetType);
+  }
 };
 
 /**

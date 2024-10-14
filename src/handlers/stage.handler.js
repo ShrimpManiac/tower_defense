@@ -11,7 +11,7 @@ import { createStage, getStage, setStage } from '../models/stage.model.js';
  */
 export const initializeStage = (uuid) => {
   try {
-    const { stages } = getGameAssets();
+    const stages = getGameAssets(ASSET_TYPE.STAGE);
     // stage asset에서 첫번째 스테이지 id 가져옴
 
     const createResult = createStage(uuid).status;
@@ -39,7 +39,7 @@ export const initializeStage = (uuid) => {
  */
 export const getCurrentStage = (uuid) => {
   try {
-    const { stages } = getGameAssets();
+    const stages = getGameAssets(ASSET_TYPE.STAGE);
 
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
