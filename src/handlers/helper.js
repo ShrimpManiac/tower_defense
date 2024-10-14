@@ -56,7 +56,7 @@ export const handleEvent = (io, socket, data) => {
  * 서버에서 클라이언트로 보내는 sendEvent
  *
  * 사용 예시: const response = await sendEvent(11, {monsterId});
- * @param {number} handlerId 클라이언트 이벤트 핸들러 ID (client/handlers/handlerMappings)
+ * @param {number} handlerId 이벤트 핸들러 ID (client\handlers\handlerMappings)
  * @param {json} payload 클라이언트로 보낼 데이터
  * @returns
  */
