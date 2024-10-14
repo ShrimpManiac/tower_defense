@@ -1,8 +1,7 @@
 import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
-import { createStage } from '../models/stage.model.js';
-import { createAccount } from '../models/account.model.js';
+
 import { generateEventId } from '../utils/generateEventId.js';
 
 // Disconnect 핸들러
@@ -17,11 +16,6 @@ export const handleConnection = (socket, uuid) => {
   addUser({ uuid: uuid, socketId: socket.id });
   console.log(`New user connected: ${uuid} with socket ID ${socket.id}`);
   console.log('Current users: ', getUsers());
-
-  createStage(uuid);
-  createAccount(uuid);
-  // createTower 만들기
-
   socket.emit('connection', { uuid });
 };
 
