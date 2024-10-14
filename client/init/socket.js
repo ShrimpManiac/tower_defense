@@ -1,6 +1,7 @@
 import { CLIENT_VERSION } from '../constants.js';
 import { generateEventId } from '../utils/generateEventId.js';
 import { io } from 'https://cdn.socket.io/4.8.0/socket.io.esm.min.js';
+import handlerMappings from '../handlers/handlerMappings.js';
 
 const socket = io('http://localhost:3000', {
   query: {
@@ -16,6 +17,20 @@ socket.on('response', (data) => {
 socket.on('connection', (data) => {
   console.log('connection: ', data);
   userId = data.uuid;
+});
+
+socket.on('event', (data) => {
+  // 핸들러ID 체크
+  const handler = handlerMappings[data.handlerId];
+  if (!handler) {
+    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Handler not found' });
+    return;
+  }
+
+  const response = handler(data.userId, data.payload);
+
+  // Response 전달
+  socket.emit(`${data.eventId}_response`, response);
 });
 
 const sendEvent = (handlerId, payload) => {

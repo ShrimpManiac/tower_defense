@@ -3,6 +3,7 @@ import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 import { createStage } from '../models/stage.model.js';
 import { createAccount } from '../models/account.model.js';
+import { generateEventId } from '../utils/generateEventId.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -22,12 +23,6 @@ export const handleConnection = (socket, uuid) => {
   // createTower 만들기
 
   socket.emit('connection', { uuid });
-};
-
-export const sendEventToClient = (eventId, payload) => {
-  socket.emit(eventId, {
-    payload,
-  });
 };
 
 // Event 핸들러
@@ -55,4 +50,25 @@ export const handleEvent = (io, socket, data) => {
 
   // Response 전달
   socket.emit(`${data.eventId}_response`, response);
+};
+
+// 서버 -> 클라이언트 sendEvent
+export const sendEventToClient = (handlerId, payload) => {
+  return new Promise((resolve, reject) => {
+    let eventId = generateEventId();
+    socket.emit('event', {
+      handlerId,
+      eventId,
+      payload,
+    });
+    // 해당 handlerId에 대한 응답을 기다림
+    socket.once(`${eventId}_response`, (data) => {
+      // 성공 시 데이터를 반환
+      if (data.status === 'success') {
+        resolve(data);
+      } else {
+        reject(data);
+      }
+    });
+  });
 };
