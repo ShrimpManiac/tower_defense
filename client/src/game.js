@@ -3,7 +3,7 @@ import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
-import { findAssetDataById, getGameAssets } from '../utils/assets.js';
+import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE } from '../constants.js';
 
 /* 

@@ -60,7 +60,7 @@ export const loadGameAssets = async () => {
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
  * @returns {JSON} JSON화된 게임에셋
  */
-export const getGameAssets = (assetType) => {
+export const getGameAsset = (assetType) => {
   switch (assetType) {
     case ASSET_TYPE.MONSTER:
       return gameAssets.monsters;
