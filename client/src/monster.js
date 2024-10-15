@@ -1,14 +1,11 @@
-// <- 이부분 지우면 됨
 import { ASSET_TYPE } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
 export class Monster {
   /**
-   *
    * @param {Number} assetId 몬스터 애셋 ID (데이터테이블 조회용)
    * @param {Number} instanceId 몬스터 인스턴스 ID (서버에서 수신)
    * @param {{x: Number, y: Number}[]} path 몬스터 경로
    */
-  // <- 이부분 지우면 됨
   constructor(assetId, instanceId, path) {
     if (!path || path.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
@@ -19,7 +16,6 @@ export class Monster {
      * 몬스터 인스턴스 ID
      */
 
-    // <- 이부분 지우면 됨
     this.id = instanceId;
 
     this.path = path; // 몬스터가 이동할 경로
@@ -74,4 +70,3 @@ export class Monster {
     ctx.fillText(`${this.hp}/${this.maxHp}`, this.x, this.y - 5);
   }
 }
-// 이부분 지우면 됨-> //
