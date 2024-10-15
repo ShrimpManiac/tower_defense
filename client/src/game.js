@@ -1,8 +1,5 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
-import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
-import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
-import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
@@ -275,14 +272,14 @@ function gameLoop() {
         // 각 몬스터 한번에 공격
         targets.forEach((target) => {
           tower.attack(target);
-          const attackResult = sendEvent(301, tower.)
+          // sendEvent 공격 패킷 요청 필요
         });
       } else {
         monsters.forEach((monster) => {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
-
+            // sendEvent 공격 패킷 요청 필요
           }
         });
       }
@@ -415,20 +412,23 @@ async function endGame() {
 let isPlacingTower = false;
 let towerTypeToPlace = null;
 
-const buyNormalTowerButton = document.createElement('button');
-buyNormalTowerButton.textContent = '일반타워 구입';
-buyNormalTowerButton.style.position = 'absolute';
-buyNormalTowerButton.style.top = '10px';
-buyNormalTowerButton.style.right = '10px';
-buyNormalTowerButton.style.padding = '10px 20px';
-buyNormalTowerButton.style.fontSize = '16px';
-buyNormalTowerButton.style.cursor = 'pointer';
-
-document.body.appendChild(buyNormalTowerButton);
+addTowerButton(); // 화면에 타워버튼 등록
 
 buyNormalTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
-  towerTypeToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
+  assetIdToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
+  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+});
+
+buySlowTowerButton.addEventListener('click', () => {
+  isPlacingTower = true; // 타워 설치 모드 활성화
+  assetIdToPlace = TOWER_TYPE.SLOW; // 설치할 타워 종류
+  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+});
+
+buyMultiTowerButton.addEventListener('click', () => {
+  isPlacingTower = true; // 타워 설치 모드 활성화
+  assetIdToPlace = TOWER_TYPE.MULTI; // 설치할 타워 종류
   canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
 });
 
@@ -438,7 +438,7 @@ canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    
+
     if (isValidPlacement(x, y)) {
       placeNewTower(towerTypeToPlace, x, y);
       isPlacingTower = false;
@@ -451,20 +451,21 @@ canvas.addEventListener('click', (event) => {
 
 /**
  * 타워 배치 함수
- * @param {Tower} TowerType 
- * @param {Number} x 
- * @param {Number} y 
- * @returns 
+ * @param {Tower} TowerDataID
+ * @param {{x: Number, y: Number}} spawnLocation 설치 좌표
+ * @returns
  */
-function placeNewTower(TowerType, x, y) {
- const newTower = null;
+async function placeNewTower(assetId, spawnLocation) {
+  const newTower = null;
   try {
-    // 타워 구매 요청 
-    const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
+    // 타워 구매 요청
+    const response = await sendEvent(21, { towerId: assetId, spawnLocation: spawnLocation });
+
+    // 서버에서 생성된 타워의 Instance id
     const towerInstanceId = response.towerId;
-    
-    newTower = createTower(TowerType, towerInstanceId, {x, y});
-    
+
+    // Client 측 타워 생성
+    newTower = createTower(assetId, towerInstanceId, { x, y });
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);
   }
@@ -477,12 +478,15 @@ function isValidPlacement(x, y) {
   // 타워 설치 위치 유효성 검증 함수. 일단은 타워끼리 겹치지 않도록
   for (const tower of towers) {
     const distance = Math.hypot(tower.x - x, tower.y - y);
-    if (distance < 100) { // 최소 거리 제한 (타워 간의 거리)
+    if (distance < 100) {
+      // 최소 거리 제한 (타워 간의 거리)
       return false;
     }
   }
   return true;
 }
+
+let selectedTower = null;
 
 const startStageButton = document.createElement('button');
 startStageButton.textContent = '준비 완료';
@@ -500,3 +504,39 @@ startStageButton.addEventListener('click', () => {
 });
 
 document.body.appendChild(startStageButton);
+
+// 버튼 등록함수
+function addTowerButton() {
+  const buyNormalTowerButton = document.createElement('button');
+  buyNormalTowerButton.textContent = '일반타워 구입';
+  buyNormalTowerButton.style.position = 'absolute';
+  buyNormalTowerButton.style.top = '10px';
+  buyNormalTowerButton.style.right = '10px';
+  buyNormalTowerButton.style.padding = '10px 20px';
+  buyNormalTowerButton.style.fontSize = '16px';
+  buyNormalTowerButton.style.cursor = 'pointer';
+
+  document.body.appendChild(buyNormalTowerButton);
+
+  const buySlowTowerButton = document.createElement('button');
+  buySlowTowerButton.textContent = '슬로우타워 구입';
+  buySlowTowerButton.style.position = 'absolute';
+  buySlowTowerButton.style.top = '10px';
+  buySlowTowerButton.style.right = '10px';
+  buySlowTowerButton.style.padding = '10px 20px';
+  buySlowTowerButton.style.fontSize = '16px';
+  buySlowTowerButton.style.cursor = 'pointer';
+
+  document.body.appendChild(buySlowTowerButton);
+
+  const buyMultiTowerButton = document.createElement('button');
+  buyMultiTowerButton.textContent = '멀티타워 구입';
+  buyMultiTowerButton.style.position = 'absolute';
+  buyMultiTowerButton.style.top = '10px';
+  buyMultiTowerButton.style.right = '10px';
+  buyMultiTowerButton.style.padding = '10px 20px';
+  buyMultiTowerButton.style.fontSize = '16px';
+  buyMultiTowerButton.style.cursor = 'pointer';
+
+  document.body.appendChild(buyMultiTowerButton);
+}
