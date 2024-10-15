@@ -63,6 +63,8 @@ export class Tower {
     }
 
     // 쿨타임 체크
+    // INCOMPLETE : 서버에서는 매 프레임마다 attack()과 updateCooldown()을 호출하지 않기 때문에
+    // 공격 핸들러를 처리할 때마다 특정 타임스탬프를 기준으로 cooldownLeft를 계산할 방법이 필요함
     if (this.cooldownLeft > 0) {
       console.log(`Tower ${this.id} 공격 쿨타임`);
       return;
@@ -74,6 +76,8 @@ export class Tower {
     this.target = monster; // 광선의 목표 설정
   }
 
+  // INCOMPLETE: 쿨타임 체크와 비슷한 맥락으로, 이 함수가 필요한지, 필요하다면 어떤식으로 서버에
+  // 맞게 개조해야 할지 고민이 필요함
   updateCooldown() {
     if (this.cooldownLeft > 0) {
       this.cooldownLeft--;
