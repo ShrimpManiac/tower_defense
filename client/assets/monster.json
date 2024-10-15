@@ -31,7 +31,7 @@
     {
       "id": 3003,
       "maxHp": 50,
-      "attack": 1,
+      "attackPower": 1,
       "defense": 1,
       "speed": 6,
       "goldDrop": 1,
@@ -44,7 +44,7 @@
     {
       "id": 3004,
       "maxHp": 50,
-      "attack": 1,
+      "attackPower": 1,
       "defense": 1,
       "speed": 6,
       "goldDrop": 1,
@@ -57,7 +57,7 @@
     {
       "id": 3005,
       "maxHp": 50,
-      "attack": 1,
+      "attackPower": 1,
       "defense": 1,
       "speed": 6,
       "goldDrop": 1,
