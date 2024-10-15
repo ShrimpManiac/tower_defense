@@ -160,47 +160,53 @@ export const upgradeTower = (uuid, payload) => {
  * @param {json} payload 데이터
  */
 export const attackMonster = (uuid, payload) => {
-  const { monsterId, towerId } = payload;
+  try {
+    const { monsterId, towerId } = payload;
 
-  // 공격할 타워 검색
-  const tower = getTowerById(uuid, towerId);
+    // 공격할 타워 검색
+    const tower = getTowerById(uuid, towerId);
 
-  // 공격받을 몬스터 검색
-  // INCOMPLETE : getMonsterById 함수 미구현
-  const monster = getMonsterById(uuid, monsterId);
+    // 공격받을 몬스터 검색
+    // INCOMPLETE : getMonsterById 함수 미구현
+    const monster = getMonsterById(uuid, monsterId);
 
-  // 공격 로직 처리
-  tower.attack(monster);
+    // 공격 로직 처리
+    tower.attack(monster);
 
-  // 몬스터 사망시:
-  if (monster.hp <= 0) {
-    // 몬스터 사망처리
-    // INCOMPLETE: deleteMonster 함수 미구현
-    deleteMonster(uuid, monsterId);
+    // 몬스터 사망시:
+    if (monster.hp <= 0) {
+      // 몬스터 사망처리
+      // INCOMPLETE: deleteMonster 함수 미구현
+      deleteMonster(uuid, monsterId);
 
-    // 유저 점수 가산
-    updateIncreaseScore(uuid, monster.score);
+      // 유저 점수 가산
+      updateIncreaseScore(uuid, monster.score);
 
-    // 유저 골드 가산
-    depositAccount(uuid, monster.goldDrop);
+      // 유저 골드 가산
+      depositAccount(uuid, monster.goldDrop);
 
-    // 결과 반환
-    const message = `Monster ${monsterId} was killed by tower ${towerId}.`;
-    return {
-      status: 'success',
-      message: message,
-      payload: { killed: true },
-    };
+      // 결과 반환
+      const message = `Monster ${monsterId} was killed by tower ${towerId}.`;
+      return {
+        status: 'success',
+        message: message,
+        payload: { killed: true },
+      };
 
-    // 몬스터 생존시:
-  } else {
-    // 결과 반환
-    const updatedMonsterInfo = `${monster.maxHp},${monster.defense},${monster.speed}`;
-    const message = `Monster ${monsterId} was attacked by tower ${towerId}.`;
-    return {
-      status: 'success',
-      message: message,
-      payload: { killed: false, monsterInfo: updatedMonsterInfo },
-    };
+      // 몬스터 생존시:
+    } else {
+      // 결과 반환
+      const updatedMonsterInfo = `${monster.maxHp},${monster.defense},${monster.speed}`;
+      const message = `Monster ${monsterId} was attacked by tower ${towerId}.`;
+      return {
+        status: 'success',
+        message: message,
+        payload: { killed: false, monsterInfo: updatedMonsterInfo },
+      };
+    }
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
   }
 };

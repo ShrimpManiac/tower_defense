@@ -71,8 +71,8 @@ export class Tower {
     }
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
     //
-    monster.hp -= this.attackPower;
-    this.cooldownLeft = this.cooldown;
+    monster.hp -= this.attackPower; // 몬스터 체력 감소
+    this.cooldownLeft = this.cooldown; // 공격 쿨타임 시작
     this.target = monster; // 광선의 목표 설정
   }
 
