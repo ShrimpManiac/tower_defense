@@ -97,16 +97,18 @@ export class Tower {
     }
   }
 
-  applyUpgrades() {
-    // 비용 상승
-    this.sellCost += this.upgradeCost * SELL_PENALTY;
-    this.upgradeCost *= UPGRADE_COST_SCALER;
+  applyUpgrades(payload) {
+    const dataString = payload.towerInfo;
+    const dataArray = dataString.split(',').map(Number);
+    // 배열의 각 값을 변수로 할당
+    const [level, attackPower, range, upgradeCost, sellCost, skillDuration, skillValue] = dataArray;
 
-    // 타워 강화
-    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
-    this.range *= UPGRADE_BONUS[this.level].range_bonus;
-
-    // 레벨 상승
-    this.level++;
+    this.level = level;
+    this.attackPower = attackPower;
+    this.range = range;
+    this.upgradeCost = upgradeCost;
+    this.sellCost = sellCost;
+    this.skillDuration = skillDuration;
+    this.skillValue = skillValue;
   }
 }

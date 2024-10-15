@@ -6,7 +6,14 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 import { Tower } from '../classes/tower.class.js';
-import { deleteTower, getTowerById, setTower } from '../models/tower.model.js';
+import {
+  deleteTower,
+  getTowerById,
+  setTower,
+  upgradeTowerById,
+  createTower,
+  isValidPlacement,
+} from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 import { updateIncreaseScore } from './score.handler.js';
 // INCOMPLETE: import monster (몬스터 클래스가 미구현)
@@ -22,17 +29,21 @@ import { updateIncreaseScore } from './score.handler.js';
  * @returns {{status: string, message: string, payload: json}}
  */
 export const buyTower = (uuid, payload) => {
+  let newTower = null;
   try {
     const { towerId, spawnLocation } = payload;
 
     // INCOMPLETE: 설치 좌표가 적합한지 검증
+    if (!isValidPlacement(uuid, spawnLocation.x, spawnLocation.y)) {
+      throw new Error('Invalid placement location in buyTower');
+    }
 
     // 타워 생성
-    const newTower = new Tower(towerId, spawnLocation);
+    newTower = createTower(towerId, spawnLocation);
 
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
-      return { status: 'failure', message: 'Not enough gold.' };
+      return { status: 'failure', message: 'Not enough gold in buyTower' };
     }
 
     // 골드 차감
@@ -73,12 +84,13 @@ export const buyTower = (uuid, payload) => {
 export const sellTower = (uuid, payload) => {
   try {
     const { towerId } = payload;
+    console.log('sellTower', towerId);
 
     // 타워 삭제
-    const sellPrice = deleteTower(uuid, towerId);
+    const sellTower = deleteTower(uuid, towerId);
 
     // 골드 가산
-    depositAccount(uuid, sellPrice);
+    depositAccount(uuid, sellTower.sellCost);
 
     // 결과 반환
     const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
@@ -104,12 +116,15 @@ export const sellTower = (uuid, payload) => {
  */
 export const upgradeTower = (uuid, payload) => {
   try {
-    // INCOMPLETE 최대 레벨이 3인경우 업그레이드 불가
-
-    const { towerId } = payload;
+    const { towerId } = payload; // 인스턴스 아이디임!
 
     // 업그레이드할 타워 검색
     const tower = getTowerById(uuid, towerId);
+
+    // 타워 레벨 검증: 레벨이 3 이상이면 업그레이드 중단
+    if (tower.level >= 3) {
+      return { status: 'failure', message: `already at or above the maximum allowed level (3).` };
+    }
 
     // 골드가 충분한지 검증
     const upgradeCost = tower.upgradeCost;
@@ -126,11 +141,8 @@ export const upgradeTower = (uuid, payload) => {
       return { status: 'failure', message: withdrawalResult.message };
     }
 
-    // 타워 업그레이드
-    tower.applyUpgrades();
+    const updatedTowerInfo = upgradeTowerById(uuid, towerId);
 
-    // 결과 반환
-    const updatedTowerInfo = `${tower.level},${tower.attackPower},${tower.range},${tower.upgradeCost},${tower.sellCost},${tower.skillDuration},${tower.skillValue}`;
     const message = `Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
     console.log(message);
     return {

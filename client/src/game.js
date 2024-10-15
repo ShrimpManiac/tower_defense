@@ -515,11 +515,9 @@ sellButton.addEventListener('click', async () => {
       alert(`판매 실패: ${response.message}`);
       return;
     }
-    console.log(towers);
     // 타워 삭제
     const deletedTower = deleteTower(selectedTower.id);
 
-    // INCOMPLETE CLIENT쪽 골드 업데이트
     loadGoldBalance();
 
     selectedTower = null;
@@ -535,7 +533,6 @@ sellButton.addEventListener('click', async () => {
 upgradeButton.addEventListener('click', async () => {
   // 선택된 타워가 없다면 종료 (방어코드)
   if (!selectedTower) return;
-
   try {
     // 서버에 업그레이드 요청
     const response = await sendEvent(23, { towerId: selectedTower.id });
@@ -544,12 +541,10 @@ upgradeButton.addEventListener('click', async () => {
       alert(`업그레이드 실패: ${response.message}`);
       return;
     }
-
     // 업그레이드 성공시 로직
-    // INCOMPLETE CLIENT용 applayUpgrade 만들기 response의 데이터로 upgrade를 해야함.
-    selectedTower.applyUpgrades();
+    selectedTower.applyUpgrades(response.payload);
 
-    // IMCOMPLETE CLIENT쪽 골드 업데이트
+    loadGoldBalance();
 
     // 최대 업그레이드 레벨에 도달하면 안보이게 하기
     // INCOMPLETE constants.js 최대 레벨 상수로 만들기 + server도
@@ -614,7 +609,6 @@ async function placeNewTower(assetId, spawnLocation) {
     setTower(newTower);
     newTower.draw(ctx);
 
-    // INCOMPLETE CLIENT쪽 골드 업데이트
     loadGoldBalance();
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);

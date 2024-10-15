@@ -1,4 +1,5 @@
-import { Tower } from '../tower.class.js';
+import { Tower } from './tower.class.js';
+import { SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants.js';
 
 /**
  * 일반 타워 클래스
@@ -38,6 +39,22 @@ export class SlowTower extends Tower {
       this.cooldownLeft = this.cooldown; // 공격 후 쿨타임 초기화
     }
   }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    this.skillValue += 0.1; // 슬로우 율 10% 씩 증가
+    this.skillDuration += 0.5; // 스킬 지속시간 0.5초씩 증가
+  }
 }
 
 export class MultiTower extends Tower {
@@ -69,5 +86,20 @@ export class MultiTower extends Tower {
         monster.isSlowed = false;
       }
     }, this.skillDuration * 1000); // 초 단위로
+  }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    this.skillValue++; // 멀티 타겟 1 증가
   }
 }
