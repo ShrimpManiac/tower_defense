@@ -11,6 +11,7 @@ export const ASSET_TYPE = Object.freeze({
   MONSTER: 'monster',
   TOWER: 'tower',
   TOWER_SKILL: 'tower_skill',
+  PATH: 'path',
 });
 
 export const TOWER_TYPE = Object.freeze({
