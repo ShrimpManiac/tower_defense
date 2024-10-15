@@ -454,32 +454,22 @@ function placeNewTower(TowerType, x, y) {
     빠진 코드들을 채워넣어주세요! 
   */
  towerData = getGameAsset(ASSET_TYPE.TOWER, TowerType)
-
+ const newTower = null;
   try {
     // 타워 구매 요청 
     const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
 
     const towerInstanceId = response.towerId;
     
-    const newTower = createTower(TowerType, towerInstanceId, x, y)
+    newTower = createTower(TowerType, towerInstanceId, x, y)
 
-    if (balance === undefined || response.status === 'failure') {
-      alert('Fail to load Gold Balance');
-
-      location.reload();
-    }
-
-    userGold = balance;
   } catch (err) {
-    console.error('Error loading gold balance:', err.message);
-    alert('Error loading gold balance', err.message);
-
-    location.reload();
+    console.error('Error occured buying tower', err.message);
   }
   
   
-  towers.push(tower);
-  tower.draw(ctx, towerImage);
+  towers.push(newTower);
+  newTower.draw(ctx, towerImage);
 }
 
 function isValidPlacement(x, y) {
