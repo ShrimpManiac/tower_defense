@@ -18,7 +18,7 @@ router.post('/account/signup', async (req, res, next) => {
     const validation = await schema.validateAsync(req.body);
     const { name, id, password, passwordCheck } = validation;
 
-    const accountCheck = await userPrisma.users.findFirst({
+    const accountCheck = await userPrisma.users.findUnique({
       where: { id: id },
     });
 
@@ -58,7 +58,7 @@ router.post('/account/signin', async (req, res, next) => {
     const validation = await schema.validateAsync(req.body);
     const { id, password } = validation;
 
-    const account = await Prisma.account.findFirst({
+    const account = await Prisma.account.findUnique({
       where: { id: id },
     });
 
@@ -68,10 +68,16 @@ router.post('/account/signin', async (req, res, next) => {
       return res.status(400).json('아이디 혹은 비밀번호가 틀렸습니다');
     }
 
+    const uuid = await Prisma.account.findUnique({
+      where: { id: id },
+      select: { aaccountid: true },
+    });
+
     const token = jwt.sign({ name: account.id }, process.env.SECRET_KEY, {
       expiresIn: '1d',
     });
     res.cookie('authorization', `Bearer ${token}`);
+    sessionStorage.setItem(uuid);
     res.status(200).json({ message: '로그인 성공', token: token });
   } catch (error) {
     return res.status(500).json({ errorname: error.name, errormessage: error.message });
@@ -95,8 +101,8 @@ router.get('/auth', async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     const id = decodedToken.id;
 
-    const user = await Prisma.account.findFirst({
-      where: { id },
+    const user = await Prisma.account.findUnique({
+      where: { id: id },
     });
     if (!user) {
       res.clearCookie('authorization');
