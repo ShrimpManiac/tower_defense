@@ -18,6 +18,7 @@ export class Tower {
 
     // 타워 위치
     this.x = spawnLocation.x; // x 좌표
+    console.log(`sL y: ${spawnLocation.y}`);
     this.y = spawnLocation.y; // y 좌표
 
     // 타워 크기
@@ -79,5 +80,20 @@ export class Tower {
     if (this.cooldownLeft > 0) {
       this.cooldownLeft--;
     }
+  }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }
