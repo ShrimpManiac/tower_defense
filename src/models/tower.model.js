@@ -11,6 +11,7 @@ let towers = {};
  */
 export const clearTowers = (uuid) => {
   towers[uuid] = [];
+  return { status: 'success', message: 'tower create successful' };
 };
 
 /**
