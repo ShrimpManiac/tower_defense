@@ -1,5 +1,6 @@
 import { Base } from './base.js';
 import { Monster } from '../classes/monster.class.js';
+import { spawnMonster } from '../services/monster.handler.js';
 // import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
 // import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
 // import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
@@ -49,6 +50,7 @@ let isInitGame = false;
 let monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
 let monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
 let monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
+let monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -238,24 +240,6 @@ function placeBase() {
   const lastPoint = monsterPath1[monsterPath1.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
-}
-
-// 몬스터객체 생성 후 spawnedMonsters에 push
-export function spawnMonster(instanceId) {
-  if (monstersToSpawn.length === 0) {
-    clearInterval(spawnIntervalId); // 더 이상 소환할 몬스터가 없으면 타이머 중단
-    return;
-  }
-  const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 ID를 하나씩 가져옴
-  const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
-
-  // 여러 몬스터 경로 중 하나를 랜덤 선택
-  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
-  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
-
-  const monsterInstance = new Monster(monsterData.id, instanceId, randomPath); // Monster 인스턴스 생성
-  spawnedMonsters.push(monsterInstance); // 생성된 몬스터 인스턴스를 배열에 추가
-  // console.log('몬스터 인스턴스: ', monsterImages);
 }
 
 // 몬스터 소환
