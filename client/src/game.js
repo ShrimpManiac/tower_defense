@@ -1,6 +1,6 @@
 import { Base } from './base.js';
 import { Monster } from '../classes/monster.class.js';
-import { clearMonsters, spawnedMonsters, monstersToSpawn } from '../models/monster.model.js';
+import { clearMonsters, spawnedMonsters, monsterSpawnQueue } from '../models/monster.model.js';
 import {
   spawnMonster,
   startSpawningMonsters,
@@ -315,7 +315,7 @@ function gameLoop() {
       }
     }
 
-    if (spawnedMonsters.length === 0 && monstersToSpawn.length == 0) {
+    if (spawnedMonsters.length === 0 && monsterSpawnQueue.length == 0) {
       endStage(); // 모든 몬스터 제거 시 스테이지 종료
     }
   }
@@ -355,10 +355,11 @@ async function initGame() {
 }
 
 async function stageInit(currentStageId) {
-  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
-  initSpawnQueue(currentStageId); // 몬스터 소환 큐 초기화
-
   const result = await sendEvent(201); // 스테이지 시작 신호
+  const spawnQueue = result.payload.spawnQueue;
+  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
+  initSpawnQueue(currentStageId, spawnQueue); // 몬스터 소환 큐 초기화
+
   // 스테이지 신호 서버로 날림
   if (result.status === 'fail') {
     cancelAnimationFrame(animationFrameId);

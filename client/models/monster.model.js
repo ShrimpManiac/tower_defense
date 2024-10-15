@@ -4,7 +4,7 @@ import { Monster } from '../classes/monster.class.js';
  * 소환할 몬스터의 애셋ID 목록
  * @type {number[]}
  */
-export let monstersToSpawn = [];
+export let monsterSpawnQueue = [];
 
 /**
  * 소환된 몬스터 객체 목록
@@ -17,7 +17,7 @@ export let spawnedMonsters = [];
  */
 export const clearMonsters = () => {
   spawnedMonsters = [];
-  monstersToSpawn = [];
+  monsterSpawnQueue = [];
 };
 
 /**
@@ -27,6 +27,14 @@ export const clearMonsters = () => {
  */
 export const setMonster = (monster) => {
   return spawnedMonsters.push(monster);
+};
+
+/**
+ * 몬스터를 소환 큐에 추가하는 함수
+ * @param {number} assetId 추가할 몬스터 애셋 ID
+ */
+export const addToSpawnQueue = (assetId) => {
+  monsterSpawnQueue.push(assetId);
 };
 
 /**

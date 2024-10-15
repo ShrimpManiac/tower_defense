@@ -1,6 +1,6 @@
 import { Monster } from '../classes/monster.class.js';
 import {
-  monstersToSpawn,
+  monsterSpawnQueue,
   spawnedMonsters,
   setMonster,
   clearMonsters,
@@ -17,15 +17,26 @@ let spawnIntervalId; // 소환 타이머
  * 몬스터 소환 명령 이벤트를 발생시키는 함수
  * @param {*} uuid userId
  * @param {*} assetId 소환할 몬스터 애셋ID
- * @param {*} path 몬스터 이동경로
  * @returns
  */
-export const spawnMonster = (uuid, path) => {
-  const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 소환할 몬스터 ID를 가져옴
-  // 서버 내 몬스터 생성
-  let monster = new Monster(monsterId, path);
+export const spawnMonster = (uuid) => {
+  // 몬스터 큐에서 소환할 몬스터 ID를 가져옴
+  const monsterId = monsterSpawnQueue.shift();
+
+  // 몬스터 경로 설정
+  const monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
+  const monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
+  const monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
+  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
+
+  // 여러 몬스터 경로 중 하나를 랜덤 선택
+  const randomPathIndex = Math.floor(Math.random() * monsterPaths.length);
+  const randomPath = monsterPaths[randomPathIndex];
+  let monster = new Monster(monsterId, randomPath);
+
+  // 몬스터 소환
   setMonster(uuid, monster);
-  const response = sendEventToClient(31, { monsterId: monster.id });
+  const response = sendEventToClient(31, { monsterId: monster.id, pathIndex: randomPathIndex });
   if (response.status === 'failure')
     throw new Error(`user ${uuid} failed to spawn monster ${monster.id}`);
 };
@@ -35,21 +46,14 @@ export const spawnMonster = (uuid, path) => {
  * @param {number} uuid userId
  */
 export const startSpawningMonsters = (uuid) => {
-  const monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
-  const monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
-  const monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
-  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
-
-  // 여러 몬스터 경로 중 하나를 랜덤 선택
-  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
-
-  spawnIntervalId = setInterval(spawnMonster(uuid, randomPath), 1000); // 1초마다 스폰
+  spawnIntervalId = setInterval(spawnMonster(uuid), 1000); // 1초마다 스폰
 };
 
 /**
  * 스테이지 시작 시 몬스터 소환 큐를 초기화하고 몬스터를 소환하는 함수
  * @param {number} uuid userId
  * @param {number} StageId 시작할 스테이지 ID
+ * @return {number[]} spawnQueue
  */
 export const initSpawnQueue = (uuid, StageId) => {
   clearMonsters; // 스테이지마다 초기화
@@ -75,4 +79,5 @@ export const initSpawnQueue = (uuid, StageId) => {
   if (StageId === 4005) {
     addToSpawnQueue(uuid, 3004);
   }
+  return monsterSpawnQueue[uuid];
 };

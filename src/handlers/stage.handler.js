@@ -160,11 +160,15 @@ export const getStartTimeByStage = (uuid) => {
 export const stageStart = (uuid) => {
   try {
     const currentStage = getStage(uuid);
-    initSpawnQueue(uuid, currentStage.id);
+    const spawnQueue = initSpawnQueue(uuid, currentStage.id);
     startSpawningMonsters(uuid);
 
     startStageTime = Date.now();
-    return { status: 'success', message: 'Successfully stage started' };
+    return {
+      status: 'success',
+      message: 'Successfully stage started',
+      payload: { spawnQueue: spawnQueue },
+    };
   } catch (err) {
     console.error(err.message);
     return { status: 'failure', message: err.message };
