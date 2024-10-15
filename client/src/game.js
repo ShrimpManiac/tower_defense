@@ -412,18 +412,77 @@ async function endGame() {
   location.reload(); // 게임 재시작
 }
 
-const buyTowerButton = document.createElement('button');
-buyTowerButton.textContent = '타워 구입';
-buyTowerButton.style.position = 'absolute';
-buyTowerButton.style.top = '10px';
-buyTowerButton.style.right = '10px';
-buyTowerButton.style.padding = '10px 20px';
-buyTowerButton.style.fontSize = '16px';
-buyTowerButton.style.cursor = 'pointer';
+let isPlacingTower = false;
+let towerTypeToPlace = null;
 
-buyTowerButton.addEventListener('click', placeNewTower);
+const buyNormalTowerButton = document.createElement('button');
+buyNormalTowerButton.textContent = '일반타워 구입';
+buyNormalTowerButton.style.position = 'absolute';
+buyNormalTowerButton.style.top = '10px';
+buyNormalTowerButton.style.right = '10px';
+buyNormalTowerButton.style.padding = '10px 20px';
+buyNormalTowerButton.style.fontSize = '16px';
+buyNormalTowerButton.style.cursor = 'pointer';
 
-document.body.appendChild(buyTowerButton);
+document.body.appendChild(buyNormalTowerButton);
+
+buyNormalTowerButton.addEventListener('click', () => {
+  isPlacingTower = true; // 타워 설치 모드 활성화
+  towerTypeToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
+  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+});
+
+// 타워 설치모드에서의 이벤트 리스너
+canvas.addEventListener('click', (event) => {
+  if (isPlacingTower) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    if (isValidPlacement(x, y)) {
+      placeNewTower(towerTypeToPlace, x, y);
+      isPlacingTower = false;
+      canvas.style.cursor = 'default';
+    } else {
+      alert('타워를 설치할 수 없는 위치입니다.');
+    }
+  }
+});
+
+/**
+ * 타워 배치 함수
+ * @param {Tower} TowerType 
+ * @param {Number} x 
+ * @param {Number} y 
+ * @returns 
+ */
+function placeNewTower(TowerType, x, y) {
+ const newTower = null;
+  try {
+    // 타워 구매 요청 
+    const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
+    const towerInstanceId = response.towerId;
+    
+    newTower = createTower(TowerType, towerInstanceId, x, y)
+    
+  } catch (err) {
+    console.error('Error occured buying Tower:', err.message);
+  }
+
+  towers.push(newTower);
+  newTower.draw(ctx, towerImage);
+}
+
+function isValidPlacement(x, y) {
+  // 타워 설치 위치 유효성 검증 함수. 일단은 타워끼리 겹치지 않도록
+  for (const tower of towers) {
+    const distance = Math.hypot(tower.x - x, tower.y - y);
+    if (distance < 100) { // 최소 거리 제한 (타워 간의 거리)
+      return false;
+    }
+  }
+  return true;
+}
 
 const startStageButton = document.createElement('button');
 startStageButton.textContent = '준비 완료';
