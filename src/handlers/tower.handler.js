@@ -30,6 +30,9 @@ export const buyTower = (uuid, payload) => {
     // 타워 생성
     const newTower = new Tower(towerId, spawnLocation);
 
+    // 타워생성 잘 됨
+    console.log(newTower);
+
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
       return { status: 'failure', message: 'Not enough gold.' };
@@ -40,13 +43,11 @@ export const buyTower = (uuid, payload) => {
 
     // 예외처리: 출금 실패
     if (withdrawalResult.status != 'success') {
-      console.log(withdrawalResult.message);
       return { status: 'failure', message: withdrawalResult.message };
     }
 
     // (서버) 타워 설치
     setTower(uuid, newTower);
-
     // 결과 반환
     const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
     console.log(message);
@@ -55,7 +56,6 @@ export const buyTower = (uuid, payload) => {
       message: message,
       payload: { towerId: newTower.id },
     };
-
     // 예외처리: 상정하지 못한 오류
   } catch (err) {
     console.error(err.message);
