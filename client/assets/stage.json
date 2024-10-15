@@ -4,48 +4,33 @@
   "data": [
     {
       "id": 4001,
-      "monsterIds": [
-        3001
-      ],
-      "numMonsters": [
-        15
-      ]
+      "monsterIds": [3001],
+      "monsterProbabilitys": [1],
+      "numMonsters": 5
     },
     {
       "id": 4002,
-      "monsterIds": [
-        3001
-      ],
-      "numMonsters": [
-        15
-      ]
+      "monsterIds": [3001, 3002],
+      "monsterProbabilitys": [0.6, 0.4],
+      "numMonsters": 6
     },
     {
       "id": 4003,
-      "monsterIds": [
-        3001
-      ],
-      "numMonsters": [
-        15
-      ]
+      "monsterIds": [3001, 3002, 3003],
+      "monsterProbabilitys": [0.3, 0.4, 0.3],
+      "numMonsters": 7
     },
     {
       "id": 4004,
-      "monsterIds": [
-        3001
-      ],
-      "numMonsters": [
-        15
-      ]
+      "monsterIds": [3001, 3002, 3003, 3005],
+      "monsterProbabilitys": [0.2, 0.3, 0.2, 0.3],
+      "numMonsters": 8
     },
     {
       "id": 4005,
-      "monsterIds": [
-        3001
-      ],
-      "numMonsters": [
-        15
-      ]
+      "monsterIds": [3001, 3002, 3003, 3005],
+      "monsterProbabilitys": [0.1, 0.2, 0.4, 0.3],
+      "numMonsters": 10
     }
   ]
 }
