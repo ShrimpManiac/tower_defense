@@ -1,8 +1,7 @@
 import { CLIENT_VERSION } from '../constants.js';
 import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
-import { createStage } from '../models/stage.model.js';
-import { createAccount } from '../models/account.model.js';
+
 import { generateEventId } from '../utils/generateEventId.js';
 
 // Disconnect 핸들러
@@ -17,11 +16,6 @@ export const handleConnection = (socket, uuid) => {
   addUser({ uuid: uuid, socketId: socket.id });
   console.log(`New user connected: ${uuid} with socket ID ${socket.id}`);
   console.log('Current users: ', getUsers());
-
-  createStage(uuid);
-  createAccount(uuid);
-  // createTower 만들기
-
   socket.emit('connection', { uuid });
 };
 
@@ -29,14 +23,17 @@ export const handleConnection = (socket, uuid) => {
 export const handleEvent = (io, socket, data) => {
   // 클라이언트 버전 체크
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Client version mismatch' });
+    socket.emit(`${data.eventId}_response`, {
+      status: 'failure',
+      message: 'Client version mismatch',
+    });
     return;
   }
 
   // 핸들러ID 체크
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit(`${data.eventId}_response`, { status: 'fail', message: 'Handler not found' });
+    socket.emit(`${data.eventId}_response`, { status: 'failure', message: 'Handler not found' });
     return;
   }
 

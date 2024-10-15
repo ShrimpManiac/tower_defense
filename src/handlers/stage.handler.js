@@ -2,6 +2,9 @@ import { ASSET_TYPE } from '../constants.js';
 import { getFirstAsset, getGameAsset, getNextAsset, getStageNumber } from '../init/assets.js';
 import { createStage, getStage, setStage } from '../models/stage.model.js';
 
+let startStageTime = 0;
+let endStageTime = 0;
+
 /**
  * 스테이지 최초 초기화
  *
@@ -27,7 +30,7 @@ export const initializeStage = (uuid) => {
     return { status: 'success', message: 'Successfully initialized stage' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -57,7 +60,7 @@ export const getCurrentStage = (uuid) => {
     };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -77,16 +80,16 @@ export const moveToNextStage = (uuid) => {
     // 다음 스테이지 아이디 획득
     const { id: nextStageId } = getNextAsset(ASSET_TYPE.STAGE, stageId);
     if (nextStageId === undefined) {
-      return { status: 'fail', message: 'Last Stage' };
+      return { status: 'failure', message: 'Last Stage' };
     }
     // 다음 스테이지 설정
     const nextStageResult = setStage(uuid, nextStageId, Date.now());
 
-    if (nextStageResult.status === 'fail') throw new Error(nextStageResult.message);
+    if (nextStageResult.status === 'failure') throw new Error(nextStageResult.message);
     return { status: 'success', message: nextStageResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -106,7 +109,7 @@ export const getMonstersByStage = (uuid) => {
     return monsterIds;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -127,7 +130,7 @@ export const getMonsterCountByStage = (uuid) => {
     return numMonsters;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -149,28 +152,42 @@ export const getStartTimeByStage = (uuid) => {
     return timestamp;
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
 export const stageStart = (uuid) => {
   // 기본 틀만 구성, 아직 미완성
-
-  const currentStage = getStage(uuid);
-  // 현재 스테이지에서 생성할 몬스터 함수
-  // 준비가 완료되면 success 신호를 날림
-  return { status: 'success', message: 'success init' };
+  try {
+    // INCOMPLETE : 해당 위치 스테이지에 따른 몬스터 큐 함수 추가해야 함.
+    /* const currentStage = getStage(uuid);
+       const monsterSpawnResult = monsterSpawn(currentStage)
+       if(monsterSpawnResult.status === 'success'){
+          startStageTime = Date.now();
+          return { status: 'success', message: 'Successfully stage started' };
+      }
+    */
+    return { status: 'success', message: 'Successfully stage started' };
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
+  }
 };
 
 export const stageEnd = (uuid) => {
   // 기본 틀만 구성, 아직 미완성
+  try {
+    endStageTime = Date.now();
+    // INCOMPLETE : 현재 스테이지 몬스터 정보 날림 추가해야 함
+    // INCOMPLETE : endStageTime - startStageTime 으로 점수검증 추가해야 함
 
-  // 현재 스테이지 몬스터 정보 날림
+    const result = moveToNextStage(uuid);
 
-  const result = moveToNextStage(uuid);
-  console.log(result);
-  if (result.status === 'fail') return { status: 'fail', message: 'Last_Stage' };
+    if (result.status === 'failure') return { status: 'failure', message: 'Last_Stage' };
 
-  return { status: 'success', message: 'success init' };
-  // 완료되면 success 신호를 날림
+    return { status: 'success', message: 'Successfully stage ended' };
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
+  }
 };

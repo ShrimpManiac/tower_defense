@@ -64,7 +64,7 @@ async function loadGoldBalance() {
 
     const balance = response.balance;
 
-    if (balance === undefined || response.status === 'fail') {
+    if (balance === undefined || response.status === 'failure') {
       alert('Fail to load Gold Balance');
 
       location.reload();
@@ -87,7 +87,7 @@ async function loadCurrentStage() {
     const stageId = response.stageId;
     const stageNumber = response.stageNumber;
 
-    if (stageId === undefined || stageNumber === undefined || response.status === 'fail') {
+    if (stageId === undefined || stageNumber === undefined || response.status === 'failure') {
       alert('Fail to load current stage');
 
       location.reload();
@@ -331,6 +331,8 @@ Promise.all([
 function initGame() {
   if (isInitGame) return;
 
+  // INCOMPLETE: 해당 부분 gameStart 관련 sendEvent 추가 예정
+
   loadGoldBalance(); // 골드 잔액 동기화
   loadCurrentStage(); // 현재 스테이지 동기화
 
@@ -344,25 +346,31 @@ function initGame() {
 }
 
 async function startStage() {
-  loadCurrentStage(); // 서버에서 스테이지 받아옴
-
-  alert(`${currentStageNumber} 스테이지 시작!`);
-  isStageActive = true; // 스테이지 활성화
-  await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
-  gameLoop();
+  try {
+    const startStageResult = await sendEvent(201);
+    if (startStageResult.status === 'failure') {
+      throw new Error(startStageResult.message);
+    }
+    loadCurrentStage(); // 서버에서 스테이지 받아옴
+    isStageActive = true; // 스테이지 활성화
+    await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
+    gameLoop();
+    alert(`${currentStageNumber} 스테이지 시작!`);
+  } catch (err) {
+    cancelAnimationFrame(animationFrameId);
+    sendEvent(3); // gameEnd 호출
+    alert(`게임 오류 발생: ${err.message}`);
+    location.reload(); // 게임 재시작
+  }
 }
 
 async function stageInit(currentStageId) {
-  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
+  // INCOMPLETE : 스테이지에 맞게 몬스터 큐 추가
+  /*
+  const spawnMonsterResult = spawnMonster(currentStageId);
+  return {status:spawnMonsterResult.status, message:spawnMonsterResult.message}
+  */
   spawnMonster(currentStageId); // 몬스터 생성
-
-  const result = await sendEvent(201); // 스테이지 시작 신호
-  // 스테이지 신호 서버로 날림
-  if (result.status === 'fail') {
-    cancelAnimationFrame(animationFrameId);
-    alert('게임 오류 발생');
-    location.reload(); // 게임 재시작
-  }
 }
 
 async function endStage() {
@@ -378,19 +386,24 @@ async function endStage() {
   } catch (err) {
     if (err.message === 'Last_Stage') {
       cancelAnimationFrame(animationFrameId);
+      await sendEvent(202); // stageEnd 호출
+      await sendEvent(3); // gameEnd 호출
       alert(`스테이지를 모두 완료하셨습니다.!`);
       location.reload(); // 게임 재시작
     } else {
       cancelAnimationFrame(animationFrameId);
-      alert(`게임 오류`);
+      await sendEvent(3); // gameEnd 호출
+      alert(`게임 오류 발생: ${err.message}`);
       location.reload(); // 게임 재시작
     }
   }
 }
 
-function endGame() {
+async function endGame() {
   isStageActive = false;
   cancelAnimationFrame(animationFrameId);
+  await sendEvent(202); // stageEnd 호출
+  await sendEvent(3); // gameEnd 호출
   alert('게임 오버! 다시 도전해보세요.');
   location.reload(); // 게임 재시작
 }

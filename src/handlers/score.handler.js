@@ -8,14 +8,14 @@ import { createScore, getScore, setScore } from '../models/score.model';
  * @returns {Object} 성공 여부를 알리는 상태와 메세지
  */
 
-const initScore = (uuid) => {
+export const initScore = (uuid) => {
   try {
     const initResult = createScore(uuid);
     if (initResult.status !== 'success') throw new Error(initResult.message);
     return { status: initResult.status, message: 'Successfully initialized Score' };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -27,7 +27,7 @@ const initScore = (uuid) => {
  * @returns {Object} 성공 여부를 알리는 상태와 메세지, highScore
  */
 
-const getHighScore = (uuid) => {
+export const getHighScore = (uuid) => {
   try {
     //INCOMPLETE: DB 구성 완료되면 구현가능
     const fetchedScore = 0; // 해당 위치에 db에 저장된 score 불러옴
@@ -39,7 +39,7 @@ const getHighScore = (uuid) => {
     };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -50,14 +50,14 @@ const getHighScore = (uuid) => {
  * @param {string} uuid uuid(userId)
  * @returns {Object} 성공 여부를 알리는 상태와 메세지,currentScore
  */
-const getCurrentScore = (uuid) => {
+export const getCurrentScore = (uuid) => {
   try {
     const currentScore = getScore(uuid);
     if (!currentScore) throw new Error('Failed to retrieved score');
     return { status: 'success', message: 'Successfully retrieved current score', currentScore };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 /**
@@ -67,7 +67,7 @@ const getCurrentScore = (uuid) => {
  * @param {string} uuid uuid(userId)
  * @returns {Object} 성공 여부를 알리는 상태와 메세지
  */
-const updateIncreaseScore = (uuid, increaseScore) => {
+export const updateIncreaseScore = (uuid, increaseScore) => {
   try {
     const currentScore = getScore(uuid);
     if (!currentScore) throw new Error('Failed to retrieved score');
@@ -81,7 +81,7 @@ const updateIncreaseScore = (uuid, increaseScore) => {
     return { status: setScoreResult.status, message: setScoreResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -93,7 +93,7 @@ const updateIncreaseScore = (uuid, increaseScore) => {
  * @returns {Object} 성공 여부를 알리는 상태와 메세지
  */
 
-const saveHighScore = (uuid, score) => {
+export const saveHighScore = (uuid, score) => {
   try {
     const currentScore = getScore(uuid);
     if (!currentScore) throw new Error('Failed to retrieved score');
@@ -109,6 +109,6 @@ const saveHighScore = (uuid, score) => {
     return { status: dbResult.status, message: dbResult.message };
   } catch (err) {
     console.error(err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };

@@ -1,151 +1,65 @@
-import { ASSET_TYPE, TOWER_TYPE } from '../constants';
-import { findAssetDataById } from '../init/assets';
+import { Tower } from '../classes/tower.class';
 
 /**
- * 게임에서 사용되는 타워의 상위 클래스입니다.
- *
- * @class
+ * 유저가 보유한 타워목록
  */
-export class Tower {
-  static id = 0;
-  /**
-   * 타워의 생성자
-   *
-   * @constructor
-   * @param {number} towerType 타워의 종류 1001 / 1002 / 1003
-   * @param {number} x 타워의 x 좌표
-   * @param {number} y 타워의 y 좌표
-   */
-  constructor(towerType, x, y) {
-    this.id = id++;
-    this.towerType = towerType;
-    this.x = x; // 타워 이미지 x 좌표
-    this.y = y; // 타워 이미지 y 좌표
-    this.level = 1; // 타워 레벨
-    this.target = null; // 타워 광선의 목표
-
-    const towerData = findAssetDataById(ASSET_TYPE.TOWER, towerType);
-    this.width = towerData.width; // 타워 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
-    this.height = towerData.height; // 타워 이미지 세로 길이
-    this.attackPower = towerData.attackPower; // 타워 공격력
-    this.range = towerData.range; // 타워 사거리
-    this.cooldown = 0; // 타워 공격 쿨타임
-    this.initialCooldown = towerData.cooldown;
-    this.beamDuration = towerData.beamDuration; // 타워 광선 지속 시간
-    this.buyCost = towerData.cost; // 타워 구입 비용
-    this.upgradeCost = Math.floor(cost * 1.5);
-    this.skillId = towerData.skillId;
-    this.image = towerData.image;
-
-    const skillData = findAssetDataById(ASSET_TYPE.TOWER_SKILL, skillId);
-    this.skillDuration = skillData.skill_duration; // 스킬 지속 시간
-    this.skillValue = skillData.skill_value; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
-    this.antiAir = skillData.anti_air; // 공중 유닛 공격 가능 여부
-  }
-
-  attack(monster) {
-    if (monster.type === 'flying' && this.antiAir === false) {
-      console.log(`Tower 대공 공격 실패 ${this.id}`);
-      return;
-    }
-    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    if (this.cooldown <= 0) {
-      monster.hp -= this.attackPower;
-      this.cooldown = this.initialCooldown; // 3초 쿨타임 (초당 60프레임)
-      this.beamDuration = 30; // 광선 지속 시간 (0.5초)
-      this.target = monster; // 광선의 목표 설정
-    }
-  }
-
-  updateCooldown() {
-    if (this.cooldown > 0) {
-      this.cooldown--;
-    }
-  }
-}
+let towers = {};
 
 /**
- * 일반 공격 타워
- * towerId 1001 / skillId 2001
- * @class
+ * 유저가 보유한 타워목록을 비워서 초기화하는 함수
+ * @param {number} uuid userId
  */
-export class NormalTower extends Tower {
-  /**
-   * 노말 타워의 생성자
-   *
-   * @constructor
-   * @param {number} x 타워의 x 좌표
-   * @param {number} y 타워의 y 좌표
-   */
-  constructor(x, y) {
-    super(TOWER_TYPE.NORMAL, x, y);
-  }
-}
+export const clearTowers = (uuid) => {
+  towers[uuid] = [];
+};
 
 /**
- * 슬로우 타워
- * towerId 1002 / skillId 2002
- * @class
+ * 유저가 보유한 타워목록 전체를 조회하는 함수
+ * @param {number} uuid userId
+ * @returns {Tower[]} 유저의 타워 보유목록
  */
-export class SlowTower extends Tower {
-  /**
-   * 슬로우 타워의 생성자
-   *
-   * @constructor
-   * @param {number} x 타워의 x 좌표
-   * @param {number} y 타워의 y 좌표
-   */
-  constructor(x, y) {
-    super(TOWER_TYPE.SLOW, x, y);
-  }
-
-  attack(monster) {
-    if (this.cooldown <= 0) {
-      this.target = monster;
-      this.beamDuration = 30;
-
-      // 몬스터 이동 속도 감소 적용
-      if (!monster.isSlowed) {
-        monster.speed *= this.skillValue; // 몬스터의 이동 속도를 감소시킴
-        monster.isSlowed = true; // 슬로우 효과를 받고 있음을 표시
-
-        // 일정 시간 후 몬스터의 속도 원상 복구
-        setTimeout(() => {
-          if (monster.isSlowed) {
-            monster.speed /= this.skillValue;
-            monster.isSlowed = false;
-          }
-        }, this.skillDuration * 1000); // 초 단위로
-      }
-
-      this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
-    }
-  }
-}
+export const getTowers = (uuid) => {
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+  return towers[uuid];
+};
 
 /**
- * 멀티공격 타워
- * towerId 1003 / skillId 2003
- * @class
+ * 타워를 유저의 타워목록에 추가하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 추가할 타워의 인스턴스 ID
+ * @returns {Tower} 추가한 타워 객체
  */
-export class MultiTower extends Tower {
-  /**
-   * 멀티공격 타워의 생성자
-   *
-   * @constructor
-   * @param {number} x 타워의 x 좌표
-   * @param {number} y 타워의 y 좌표
-   */
-  constructor(x, y) {
-    super(TOWER_TYPE.MULTI, x, y);
-  }
+export const setTower = (uuid, tower) => {
+  return towers[uuid].push(tower);
+};
 
-  attack(monster) {
-    if (this.cooldown <= 0) {
-      this.target = monster;
-      this.beamDuration = 30;
+/**
+ * 유저가 보유한 타워목록에서 towerId와 일치하는 타워를 삭제하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 삭제할 타워의 인스턴스 ID
+ * @returns {Tower} 삭제한 타워 객체
+ */
+export const deleteTower = (uuid, towerId) => {
+  const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
+  // 예외처리: 타워를 찾지 못함
+  if (towerIndex === -1) throw new Error(`Tower not found.`);
+  const deletedTower = towers[uuid][towerIndex];
+  towers[uuid].splice(towerIndex, 1); // 타워 삭제
+  return deletedTower;
+};
 
-      this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
-    }
-  }
+/**
+ * 유저가 보유한 타워목록에서 towerId와 일치하는 타워 객체를 반환하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 검색할 타워의 인스턴스 ID
+ * @returns {Tower} 검색한 타워 객체
+ */
+export function getTowerById(uuid, towerId) {
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+  let tower = towers[uuid].find((tower) => tower.id === towerId);
+  // 예외처리: 타워를 찾지 못함
+  if (!tower) throw new Error(`Tower not found.`);
+  return tower;
 }
