@@ -5,6 +5,7 @@ import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
+import { Tower } from '../classes/tower.class.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -207,16 +208,7 @@ function placeInitialTowers() {
   }
 }
 
-function placeNewTower() {
-  /* 
-    타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
-    빠진 코드들을 채워넣어주세요! 
-  */
-  const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
-  towers.push(tower);
-  tower.draw(ctx, towerImage);
-}
+
 
 function placeBase() {
   const lastPoint = monsterPath1[monsterPath.length - 1];
@@ -410,18 +402,97 @@ async function endGame() {
   location.reload(); // 게임 재시작
 }
 
-const buyTowerButton = document.createElement('button');
-buyTowerButton.textContent = '타워 구입';
-buyTowerButton.style.position = 'absolute';
-buyTowerButton.style.top = '10px';
-buyTowerButton.style.right = '10px';
-buyTowerButton.style.padding = '10px 20px';
-buyTowerButton.style.fontSize = '16px';
-buyTowerButton.style.cursor = 'pointer';
 
-buyTowerButton.addEventListener('click', placeNewTower);
 
-document.body.appendChild(buyTowerButton);
+let isPlacingTower = false;
+let towerTypeToPlace = null;
+
+const buyNormalTowerButton = document.createElement('button');
+buyNormalTowerButton.textContent = '일반타워 구입';
+buyNormalTowerButton.style.position = 'absolute';
+buyNormalTowerButton.style.top = '10px';
+buyNormalTowerButton.style.right = '10px';
+buyNormalTowerButton.style.padding = '10px 20px';
+buyNormalTowerButton.style.fontSize = '16px';
+buyNormalTowerButton.style.cursor = 'pointer';
+
+document.body.appendChild(buyNormalTowerButton);
+
+buyNormalTowerButton.addEventListener('click', () => {
+  isPlacingTower = true; // 타워 설치 모드 활성화
+  towerTypeToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
+  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+});
+
+// 타워 설치모드에서의 이벤트 리스너
+canvas.addEventListener('click', (event) => {
+  if (isPlacingTower) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    if (isValidPlacement(x, y)) {
+      placeNewTower(towerTypeToPlace, x, y);
+      isPlacingTower = false;
+      canvas.style.cursor = 'default';
+    } else {
+      alert('타워를 설치할 수 없는 위치입니다.');
+    }
+  }
+});
+
+/**
+ * 타워 배치 함수
+ * @param {Tower} TowerType 
+ * @param {Number} x 
+ * @param {Number} y 
+ * @returns 
+ */
+function placeNewTower(TowerType, x, y) {
+  /* 
+    타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
+    빠진 코드들을 채워넣어주세요! 
+  */
+ towerData = getGameAsset(ASSET_TYPE.TOWER, TowerType)
+
+  try {
+    // 타워 구매 요청 
+    const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
+
+    const towerInstanceId = response.towerId;
+    
+    const newTower = createTower(TowerType, towerInstanceId, x, y)
+
+    if (balance === undefined || response.status === 'failure') {
+      alert('Fail to load Gold Balance');
+
+      location.reload();
+    }
+
+    userGold = balance;
+  } catch (err) {
+    console.error('Error loading gold balance:', err.message);
+    alert('Error loading gold balance', err.message);
+
+    location.reload();
+  }
+  
+  
+  towers.push(tower);
+  tower.draw(ctx, towerImage);
+}
+
+function isValidPlacement(x, y) {
+  // 타워 설치 위치 유효성 검증 함수. 일단은 타워끼리 겹치지 않도록
+  for (const tower of towers) {
+    const distance = Math.hypot(tower.x - x, tower.y - y);
+    if (distance < 100) { // 최소 거리 제한 (타워 간의 거리)
+      return false;
+    }
+  }
+  return true;
+}
+
 
 const startStageButton = document.createElement('button');
 startStageButton.textContent = '준비 완료';
