@@ -1,6 +1,11 @@
 import { Base } from './base.js';
 import { Monster } from '../classes/monster.class.js';
-import { spawnMonster } from '../services/monster.handler.js';
+import { clearMonsters, spawnedMonsters } from '../models/monster.model.js';
+import {
+  spawnMonster,
+  startSpawningMonsters,
+  initSpawnQueue,
+} from '../handlers/monster.handler.js';
 // import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
 // import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
 // import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
@@ -37,9 +42,6 @@ let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 3000; // 몬스터 생성 주기
-let spawnedMonsters = []; // 소환된 몬스터 목록
-let monstersToSpawn = []; // 소환할 몬스터 목록
-let spawnIntervalId; // 스폰될 시간
 const towers = [];
 
 let score = 0; // 게임 점수
@@ -242,43 +244,6 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-// 몬스터 소환
-function startSpawningMonsters() {
-  spawnIntervalId = setInterval(spawnMonster, 1000); // 1초마다 스폰
-}
-
-// 스테이지별 소환될 몬스터 monstersToSpawn에 push
-function initSpawnQueue(StageId) {
-  monstersToSpawn = []; // 스테이지마다 초기화
-  let stageData = findAssetDataById(ASSET_TYPE.STAGE, StageId);
-  // 변수 설정
-  let monsterIds = stageData.monsterIds;
-  let numMonsters = stageData.numMonsters;
-  let monsterProbabilitys = stageData.monsterProbabilitys;
-
-  //랜덤으로 monstersToSpawn에 monseterId를 넣는 반복문
-  for (let i = 0; i < numMonsters; i++) {
-    const rand = Math.random(); // 랜덤함수
-    let cumulativeRate = 0; // 누적확률
-    // monsterProbabilitys에 따라 몬스터 선택
-    for (let j = 0; j < monsterIds.length; j++) {
-      cumulativeRate += monsterProbabilitys[j];
-      if (rand < cumulativeRate) {
-        let monsterId = monsterIds[j];
-        monstersToSpawn.push(monsterId);
-        break;
-      }
-    }
-  }
-  // 마지막 스테이지 보스 출현
-  if (StageId === 4005) {
-    monstersToSpawn.push(3004);
-  }
-  console.log(`${StageId}에 소환될 몬스터`, monstersToSpawn);
-  startSpawningMonsters();
-  spawnedMonsters = []; // 스테이지마다 초기화
-}
-
 function displayInfo() {
   ctx.font = '25px Times New Roman';
   ctx.fillStyle = 'skyblue';
@@ -311,8 +276,8 @@ function gameLoop() {
       if (tower.type === TOWER_TYPE.MULTI) {
         // MultiTower의 경우 사거리 내에서 최대 3개의 몬스터를 공격
         const targets = [];
-        for (let i = 0; i < monsters.length; i++) {
-          const monster = monsters[i];
+        for (let i = 0; i < spawnedMonsters.length; i++) {
+          const monster = spawnedMonsters[i];
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             targets.push(monster);
