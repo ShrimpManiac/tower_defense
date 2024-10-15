@@ -19,6 +19,22 @@ export const ASSET_TYPE = Object.freeze({
   PATH: 'path',
 });
 
+export const TOWER_TYPE = Object.freeze({
+  NORMAL: 1001,
+  SLOW: 1002,
+  MULTI: 1003,
+});
+
+/**
+ * 업그레이드 비용
+ */
+export const UPGRADE_COST = 0;
+
+/**
+ * 타워 환불
+ */
+export const SELL_PENALTY = 0.5;
+
 /**
  * 업그레이드 비용 증가율
  */
@@ -35,8 +51,3 @@ export const UPGRADE_BONUS = Object.freeze({
   2: { attack_bonus: 1.35, range_bonus: 1.15 },
   3: { attack_bonus: 1.2, range_bonus: 1.1 },
 });
-
-/**
- * 타워 환불 가격비율
- */
-export const SELL_PENALTY = 0.5;

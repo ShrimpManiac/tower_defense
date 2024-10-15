@@ -14,6 +14,12 @@ export const ASSET_TYPE = Object.freeze({
   PATH: 'path',
 });
 
+export const TOWER_TYPE = Object.freeze({
+  NORMAL: 1001,
+  SLOW: 1002,
+  MULTI: 1003,
+});
+
 /**
  * 업그레이드 비용 증가율
  */
