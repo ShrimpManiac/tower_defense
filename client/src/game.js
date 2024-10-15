@@ -409,42 +409,87 @@ async function endGame() {
   location.reload(); // 게임 재시작
 }
 
+// 타워 설치 모드 변수
 let isPlacingTower = false;
+// 설치할 타워
 let towerTypeToPlace = null;
+// 타워 클릭 모드 변수
+let selectedTower = null;
+const buyNormalTowerButton = document.createElement('button');
+const buySlowTowerButton = document.createElement('button');
+const buyMultiTowerButton = document.createElement('button');
+const upgradeButton = document.createElement('button');
 
-addTowerButton(); // 화면에 타워버튼 등록
+initButton(); // 버튼 세팅
 
+// 노말타워 설치 버튼 이벤트 리스너
 buyNormalTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
   canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
 });
-
+// 슬로우타워 설치 버튼 이벤트 리스너
 buySlowTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.SLOW; // 설치할 타워 종류
   canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
 });
-
+// 멀티타워 설치 버튼 이벤트 리스너
 buyMultiTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.MULTI; // 설치할 타워 종류
   canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
 });
+// 타워 업그레이드 버튼 이벤트 리스너
+upgradeButton.addEventListener('click', async () => {
+  // 선택된 타워가 없다면 종료 (방어코드)
+  if (!selectedTower) return;
 
-// 타워 설치모드에서의 이벤트 리스너
+  try {
+    // 서버에 업그레이드 요청
+    const response = await sendEvent(23, { towerId: selectedTower.id });
+    if (response.status === 'failure') {
+      alert(`업그레이드 실패: ${response.message}`);
+      return;
+    }
+
+    // 업그레이드 성공시 로직
+    selectedTower.applyUpgrades();
+
+    // 최대 업그레이드 레벨에 도달하면 안보이게 하기
+    if (selectedTower.level >= 3) {
+      hideUpgradeButton();
+    }
+    alert('타워가 업그레이드되었습니다');
+  } catch (err) {
+    console.error('Error occured upgrade Tower:', err.message);
+  }
+});
+
+// 화면 클릭 이벤트 리스너
 canvas.addEventListener('click', (event) => {
-  if (isPlacingTower) {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clinetY - rect.top;
 
+  // 타워 설치 모드일 경우 새 타워 설치
+  if (isPlacingTower) {
     if (isValidPlacement(x, y)) {
       placeNewTower(towerTypeToPlace, x, y);
       isPlacingTower = false;
       canvas.style.cursor = 'default';
     } else {
       alert('타워를 설치할 수 없는 위치입니다.');
+    }
+  } else {
+    // 타워 선택 모드
+    selectedTower = getTowerAtLocation(x, y);
+    if (selectedTower) {
+      if (selectedTower.level < 3) {
+        showUpgradeButton();
+      }
+    } else {
+      hideUpgradeButton();
     }
   }
 });
@@ -486,8 +531,6 @@ function isValidPlacement(x, y) {
   return true;
 }
 
-let selectedTower = null;
-
 const startStageButton = document.createElement('button');
 startStageButton.textContent = '준비 완료';
 startStageButton.style.position = 'absolute';
@@ -506,8 +549,7 @@ startStageButton.addEventListener('click', () => {
 document.body.appendChild(startStageButton);
 
 // 버튼 등록함수
-function addTowerButton() {
-  const buyNormalTowerButton = document.createElement('button');
+function initButton() {
   buyNormalTowerButton.textContent = '일반타워 구입';
   buyNormalTowerButton.style.position = 'absolute';
   buyNormalTowerButton.style.top = '10px';
@@ -518,7 +560,6 @@ function addTowerButton() {
 
   document.body.appendChild(buyNormalTowerButton);
 
-  const buySlowTowerButton = document.createElement('button');
   buySlowTowerButton.textContent = '슬로우타워 구입';
   buySlowTowerButton.style.position = 'absolute';
   buySlowTowerButton.style.top = '10px';
@@ -529,7 +570,6 @@ function addTowerButton() {
 
   document.body.appendChild(buySlowTowerButton);
 
-  const buyMultiTowerButton = document.createElement('button');
   buyMultiTowerButton.textContent = '멀티타워 구입';
   buyMultiTowerButton.style.position = 'absolute';
   buyMultiTowerButton.style.top = '10px';
@@ -539,4 +579,37 @@ function addTowerButton() {
   buyMultiTowerButton.style.cursor = 'pointer';
 
   document.body.appendChild(buyMultiTowerButton);
+
+  // 타워 업그레이드 버튼 처리
+  upgradeButton.textContent = '업그레이드';
+  upgradeButton.style.position = 'absolute';
+  upgradeButton.style.top = '50px';
+  upgradeButton.style.right = '150px';
+  upgradeButton.style.padding = '10px 20px';
+  upgradeButton.style.fontSize = '16px';
+  upgradeButton.style.cursor = 'pointer';
+  upgradeButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
+  document.body.appendChild(upgradeButton);
+}
+
+// 클릭한 타워를 얻는 함수
+function getTowerAtLocation(x, y) {
+  // distance = 클릭한 곳과 tower의 중심부와의 거리
+  for (const tower of towers) {
+    const distance = Math.hypot(tower.x + tower.width / 2 - x, tower.y + tower.height / 2 - y);
+    if (distance < tower.width / 2) {
+      return tower;
+    }
+  }
+  return null;
+}
+
+// 업그레이드 버튼 보이기
+function showUpgradeButton() {
+  upgradeButton.style.display = 'block';
+}
+
+// 업그레이드 버튼 숨기기
+function hideUpgradeButton() {
+  upgradeButton.style.display = 'none';
 }

@@ -113,9 +113,9 @@ export const upgradeTower = (uuid, payload) => {
     const tower = getTowerById(uuid, towerId);
 
     // 골드가 충분한지 검증
-    const upgradeCost = this.upgradeCost;
+    const upgradeCost = tower.upgradeCost;
     if (!hasSufficientBalance(uuid, upgradeCost)) {
-      return { status: 'failure', message: 'Not enough gold.' };
+      return { status: 'failure', message: `Not enough gold to upgrade tower ${tower.id}` };
     }
 
     // 골드 차감
