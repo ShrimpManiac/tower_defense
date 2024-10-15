@@ -1,4 +1,4 @@
-import { Tower } from './tower.model';
+import { Tower } from '../tower.class.js';
 
 // 슬로우 타워 클래스 생성 예시 쓰기 new MultiTower('2003', x, y)
 

@@ -1,4 +1,4 @@
-import { Tower } from '../../models/tower.model';
+import { Tower } from '../tower.class.js';
 
 export class MultiTower extends Tower {
   constructor(assetId, spawnLocation) {

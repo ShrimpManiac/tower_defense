@@ -1,4 +1,4 @@
-import { Tower } from './tower.model';
+import { Tower } from '../tower.class.js';
 
 /**
  * 일반 타워 클래스
