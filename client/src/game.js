@@ -463,7 +463,7 @@ function placeNewTower(TowerType, x, y) {
     const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
     const towerInstanceId = response.towerId;
     
-    newTower = createTower(TowerType, towerInstanceId, x, y)
+    newTower = createTower(TowerType, towerInstanceId, {x, y});
     
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);
