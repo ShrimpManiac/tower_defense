@@ -24,8 +24,10 @@ let baseHp = 1000; // 기지 체력
 let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
-let monsterSpawnInterval = 0; // 몬스터 생성 주기
-const monsters = [];
+let monsterSpawnInterval = 3000; // 몬스터 생성 주기
+let spawnedMonsters = []; // 소환된 몬스터 목록
+let monstersToSpawn = []; // 소환할 몬스터 목록
+let spawnIntervalId; // 스폰될 시간
 const towers = [];
 
 let score = 0; // 게임 점수
@@ -227,11 +229,54 @@ function placeBase() {
   base.draw(ctx, baseImage);
 }
 
-function spawnMonster(assetId, instanceId, monsterPath) {
-  // INCOMPLETE : 몬스터 커밋되기 전이라 기존 한마리 생성으로 임시 대체
-  // monsters.push(new Monster(assetId, instanceId, monsterPath[0]));
+// 몬스터객체 생성 후 spawnedMonsters에 push
+export function spawnMonster(instanceId) {
+  if (monstersToSpawn.length === 0) {
+    clearInterval(spawnIntervalId); // 더 이상 소환할 몬스터가 없으면 타이머 중단
+    return;
+  }
+  const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 ID를 하나씩 가져옴
+  const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
+  const monsterInstance = new Monster(monsterData.id, instanceId, monsterPath1); // Monster 인스턴스 생성
+  spawnedMonsters.push(monsterInstance); // 생성된 몬스터 인스턴스를 배열에 추가
+  // console.log('몬스터 인스턴스: ', monsterImages);
+}
 
-  monsters.push(new Monster(monsterPath1, monsterImages, monsterLevel));
+// 몬스터 소환
+function startSpawningMonsters() {
+  spawnIntervalId = setInterval(spawnMonster, 1000); // 1초마다 스폰
+}
+
+// 스테이지별 소환될 몬스터 monstersToSpawn에 push
+function initSpawnQueue(StageId) {
+  monstersToSpawn = []; // 스테이지마다 초기화
+  let stageData = findAssetDataById(ASSET_TYPE.STAGE, StageId);
+  // 변수 설정
+  let monsterIds = stageData.monsterIds;
+  let numMonsters = stageData.numMonsters;
+  let monsterProbabilitys = stageData.monsterProbabilitys;
+
+  //랜덤으로 monstersToSpawn에 monseterId를 넣는 반복문
+  for (let i = 0; i < numMonsters; i++) {
+    const rand = Math.random(); // 랜덤함수
+    let cumulativeRate = 0; // 누적확률
+    // monsterProbabilitys에 따라 몬스터 선택
+    for (let j = 0; j < monsterIds.length; j++) {
+      cumulativeRate += monsterProbabilitys[j];
+      if (rand < cumulativeRate) {
+        let monsterId = monsterIds[j];
+        monstersToSpawn.push(monsterId);
+        break;
+      }
+    }
+  }
+  // 마지막 스테이지 보스 출현
+  if (StageId === 4005) {
+    monstersToSpawn.push(3004);
+  }
+  console.log(`${StageId}에 소환될 몬스터`, monstersToSpawn);
+  startSpawningMonsters();
+  spawnedMonsters = []; // 스테이지마다 초기화
 }
 
 function displayInfo() {
@@ -282,7 +327,7 @@ function gameLoop() {
           // sendEvent 공격 패킷 요청 필요
         });
       } else {
-        monsters.forEach((monster) => {
+        spawnedMonsters.forEach((monster) => {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
@@ -298,8 +343,8 @@ function gameLoop() {
 
   if (isStageActive) {
     // 활성 스테이지에만 몬스터 이동 및 게임 오버 체크
-    for (let i = monsters.length - 1; i >= 0; i--) {
-      const monster = monsters[i];
+    for (let i = spawnedMonsters.length - 1; i >= 0; i--) {
+      const monster = spawnedMonsters[i];
       if (monster.hp > 0) {
         const isDestroyed = monster.move(base);
         if (isDestroyed) {
@@ -310,11 +355,11 @@ function gameLoop() {
         monster.draw(ctx);
       } else {
         userGold += monster.goldDrop; // 몬스터 죽을 때 골드 추가
-        monsters.splice(i, 1); // 몬스터 제거
+        spawnedMonsters.splice(i, 1); // 몬스터 제거
       }
     }
 
-    if (monsters.length === 0) {
+    if (spawnedMonsters.length === 0 && monstersToSpawn.length == 0) {
       endStage(); // 모든 몬스터 제거 시 스테이지 종료
     }
   }
@@ -353,6 +398,19 @@ async function initGame() {
   isInitGame = true;
 }
 
+async function stageInit(currentStageId) {
+  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
+  initSpawnQueue(currentStageId); // 몬스터 소환 큐 초기화
+
+  const result = await sendEvent(201); // 스테이지 시작 신호
+  // 스테이지 신호 서버로 날림
+  if (result.status === 'fail') {
+    cancelAnimationFrame(animationFrameId);
+    alert('게임 오류 발생');
+    location.reload(); // 게임 재시작
+  }
+}
+
 async function startStage() {
   try {
     const startStageResult = await sendEvent(201);
@@ -360,6 +418,7 @@ async function startStage() {
       throw new Error(startStageResult.message);
     }
     loadCurrentStage(); // 서버에서 스테이지 받아옴
+    cancelAnimationFrame(animationFrameId);
     isStageActive = true; // 스테이지 활성화
     await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
     gameLoop();
@@ -372,15 +431,6 @@ async function startStage() {
   }
 }
 
-async function stageInit(currentStageId) {
-  // INCOMPLETE : 스테이지에 맞게 몬스터 큐 추가
-  /*
-  const spawnMonsterResult = spawnMonster(currentStageId);
-  return {status:spawnMonsterResult.status, message:spawnMonsterResult.message}
-  */
-  spawnMonster(currentStageId); // 몬스터 생성
-}
-
 async function endStage() {
   try {
     isStageActive = false; // 스테이지 비활성화
@@ -391,20 +441,20 @@ async function endStage() {
     loadCurrentStage();
     console.log(stageEndResult);
 
-    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
-  } catch (err) {
-    if (err.message === 'Last_Stage') {
+    if (stageEndResult.message === 'Last_Stage') {
       cancelAnimationFrame(animationFrameId);
       await sendEvent(202); // stageEnd 호출
       await sendEvent(3); // gameEnd 호출
       alert(`스테이지를 모두 완료하셨습니다.!`);
       location.reload(); // 게임 재시작
-    } else {
-      cancelAnimationFrame(animationFrameId);
-      await sendEvent(3); // gameEnd 호출
-      alert(`게임 오류 발생: ${err.message}`);
-      location.reload(); // 게임 재시작
     }
+
+    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
+  } catch (err) {
+    cancelAnimationFrame(animationFrameId);
+    await sendEvent(3); // gameEnd 호출
+    alert(`게임 오류 발생: ${err.message}`);
+    location.reload(); // 게임 재시작
   }
 }
 
@@ -417,7 +467,6 @@ async function endGame() {
   location.reload(); // 게임 재시작
 }
 
-// 타워 설치 모드 변수
 let isPlacingTower = false;
 // 설치할 타워
 let towerTypeToPlace = null;
