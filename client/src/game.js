@@ -12,7 +12,7 @@ import {
   getTowers,
   getTowerAtLocation,
 } from './tower.js';
-import { showButton, hideButton } from './button.js';
+import { showButton, hideButton, initButton } from './button.js';
 const res = await fetch('http://localhost:3000/api/auth', {
   method: 'get',
   credentials: 'include',
@@ -490,7 +490,13 @@ const buyMultiTowerButton = document.createElement('button');
 const upgradeButton = document.createElement('button');
 const sellButton = document.createElement('button');
 
-initButton(); // 버튼 세팅
+initButton(
+  buyNormalTowerButton,
+  buySlowTowerButton,
+  buyMultiTowerButton,
+  upgradeButton,
+  sellButton,
+); // 버튼 세팅
 
 // 노말타워 설치 버튼 이벤트 리스너
 buyNormalTowerButton.addEventListener('click', () => {
@@ -648,59 +654,3 @@ startStageButton.addEventListener('click', () => {
 });
 
 document.body.appendChild(startStageButton);
-
-// 버튼 등록함수
-function initButton() {
-  buyNormalTowerButton.textContent = '일반타워 구입';
-  buyNormalTowerButton.style.position = 'absolute';
-  buyNormalTowerButton.style.top = '60px';
-  buyNormalTowerButton.style.right = '10px';
-  buyNormalTowerButton.style.padding = '10px 20px';
-  buyNormalTowerButton.style.fontSize = '16px';
-  buyNormalTowerButton.style.cursor = 'pointer';
-
-  document.body.appendChild(buyNormalTowerButton);
-
-  buySlowTowerButton.textContent = '슬로우타워 구입';
-  buySlowTowerButton.style.position = 'absolute';
-  buySlowTowerButton.style.top = '110px';
-  buySlowTowerButton.style.right = '10px';
-  buySlowTowerButton.style.padding = '10px 20px';
-  buySlowTowerButton.style.fontSize = '16px';
-  buySlowTowerButton.style.cursor = 'pointer';
-
-  document.body.appendChild(buySlowTowerButton);
-
-  buyMultiTowerButton.textContent = '멀티타워 구입';
-  buyMultiTowerButton.style.position = 'absolute';
-  buyMultiTowerButton.style.top = '160px';
-  buyMultiTowerButton.style.right = '10px';
-  buyMultiTowerButton.style.padding = '10px 20px';
-  buyMultiTowerButton.style.fontSize = '16px';
-  buyMultiTowerButton.style.cursor = 'pointer';
-
-  document.body.appendChild(buyMultiTowerButton);
-
-  // 타워 업그레이드 버튼 처리
-  upgradeButton.textContent = '업그레이드';
-  upgradeButton.style.position = 'absolute';
-  upgradeButton.style.top = '210px';
-  upgradeButton.style.right = '150px';
-  upgradeButton.style.padding = '10px 20px';
-  upgradeButton.style.fontSize = '16px';
-  upgradeButton.style.cursor = 'pointer';
-  upgradeButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
-
-  document.body.appendChild(upgradeButton);
-
-  // 타워 판매 버튼 처리
-  sellButton.textContent = '판매';
-  sellButton.style.position = 'absolute';
-  sellButton.style.top = '260px';
-  sellButton.style.right = '150px';
-  sellButton.style.padding = '10px 20px';
-  sellButton.style.fontSize = '16px';
-  sellButton.style.cursor = 'pointer';
-  sellButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
-  document.body.appendChild(sellButton);
-}
