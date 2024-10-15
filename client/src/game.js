@@ -37,12 +37,8 @@ let currentStageId = 0;
 let currentStageNumber = 0;
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 1000; // 기지 체력
-
-let towerCost = 0; // 타워 구입 비용
+let baseHp = 0; // 기지 체력
 let numOfInitialTowers = 0; // 초기 타워 개수
-let monsterLevel = 0; // 몬스터 레벨
-let monsterSpawnInterval = 3000; // 몬스터 생성 주기
 const towers = [];
 
 let score = 0; // 게임 점수
@@ -244,8 +240,6 @@ function displayInfo() {
   ctx.fillText(`점수: ${score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
   ctx.fillText(`골드: ${userGold}`, 100, 200); // 골드 표시
-  ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${monsterLevel}`, 100, 250); // 최고 기록 표시
 }
 let isStageActive = false; // 스테이지 진행 중 여부
 let animationFrameId;
@@ -305,8 +299,6 @@ function gameLoop() {
       if (monster.hp > 0) {
         const isDestroyed = monster.move(base);
         if (isDestroyed) {
-          alert('게임 오버! 기지를 지키지 못했습니다...');
-          cancelAnimationFrame(animationFrameId); // 애니메이션 루프 중지
           endGame();
         }
         monster.draw(ctx);
@@ -441,10 +433,24 @@ async function endStage() {
 async function endGame() {
   isStageActive = false;
   cancelAnimationFrame(animationFrameId);
-  await sendEvent(202); // stageEnd 호출
-  await sendEvent(3); // gameEnd 호출
-  alert('게임 오버! 다시 도전해보세요.');
-  location.reload(); // 게임 재시작
+
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach((button) => {
+    button.style.display = 'none';
+  });
+
+  const gameOverDiv = document.getElementById('gameOverDiv');
+
+  gameOverDiv.style.display = 'block';
+
+  const gameEndButton = document.getElementById('gameEndButton');
+  gameEndButton.style.display = 'block';
+  gameEndButton.addEventListener('click', () => {
+    location.reload();
+  });
+  const result = await sendEvent(202); // stageEnd 호출
+  const result2 = await sendEvent(3); // gameEnd 호출
+  console.log(result, result2);
 }
 
 let isPlacingTower = false;
