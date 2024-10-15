@@ -65,13 +65,29 @@ export class Tower {
   }
 
   attack(monster) {
-    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    if (this.cooldown <= 0) {
-      monster.hp -= this.attackPower;
-      this.cooldown = 60; // 1초 쿨타임 (초당 60프레임)
-      this.remainingBeamDuration = BEAM_DURATION; // 광선 지속 시간 (0.5초)
-      this.target = monster; // 광선의 목표 설정
+    // 대공 체크
+    if (monster.type === 'flying' && this.antiAir === false) {
+      console.log(`Tower ${this.id} 대공 공격 실패`);
+      return;
     }
+
+    // 사거리 체크
+    // INCOMPLETE : withinRange 함수 미구현
+    if (!withinRange(tower, monster)) {
+      return { status: 'failure', message: 'Monster not within range' };
+    }
+
+    // 쿨타임 체크
+    if (this.cooldownLeft > 0) {
+      console.log(`Tower ${this.id} 공격 쿨타임`);
+      return;
+    }
+
+    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
+    monster.hp -= this.attackPower; // 몬스터 체력 감소
+    this.cooldownLeft = this.cooldown; // 공격 쿨타임 시작
+    this.target = monster; // 광선의 목표 설정
+    this.remainingBeamDuration = BEAM_DURATION; // 광선 애니메이션 가동 (남은시간 0초 -> 0.5초)
   }
 
   updateCooldown() {
