@@ -600,16 +600,13 @@ async function placeNewTower(assetId, spawnLocation) {
     // 타워 구매 요청
     const response = await sendEvent(21, { towerId: assetId, spawnLocation: spawnLocation });
 
-    console.log(`here ${response.message}`);
     // INCOMPLETE response 유효성 검사
 
     // 서버에서 생성된 타워의 Instance id
     const towerInstanceId = response.payload.towerId;
-    console.log(`towerInstaceId ${towerInstanceId}`);
 
     // Client 측 타워 생성
     newTower = createTower(assetId, towerInstanceId, spawnLocation);
-    console.log(`here ${towers}`);
     towers.push(newTower);
     newTower.draw(ctx, towerImage);
 
