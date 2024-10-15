@@ -3,6 +3,7 @@ import handlerMappings from './handlerMappings.js';
 import { addUser, getUsers, removeUser } from '../models/user.model.js';
 
 import { generateEventId } from '../utils/generateEventId.js';
+import { reverseSocket } from './register.handler.js';
 
 // Disconnect 핸들러
 export const handleDisconnect = (socket) => {
@@ -60,13 +61,13 @@ export const handleEvent = (io, socket, data) => {
 export const sendEventToClient = (handlerId, payload) => {
   return new Promise((resolve, reject) => {
     let eventId = generateEventId();
-    socket.emit('event', {
-      handlerId,
-      eventId,
-      payload,
+    reverseSocket.emit('event', {
+      handlerId: handlerId,
+      eventId: eventId,
+      payload: payload,
     });
     // 해당 handlerId에 대한 응답을 기다림
-    socket.once(`${eventId}_response`, (data) => {
+    reverseSocket.once(`${eventId}_response`, (data) => {
       // 성공 시 데이터를 반환
       if (data.status === 'success') {
         resolve(data);

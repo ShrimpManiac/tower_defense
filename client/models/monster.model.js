@@ -26,7 +26,7 @@ export const clearMonsters = () => {
  * @returns {Monster} 추가한 몬스터 객체
  */
 export const setMonster = (monster) => {
-  return spawnedMonsters.push(monster);
+  spawnedMonsters.push(monster);
 };
 
 /**

@@ -21,6 +21,7 @@ import { monsterPaths } from '../src/game.js';
  * @returns
  */
 export const spawnMonster = (payload) => {
+  console.log(`payload: ${JSON.stringify(payload)}`);
   const { monsterId: instanceId, pathIndex } = payload;
 
   const assetId = monsterSpawnQueue.shift(); // 몬스터 큐에서 소환할 몬스터 ID를 가져옴

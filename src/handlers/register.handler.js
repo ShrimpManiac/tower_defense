@@ -2,9 +2,12 @@ import socket from '../init/socket.js';
 import { v4 as uuidv4 } from 'uuid';
 import { handleConnection, handleDisconnect, handleEvent } from './helper.js';
 
+export let reverseSocket;
+
 // 유저 등록 핸들러
 const registerHandler = (io) => {
   io.on('connection', (socket) => {
+    reverseSocket = socket;
     const { uuid } = socket.handshake.query;
     const userUUID = uuid || uuidv4();
 

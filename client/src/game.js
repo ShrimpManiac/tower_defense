@@ -350,32 +350,25 @@ async function initGame() {
   isInitGame = true;
 }
 
-async function stageInit(currentStageId) {
-  const result = await sendEvent(201); // 스테이지 시작 신호
-  const spawnQueue = result.payload.spawnQueue;
-  // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
-  initSpawnQueue(currentStageId, spawnQueue); // 몬스터 소환 큐 초기화
-
-  // 스테이지 신호 서버로 날림
-  if (result.status === 'fail') {
-    cancelAnimationFrame(animationFrameId);
-    alert('게임 오류 발생');
-    location.reload(); // 게임 재시작
-  }
-}
-
 async function startStage() {
   try {
+    console.log('1');
     const startStageResult = await sendEvent(201);
+    console.log('1-1');
     if (startStageResult.status === 'failure') {
       throw new Error(startStageResult.message);
     }
     loadCurrentStage(); // 서버에서 스테이지 받아옴
+    console.log('2');
+    const spawnQueue = startStageResult.payload.spawnQueue;
+    // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
+    initSpawnQueue(currentStageId, spawnQueue); // 몬스터 소환 큐 초기화
+    console.log('3');
     cancelAnimationFrame(animationFrameId);
     isStageActive = true; // 스테이지 활성화
-    await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
     gameLoop();
     alert(`${currentStageNumber} 스테이지 시작!`);
+    console.log('4');
   } catch (err) {
     cancelAnimationFrame(animationFrameId);
     sendEvent(3); // gameEnd 호출

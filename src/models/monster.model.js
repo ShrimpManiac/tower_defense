@@ -21,6 +21,7 @@ export let spawnedMonsters = {};
 export const clearMonsters = (uuid) => {
   monsterSpawnQueue[uuid] = [];
   spawnedMonsters[uuid] = [];
+  return { status: 'success' };
 };
 
 /**
@@ -40,7 +41,7 @@ export const getMonsters = (uuid) => {
  * @returns {Monster} 추가한 몬스터 객체
  */
 export const setMonster = (uuid, monster) => {
-  return monsterSpawnQueue[uuid].push(monster);
+  spawnedMonsters[uuid].push(monster);
 };
 
 /**
