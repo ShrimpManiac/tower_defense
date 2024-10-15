@@ -232,14 +232,14 @@ function placeBase() {
 }
 
 // 몬스터객체 생성 후 spawnedMonsters에 push
-function spawnMonster() {
+export function spawnMonster(instanceId) {
   if (monstersToSpawn.length === 0) {
     clearInterval(spawnIntervalId); // 더 이상 소환할 몬스터가 없으면 타이머 중단
     return;
   }
   const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 ID를 하나씩 가져옴
   const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
-  const monsterInstance = new Monster(monsterData, monsterPath1, monsterImages); // Monster 인스턴스 생성
+  const monsterInstance = new Monster(monsterData.id, instanceId, monsterPath1); // Monster 인스턴스 생성
   spawnedMonsters.push(monsterInstance); // 생성된 몬스터 인스턴스를 배열에 추가
   // console.log('몬스터 인스턴스: ', monsterImages);
 }
@@ -400,15 +400,6 @@ async function initGame() {
   isInitGame = true;
 }
 
-async function startStage() {
-  loadCurrentStage(); // 서버에서 스테이지 받아옴
-
-  alert(`${currentStageNumber} 스테이지 시작!`);
-  isStageActive = true; // 스테이지 활성화
-  await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
-  gameLoop();
-}
-
 async function stageInit(currentStageId) {
   // 인수로 받은 해당 스테이지에 맞게 몬스터 생성
   initSpawnQueue(currentStageId); // 몬스터 소환 큐 초기화
@@ -421,51 +412,6 @@ async function stageInit(currentStageId) {
     location.reload(); // 게임 재시작
   }
 }
-
-async function endStage() {
-  try {
-    isStageActive = false; // 스테이지 비활성화
-    alert(`스테이지 ${currentStageNumber} 완료!`);
-    const stageEndResult = await sendEvent(202);
-    loadGoldBalance(); // 골드 잔액 동기화
-    loadCurrentStage();
-    console.log(stageEndResult);
-
-    if (stageEndResult.message === 'Last_Stage') {
-      cancelAnimationFrame(animationFrameId);
-      alert(`스테이지를 모두 완료하셨습니다.!`);
-      location.reload(); // 게임 재시작
-    }
-
-    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
-  } catch (err) {
-    if (err.message === 'Last_Stage') {
-      cancelAnimationFrame(animationFrameId);
-      alert(`스테이지를 모두 완료하셨습니다.!`);
-      location.reload(); // 게임 재시작
-    } else {
-      cancelAnimationFrame(animationFrameId);
-      alert(`게임 오류`);
-      location.reload(); // 게임 재시작
-    }
-  }
-}
-
-function endGame() {
-  isStageActive = false;
-  cancelAnimationFrame(animationFrameId);
-  alert('게임 오버! 다시 도전해보세요.');
-  location.reload(); // 게임 재시작
-}
-
-const buyTowerButton = document.createElement('button');
-buyTowerButton.textContent = '타워 구입';
-buyTowerButton.style.position = 'absolute';
-buyTowerButton.style.top = '10px';
-buyTowerButton.style.right = '10px';
-buyTowerButton.style.padding = '10px 20px';
-buyTowerButton.style.fontSize = '16px';
-buyTowerButton.style.cursor = 'pointer';
 
 async function startStage() {
   try {
@@ -487,15 +433,6 @@ async function startStage() {
   }
 }
 
-async function stageInit(currentStageId) {
-  // INCOMPLETE : 스테이지에 맞게 몬스터 큐 추가
-  /*
-  const spawnMonsterResult = spawnMonster(currentStageId);
-  return {status:spawnMonsterResult.status, message:spawnMonsterResult.message}
-  */
-  spawnMonster(currentStageId); // 몬스터 생성
-}
-
 async function endStage() {
   try {
     isStageActive = false; // 스테이지 비활성화
@@ -506,20 +443,20 @@ async function endStage() {
     loadCurrentStage();
     console.log(stageEndResult);
 
-    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
-  } catch (err) {
-    if (err.message === 'Last_Stage') {
+    if (stageEndResult.message === 'Last_Stage') {
       cancelAnimationFrame(animationFrameId);
       await sendEvent(202); // stageEnd 호출
       await sendEvent(3); // gameEnd 호출
       alert(`스테이지를 모두 완료하셨습니다.!`);
       location.reload(); // 게임 재시작
-    } else {
-      cancelAnimationFrame(animationFrameId);
-      await sendEvent(3); // gameEnd 호출
-      alert(`게임 오류 발생: ${err.message}`);
-      location.reload(); // 게임 재시작
     }
+
+    startStageButton.style.display = 'block'; // 준비 완료 버튼 다시 표시
+  } catch (err) {
+    cancelAnimationFrame(animationFrameId);
+    await sendEvent(3); // gameEnd 호출
+    alert(`게임 오류 발생: ${err.message}`);
+    location.reload(); // 게임 재시작
   }
 }
 
@@ -531,6 +468,15 @@ async function endGame() {
   alert('게임 오버! 다시 도전해보세요.');
   location.reload(); // 게임 재시작
 }
+
+const buyTowerButton = document.createElement('button');
+buyTowerButton.textContent = '타워 구입';
+buyTowerButton.style.position = 'absolute';
+buyTowerButton.style.top = '10px';
+buyTowerButton.style.right = '10px';
+buyTowerButton.style.padding = '10px 20px';
+buyTowerButton.style.fontSize = '16px';
+buyTowerButton.style.cursor = 'pointer';
 
 let isPlacingTower = false;
 let towerTypeToPlace = null;
