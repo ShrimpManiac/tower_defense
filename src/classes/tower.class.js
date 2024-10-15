@@ -18,7 +18,6 @@ export class Tower {
 
     // 타워 위치
     this.x = spawnLocation.x; // x 좌표
-    console.log(`sL y: ${spawnLocation.y}`);
     this.y = spawnLocation.y; // y 좌표
 
     // 타워 크기
