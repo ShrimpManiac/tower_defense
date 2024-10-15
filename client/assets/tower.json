@@ -29,8 +29,8 @@
     {
       "id": 1003,
       "name": "Multi_Tower",
-      "attackPower": 25,
-      "range": 300,
+      "attackPower": 8,
+      "range": 600,
       "cooldown": 60,
       "cost": 400,
       "skillId": 2003,

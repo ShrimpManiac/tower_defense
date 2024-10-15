@@ -108,7 +108,5 @@ export class Tower {
 
     // 레벨 상승
     this.level++;
-
-    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }

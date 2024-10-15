@@ -4,7 +4,7 @@ import '../init/socket.js';
 import { disconnectSocket, sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
-import { createTower } from './tower.js';
+import { createTower, deleteTower, setTower, clearTowers, getTowers } from './tower.js';
 
 const res = await fetch('http://localhost:3000/api/auth', {
   method: 'get',
@@ -37,7 +37,8 @@ let monsterSpawnInterval = 3000; // 몬스터 생성 주기
 let spawnedMonsters = []; // 소환된 몬스터 목록
 let monstersToSpawn = []; // 소환할 몬스터 목록
 let spawnIntervalId; // 스폰될 시간
-const towers = [];
+clearTowers();
+const towers = getTowers();
 
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
@@ -489,7 +490,6 @@ buyNormalTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
 
-  // INCOMPLETE 타워 이미지 못가져오는 문제
   canvas.style.cursor = 'crosshair'; // 커서를 변경
 });
 // 슬로우타워 설치 버튼 이벤트 리스너
@@ -515,22 +515,19 @@ sellButton.addEventListener('click', async () => {
       alert(`판매 실패: ${response.message}`);
       return;
     }
-
-    // INCOMPLETE 서버측 deleteTower 응용하기
-    // 판매 성공시 로직
-    const index = towers.indexOf(selectedTower);
-    if (index !== -1) {
-      towers.splice(index, 1);
-    }
+    console.log(towers);
+    // 타워 삭제
+    const deletedTower = deleteTower(selectedTower.id);
 
     // INCOMPLETE CLIENT쪽 골드 업데이트
+    loadGoldBalance();
 
     selectedTower = null;
     hideUpgradeButton();
     hideSellButton();
     alert('타워가 판매되었습니다.');
   } catch (err) {
-    console.error('Error occured selling Tower:', err.message);
+    console.error('Error occured in selling Tower:', err.message);
   }
 });
 
@@ -614,7 +611,7 @@ async function placeNewTower(assetId, spawnLocation) {
 
     // Client 측 타워 생성
     newTower = createTower(assetId, towerInstanceId, spawnLocation);
-    towers.push(newTower);
+    setTower(newTower);
     newTower.draw(ctx);
 
     // INCOMPLETE CLIENT쪽 골드 업데이트
