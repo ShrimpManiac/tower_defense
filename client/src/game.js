@@ -4,8 +4,10 @@ import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
-import { func } from 'joi';
+import { createTower } from './tower.js';
 
+// INCOMPLETE 몬스터 이미지 바꾸기
+// 타워 이미지 추가
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
 */
@@ -212,17 +214,6 @@ function placeInitialTowers() {
   }
 }
 
-// function placeNewTower() {
-//   /*
-//     타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
-//     빠진 코드들을 채워넣어주세요!
-//   */
-//   const { x, y } = getRandomPositionNearPath(200);
-//   const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
-//   towers.push(tower);
-//   tower.draw(ctx, towerImage);
-// }
-
 function placeBase() {
   const lastPoint = monsterPath1[monsterPath1.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
@@ -315,9 +306,10 @@ function gameLoop() {
     if (isStageActive) {
       if (tower.type === TOWER_TYPE.MULTI) {
         // MultiTower의 경우 사거리 내에서 최대 3개의 몬스터를 공격
+        // IMCOMPLETE 사거리 계산 attack 함수 안으로 넣는 방법 고민
         const targets = [];
-        for (let i = 0; i < monsters.length; i++) {
-          const monster = monsters[i];
+        for (let i = 0; i < spawnedMonsters.length; i++) {
+          const monster = spawnedMonsters[i];
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             targets.push(monster);
@@ -336,6 +328,7 @@ function gameLoop() {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
+            console.log(monster.hp);
             // sendEvent 공격 패킷 요청 필요
           }
         });
@@ -473,7 +466,7 @@ async function endGame() {
 
 let isPlacingTower = false;
 // 설치할 타워
-let towerTypeToPlace = null;
+let assetIdToPlace = null;
 // 타워 클릭 모드 변수
 let selectedTower = null;
 const buyNormalTowerButton = document.createElement('button');
@@ -542,13 +535,14 @@ upgradeButton.addEventListener('click', async () => {
   try {
     // 서버에 업그레이드 요청
     const response = await sendEvent(23, { towerId: selectedTower.id });
+
     if (response.status === 'failure') {
       alert(`업그레이드 실패: ${response.message}`);
       return;
     }
 
     // 업그레이드 성공시 로직
-    // INCOMPLETE CLIENT용 applayUpgrade 만들기
+    // INCOMPLETE CLIENT용 applayUpgrade 만들기 response의 데이터로 upgrade를 해야함.
     selectedTower.applyUpgrades();
 
     // IMCOMPLETE CLIENT쪽 골드 업데이트
@@ -568,12 +562,12 @@ upgradeButton.addEventListener('click', async () => {
 canvas.addEventListener('click', (event) => {
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
-  const y = event.clinetY - rect.top;
+  const y = event.clientY - rect.top;
 
   // 타워 설치 모드일 경우 새 타워 설치
   if (isPlacingTower) {
     if (isValidPlacement(x, y)) {
-      placeNewTower(towerTypeToPlace, x, y);
+      placeNewTower(assetIdToPlace, { x, y });
       isPlacingTower = false;
       canvas.style.cursor = 'default';
     } else {
@@ -606,17 +600,21 @@ async function placeNewTower(assetId, spawnLocation) {
     // 타워 구매 요청
     const response = await sendEvent(21, { towerId: assetId, spawnLocation: spawnLocation });
 
+    console.log(`here ${response.message}`);
     // INCOMPLETE response 유효성 검사
 
     // 서버에서 생성된 타워의 Instance id
-    const towerInstanceId = response.towerId;
+    const towerInstanceId = response.payload.towerId;
+    console.log(`towerInstaceId ${towerInstanceId}`);
 
     // Client 측 타워 생성
-    newTower = createTower(assetId, towerInstanceId, { x, y });
+    newTower = createTower(assetId, towerInstanceId, spawnLocation);
+    console.log(`here ${towers}`);
     towers.push(newTower);
     newTower.draw(ctx, towerImage);
 
     // INCOMPLETE CLIENT쪽 골드 업데이트
+    loadGoldBalance();
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);
   }
@@ -637,7 +635,7 @@ function isValidPlacement(x, y) {
 const startStageButton = document.createElement('button');
 startStageButton.textContent = '준비 완료';
 startStageButton.style.position = 'absolute';
-startStageButton.style.top = '50px';
+startStageButton.style.top = '300px';
 startStageButton.style.right = '10px';
 startStageButton.style.padding = '10px 20px';
 startStageButton.style.fontSize = '16px';
@@ -655,7 +653,7 @@ document.body.appendChild(startStageButton);
 function initButton() {
   buyNormalTowerButton.textContent = '일반타워 구입';
   buyNormalTowerButton.style.position = 'absolute';
-  buyNormalTowerButton.style.top = '10px';
+  buyNormalTowerButton.style.top = '60px';
   buyNormalTowerButton.style.right = '10px';
   buyNormalTowerButton.style.padding = '10px 20px';
   buyNormalTowerButton.style.fontSize = '16px';
@@ -665,7 +663,7 @@ function initButton() {
 
   buySlowTowerButton.textContent = '슬로우타워 구입';
   buySlowTowerButton.style.position = 'absolute';
-  buySlowTowerButton.style.top = '10px';
+  buySlowTowerButton.style.top = '110px';
   buySlowTowerButton.style.right = '10px';
   buySlowTowerButton.style.padding = '10px 20px';
   buySlowTowerButton.style.fontSize = '16px';
@@ -675,7 +673,7 @@ function initButton() {
 
   buyMultiTowerButton.textContent = '멀티타워 구입';
   buyMultiTowerButton.style.position = 'absolute';
-  buyMultiTowerButton.style.top = '10px';
+  buyMultiTowerButton.style.top = '160px';
   buyMultiTowerButton.style.right = '10px';
   buyMultiTowerButton.style.padding = '10px 20px';
   buyMultiTowerButton.style.fontSize = '16px';
@@ -686,7 +684,7 @@ function initButton() {
   // 타워 업그레이드 버튼 처리
   upgradeButton.textContent = '업그레이드';
   upgradeButton.style.position = 'absolute';
-  upgradeButton.style.top = '50px';
+  upgradeButton.style.top = '210px';
   upgradeButton.style.right = '150px';
   upgradeButton.style.padding = '10px 20px';
   upgradeButton.style.fontSize = '16px';
@@ -698,7 +696,7 @@ function initButton() {
   // 타워 판매 버튼 처리
   sellButton.textContent = '판매';
   sellButton.style.position = 'absolute';
-  sellButton.style.top = '100px';
+  sellButton.style.top = '260px';
   sellButton.style.right = '150px';
   sellButton.style.padding = '10px 20px';
   sellButton.style.fontSize = '16px';
