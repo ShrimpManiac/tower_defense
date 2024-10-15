@@ -14,27 +14,10 @@
       <button id="registerButton">회원가입</button>
       <button id="loginButton">로그인</button>
       <button id="playButton">게임 플레이</button>
+      <button id="logoutButton">로그아웃</button>
     </div>
     <canvas id="gameCanvas" width="1920" height="1080"></canvas>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script type="module">
-      document.getElementById('registerButton').addEventListener('click', () => {
-        window.location.href = 'register.html';
-      });
-
-      document.getElementById('loginButton').addEventListener('click', () => {
-        window.location.href = 'login.html';
-      });
-
-      document.getElementById('playButton').addEventListener('click', async () => {
-        const result = await import('./src/user.js');
-        if (!result.id) {
-          return;
-        }
-        document.querySelector('.button-container').style.display = 'none';
-        document.getElementById('gameCanvas').style.display = 'block';
-        import('./src/game.js');
-      });
-    </script>
+    <script src="./src/js/page/index.js"></script>
   </body>
 </html>

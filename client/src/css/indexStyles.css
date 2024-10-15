@@ -25,6 +25,19 @@ img {
   height: auto;
 }
 
+#registerButton {
+  display: none;
+}
+#loginButton {
+  display: none;
+}
+#playButton {
+  display: none;
+}
+#logoutButton {
+  display: none;
+}
+
 button {
   padding: 15px 30px;
   font-size: 18px;
