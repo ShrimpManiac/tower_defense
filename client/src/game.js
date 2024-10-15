@@ -1,5 +1,5 @@
 import { Base } from './base.js';
-import { Monster } from './monster.js';
+import { Monster } from '../classes/monster.class.js';
 // import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
 // import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
 // import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
