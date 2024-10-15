@@ -1,5 +1,14 @@
 import { Base } from './base.js';
-import { Monster } from './monster.js';
+import { Monster } from '../classes/monster.class.js';
+import { clearMonsters, spawnedMonsters, monstersToSpawn } from '../models/monster.model.js';
+import {
+  spawnMonster,
+  startSpawningMonsters,
+  initSpawnQueue,
+} from '../handlers/monster.handler.js';
+// import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
+// import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
+// import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
 import '../init/socket.js';
 import { disconnectSocket, sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
@@ -34,9 +43,6 @@ let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
 let monsterLevel = 0; // 몬스터 레벨
 let monsterSpawnInterval = 3000; // 몬스터 생성 주기
-let spawnedMonsters = []; // 소환된 몬스터 목록
-let monstersToSpawn = []; // 소환할 몬스터 목록
-let spawnIntervalId; // 스폰될 시간
 const towers = [];
 
 let score = 0; // 게임 점수
@@ -47,6 +53,7 @@ let isInitGame = false;
 let monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
 let monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
 let monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
+export let monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -225,61 +232,6 @@ function placeBase() {
   const lastPoint = monsterPath1[monsterPath1.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
-}
-
-// 몬스터객체 생성 후 spawnedMonsters에 push
-export function spawnMonster(instanceId) {
-  if (monstersToSpawn.length === 0) {
-    clearInterval(spawnIntervalId); // 더 이상 소환할 몬스터가 없으면 타이머 중단
-    return;
-  }
-  const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 ID를 하나씩 가져옴
-  const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
-
-  // 여러 몬스터 경로 중 하나를 랜덤 선택
-  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
-  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
-
-  const monsterInstance = new Monster(monsterData.id, instanceId, randomPath); // Monster 인스턴스 생성
-  spawnedMonsters.push(monsterInstance); // 생성된 몬스터 인스턴스를 배열에 추가
-  // console.log('몬스터 인스턴스: ', monsterImages);
-}
-
-// 몬스터 소환
-function startSpawningMonsters() {
-  spawnIntervalId = setInterval(spawnMonster, 1000); // 1초마다 스폰
-}
-
-// 스테이지별 소환될 몬스터 monstersToSpawn에 push
-function initSpawnQueue(StageId) {
-  monstersToSpawn = []; // 스테이지마다 초기화
-  let stageData = findAssetDataById(ASSET_TYPE.STAGE, StageId);
-  // 변수 설정
-  let monsterIds = stageData.monsterIds;
-  let numMonsters = stageData.numMonsters;
-  let monsterProbabilitys = stageData.monsterProbabilitys;
-
-  //랜덤으로 monstersToSpawn에 monseterId를 넣는 반복문
-  for (let i = 0; i < numMonsters; i++) {
-    const rand = Math.random(); // 랜덤함수
-    let cumulativeRate = 0; // 누적확률
-    // monsterProbabilitys에 따라 몬스터 선택
-    for (let j = 0; j < monsterIds.length; j++) {
-      cumulativeRate += monsterProbabilitys[j];
-      if (rand < cumulativeRate) {
-        let monsterId = monsterIds[j];
-        monstersToSpawn.push(monsterId);
-        break;
-      }
-    }
-  }
-  // 마지막 스테이지 보스 출현
-  if (StageId === 4005) {
-    monstersToSpawn.push(3004);
-  }
-  console.log(`${StageId}에 소환될 몬스터`, monstersToSpawn);
-  startSpawningMonsters();
-  spawnedMonsters = []; // 스테이지마다 초기화
 }
 
 function displayInfo() {
