@@ -1,9 +1,21 @@
-import { ASSET_TYPE } from '../constants';
+import { ASSET_TYPE, TOWER_TYPE } from '../constants';
 import { findAssetDataById } from '../init/assets';
 
+/**
+ * 게임에서 사용되는 타워의 상위 클래스입니다.
+ *
+ * @class
+ */
 export class Tower {
   static id = 0;
-
+  /**
+   * 타워의 생성자
+   *
+   * @constructor
+   * @param {number} towerType 타워의 종류 1001 / 1002 / 1003
+   * @param {number} x 타워의 x 좌표
+   * @param {number} y 타워의 y 좌표
+   */
   constructor(towerType, x, y) {
     this.id = id++;
     this.towerType = towerType;
@@ -52,17 +64,39 @@ export class Tower {
   }
 }
 
-// 일반 타워 클래스
+/**
+ * 일반 공격 타워
+ * towerId 1001 / skillId 2001
+ * @class
+ */
 export class NormalTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  /**
+   * 노말 타워의 생성자
+   *
+   * @constructor
+   * @param {number} x 타워의 x 좌표
+   * @param {number} y 타워의 y 좌표
+   */
+  constructor(x, y) {
+    super(TOWER_TYPE.NORMAL, x, y);
   }
 }
 
-// 슬로우 타워 클래스
+/**
+ * 슬로우 타워
+ * towerId 1002 / skillId 2002
+ * @class
+ */
 export class SlowTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  /**
+   * 슬로우 타워의 생성자
+   *
+   * @constructor
+   * @param {number} x 타워의 x 좌표
+   * @param {number} y 타워의 y 좌표
+   */
+  constructor(x, y) {
+    super(TOWER_TYPE.SLOW, x, y);
   }
 
   attack(monster) {
@@ -71,7 +105,7 @@ export class SlowTower extends Tower {
       this.beamDuration = 30;
 
       // 몬스터 이동 속도 감소 적용
-      if (monster.speed && !monster.isSlowed) {
+      if (!monster.isSlowed) {
         monster.speed *= this.skillValue; // 몬스터의 이동 속도를 감소시킴
         monster.isSlowed = true; // 슬로우 효과를 받고 있음을 표시
 
@@ -89,10 +123,21 @@ export class SlowTower extends Tower {
   }
 }
 
-// 슬로우 타워 클래스 생성 예시 쓰기 new MultiTower('2003', x, y)
+/**
+ * 멀티공격 타워
+ * towerId 1003 / skillId 2003
+ * @class
+ */
 export class MultiTower extends Tower {
-  constructor(towerType, x, y) {
-    super(towerType, x, y);
+  /**
+   * 멀티공격 타워의 생성자
+   *
+   * @constructor
+   * @param {number} x 타워의 x 좌표
+   * @param {number} y 타워의 y 좌표
+   */
+  constructor(x, y) {
+    super(TOWER_TYPE.MULTI, x, y);
   }
 
   attack(monster) {
@@ -100,25 +145,7 @@ export class MultiTower extends Tower {
       this.target = monster;
       this.beamDuration = 30;
 
-      // 몬스터 이동 속도 감소 적용
-      if (monster.speed && !monster.isSlowed) {
-        monster.speed *= this.skillValue; // 몬스터의 이동 속도를 감소시킴
-        monster.isSlowed = true; // 슬로우 효과를 받고 있음을 표시
-
-        // 일정 시간 후 몬스터의 속도 원상 복구
-        this.applySkillEffect(monster);
-      }
-
       this.cooldown = this.initialCooldown; // 공격 후 쿨타임 초기화
     }
-  }
-
-  applySkillEffect(monster) {
-    setTimeout(() => {
-      if (monster.isSlowed) {
-        monster.speed /= this.skillValue;
-        monster.isSlowed = false;
-      }
-    }, this.skillDuration * 1000); // 초 단위로
   }
 }

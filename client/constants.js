@@ -13,6 +13,12 @@ export const ASSET_TYPE = Object.freeze({
   TOWER_SKILL: 'tower_skill',
 });
 
+export const TOWER_TYPE = Object.freeze({
+  NORMAL: 1001,
+  SLOW: 1002,
+  MULTI: 1003,
+});
+
 /**
  * 업그레이드 비용
  */

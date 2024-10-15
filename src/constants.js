@@ -18,4 +18,27 @@ export const ASSET_TYPE = Object.freeze({
   TOWER_SKILL: 'tower_skill',
 });
 
-// 타워 관련 상수 추가하기
+export const TOWER_TYPE = Object.freeze({
+  NORMAL: 1001,
+  SLOW: 1002,
+  MULTI: 1003,
+});
+
+/**
+ * 업그레이드 비용
+ */
+export const UPGRADE_COST = 0;
+
+/**
+ * 타워 환불
+ */
+export const SELL_PENALTY = 0.5;
+
+/**
+ * 타워 환불
+ */
+export const UPGRADE_BONUS = [
+  { level: 1, rate: 0.3 },
+  { level: 2, rate: 0.2 },
+  { level: 3, rate: 0.1 },
+];

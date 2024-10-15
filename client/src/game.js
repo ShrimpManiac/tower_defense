@@ -3,6 +3,8 @@ import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
+import { ASSET_TYPE } from '../constants.js';
+import { TOWER_TYPE } from '../../src/constants.js';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -248,7 +250,7 @@ function gameLoop() {
     tower.draw(ctx, towerImage);
     tower.updateCooldown();
     if (isStageActive) {
-      if (tower.type === 1003) {
+      if (tower.type === TOWER_TYPE.MULTI) {
         // MultiTower의 경우 사거리 내에서 최대 3개의 몬스터를 공격
         const targets = [];
         for (let i = 0; i < monsters.length; i++) {
