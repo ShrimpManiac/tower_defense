@@ -1,5 +1,7 @@
 import { ASSET_TYPE } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
+import { Base } from './base.js';
+
 export class Monster {
   /**
    * @param {Number} assetId 몬스터 애셋 ID (데이터테이블 조회용)
@@ -15,52 +17,60 @@ export class Monster {
     /**
      * 몬스터 인스턴스 ID
      */
-
     this.id = instanceId;
 
+    // 경로 & 현재위치
     this.path = path; // 몬스터가 이동할 경로
-    this.currentIndex = 0; // 몬스터가 이동 중인 경로의 인덱스
+    this.currentPathIndex = 0; // 몬스터가 이동 중인 경로의 인덱스
     this.x = path[0].x; // 몬스터의 x 좌표 (최초 위치는 경로의 첫 번째 지점)
     this.y = path[0].y; // 몬스터의 y 좌표 (최초 위치는 경로의 첫 번째 지점)
 
-    // JSON으로 불러온 목스터 속성
-    this.id = monsterData.id;
-    this.maxHp = monsterData.maxHp;
-    this.hp = this.maxHp;
-    this.attackPower = monsterData.attackPower;
-    this.defense = monsterData.defense;
-    this.speed = monsterData.speed;
-    this.goldDrop = monsterData.goldDrop;
-    this.score = monsterData.score;
+    // 체력
+    this.maxHp = monsterData.maxHp; // 최대 체력
+    this.hp = this.maxHp; // 현재 체력
+
+    // 기본스탯
+    this.attackPower = monsterData.attackPower; // 공격력
+    this.defense = monsterData.defense; // 방어력
+    this.speed = monsterData.speed; // 이동속도
+    this.goldDrop = monsterData.goldDrop; // 처치시 골드드랍
+    this.score = monsterData.score; // 처치시 점수
+
+    // 몬스터 타입
     this.type = monsterData.type;
-    this.image = new Image();
-    this.image.src = monsterData.image;
-    this.width = monsterData.width;
-    this.height = monsterData.height;
+    this.isSlowed = false;
+
+    // 이미지
+    this.image = new Image(); // 이미지
+    this.image.src = monsterData.image; // 이미지 주소
+    this.width = monsterData.width; // 이미지 가로 크기
+    this.height = monsterData.height; // 이미지 세로 크기
   }
 
   move(base) {
-    if (this.currentIndex < this.path.length - 1) {
-      const nextPoint = this.path[this.currentIndex + 1];
-      const deltaX = nextPoint.x - this.x;
-      const deltaY = nextPoint.y - this.y;
-      // 2차원 좌표계에서 두 점 사이의 거리를 구할 땐 피타고라스 정리를 활용하면 됩니다! a^2 = b^2 + c^2니까 루트를 씌워주면 되죠!
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-      if (distance < this.speed) {
-        // 거리가 속도보다 작으면 다음 지점으로 이동시켜주면 됩니다!
-        this.currentIndex++;
-      } else {
-        // 거리가 속도보다 크면 일정한 비율로 이동하면 됩니다. 이 때, 단위 벡터와 속도를 곱해줘야 해요!
-        this.x += (deltaX / distance) * this.speed; // 단위 벡터: deltaX / distance
-        this.y += (deltaY / distance) * this.speed; // 단위 벡터: deltaY / distance
-      }
-      return false;
-    } else {
-      const isDestroyed = base.takeDamage(this.attackPower); // 기지에 도달하면 기지에 데미지를 입힙니다!
-      this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
+    // 기지에 도착했다면 기지 공격
+    if (this.currentPathIndex >= this.path.length - 1) {
+      // INCOMPLETE : base 클래스 서버측에 구현 필요
+      const isDestroyed = base.takeDamage(this.attackPower); // 기지를 공격
+      this.hp = 0; // 몬스터 소멸
       return isDestroyed;
     }
+
+    // 목적지까지의 거리 계산
+    const nextPoint = this.path[this.currentPathIndex + 1]; // 목적지
+    const deltaX = nextPoint.x - this.x;
+    const deltaY = nextPoint.y - this.y;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 목적지까지의 거리
+
+    // 도착시 다음 목적지로 업데이트
+    if (distance < this.speed) {
+      this.currentPathIndex++;
+      // 목적지를 향해 이동
+    } else {
+      this.x += (deltaX / distance) * this.speed;
+      this.y += (deltaY / distance) * this.speed;
+    }
+    return false; // 기지에 도달하지 않음
   }
 
   draw(ctx) {
