@@ -7,7 +7,7 @@ export const createScore = (uuid) => {
 
 export const getScore = (uuid) => {
   if (scores[uuid] === undefined) throw new Error('Score Not Found'); // 스코어 존재 여부 확인
-  return scores[uuid];
+  return { status: 'success', message: 'Score successfully set.', score: scores[uuid] };
 };
 
 export const setScore = (uuid, score) => {
