@@ -75,16 +75,16 @@ const checkTowersExist = (uuid) => {
   if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
 };
 
-export function createTower(towerType, instanceId, spawnLocation) {
-  switch (towerType) {
+export function createTower(assetId, instanceId, spawnLocation) {
+  switch (assetId) {
     case TOWER_TYPE.NORMAL:
-      return new NormalTower(instanceId, spawnLocation);
+      return new NormalTower(assetId, instanceId, spawnLocation);
     case TOWER_TYPE.SLOW:
-      return new SlowTower(instanceId, spawnLocation);
+      return new SlowTower(assetId, instanceId, spawnLocation);
     case TOWER_TYPE.MULTI:
-      return new MultiTower(instanceId, spawnLocation);
+      return new MultiTower(assetId, instanceId, spawnLocation);
     default:
-      console.error(`알 수 없는 타워 타입: ${towerType}`);
+      console.error(`알 수 없는 타워 타입: ${assetId}`);
       return null;
   }
 }
