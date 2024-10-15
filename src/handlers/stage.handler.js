@@ -1,6 +1,7 @@
 import { ASSET_TYPE } from '../constants.js';
 import { getFirstAsset, getGameAsset, getNextAsset, getStageNumber } from '../init/assets.js';
 import { createStage, getStage, setStage } from '../models/stage.model.js';
+import { initSpawnQueue, startSpawningMonsters } from '../services/monster.service.js';
 
 let startStageTime = 0;
 let endStageTime = 0;
@@ -157,16 +158,12 @@ export const getStartTimeByStage = (uuid) => {
 };
 
 export const stageStart = (uuid) => {
-  // 기본 틀만 구성, 아직 미완성
   try {
-    // INCOMPLETE : 해당 위치 스테이지에 따른 몬스터 큐 함수 추가해야 함.
-    /* const currentStage = getStage(uuid);
-       const monsterSpawnResult = monsterSpawn(currentStage)
-       if(monsterSpawnResult.status === 'success'){
-          startStageTime = Date.now();
-          return { status: 'success', message: 'Successfully stage started' };
-      }
-    */
+    const currentStage = getStage(uuid);
+    initSpawnQueue(uuid, currentStage.id);
+    startSpawningMonsters(uuid);
+
+    startStageTime = Date.now();
     return { status: 'success', message: 'Successfully stage started' };
   } catch (err) {
     console.error(err.message);

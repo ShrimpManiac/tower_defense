@@ -35,7 +35,15 @@ export const spawnMonster = (uuid, path) => {
  * @param {number} uuid userId
  */
 export const startSpawningMonsters = (uuid) => {
-  spawnIntervalId = setInterval(spawnMonster(uuid, path), 1000); // 1초마다 스폰
+  const monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
+  const monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
+  const monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
+  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
+
+  // 여러 몬스터 경로 중 하나를 랜덤 선택
+  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
+
+  spawnIntervalId = setInterval(spawnMonster(uuid, randomPath), 1000); // 1초마다 스폰
 };
 
 /**
