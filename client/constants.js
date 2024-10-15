@@ -48,3 +48,4 @@ export const UPGRADE_BONUS = Object.freeze({
  * 30프레임 = 0.5초 (1초당 60프레임)
  */
 export const BEAM_DURATION = 30;
+export const MAX_TOWER_LEVEL = 3;

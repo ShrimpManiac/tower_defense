@@ -84,3 +84,15 @@ export function createTower(assetId, instanceId, spawnLocation) {
       return null;
   }
 }
+
+// 클릭한 타워를 얻는 함수
+export function getTowerAtLocation(towers, x, y) {
+  // distance = 클릭한 곳과 tower의 중심부와의 거리
+  for (const tower of towers) {
+    const distance = Math.hypot(tower.x + tower.width / 2 - x, tower.y + tower.height / 2 - y);
+    if (distance < tower.width / 2) {
+      return tower;
+    }
+  }
+  return null;
+}

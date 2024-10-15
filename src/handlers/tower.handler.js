@@ -6,6 +6,7 @@
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 import { Tower } from '../classes/tower.class.js';
+import { MAX_TOWER_LEVEL } from '../constants.js';
 import {
   deleteTower,
   getTowerById,
@@ -33,7 +34,6 @@ export const buyTower = (uuid, payload) => {
   try {
     const { towerId, spawnLocation } = payload;
 
-    // INCOMPLETE: 설치 좌표가 적합한지 검증
     if (!isValidPlacement(uuid, spawnLocation.x, spawnLocation.y)) {
       throw new Error('Invalid placement location in buyTower');
     }
@@ -84,7 +84,6 @@ export const buyTower = (uuid, payload) => {
 export const sellTower = (uuid, payload) => {
   try {
     const { towerId } = payload;
-    console.log('sellTower', towerId);
 
     // 타워 삭제
     const sellTower = deleteTower(uuid, towerId);
@@ -122,7 +121,7 @@ export const upgradeTower = (uuid, payload) => {
     const tower = getTowerById(uuid, towerId);
 
     // 타워 레벨 검증: 레벨이 3 이상이면 업그레이드 중단
-    if (tower.level >= 3) {
+    if (tower.level >= MAX_TOWER_LEVEL) {
       return { status: 'failure', message: `already at or above the maximum allowed level (3).` };
     }
 

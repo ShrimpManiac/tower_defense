@@ -14,7 +14,7 @@ export const gameStart = (uuid) => {
       createAccount(uuid),
       initScore(uuid),
       clearTowers(uuid),
-      // INCOMPLETE: 타워 초기화, 몬스터 초기화 추가해야 함
+      // INCOMPLETE: 몬스터 초기화 추가해야 함
     ];
 
     if (results.every((result) => result.status === 'success')) {

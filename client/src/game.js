@@ -3,9 +3,16 @@ import { Monster } from './monster.js';
 import '../init/socket.js';
 import { disconnectSocket, sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
-import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
-import { createTower, deleteTower, setTower, clearTowers, getTowers } from './tower.js';
-
+import { ASSET_TYPE, TOWER_TYPE, MAX_TOWER_LEVEL } from '../constants.js';
+import {
+  createTower,
+  deleteTower,
+  setTower,
+  clearTowers,
+  getTowers,
+  getTowerAtLocation,
+} from './tower.js';
+import { showButton, hideButton } from './button.js';
 const res = await fetch('http://localhost:3000/api/auth', {
   method: 'get',
   credentials: 'include',
@@ -328,7 +335,7 @@ function gameLoop() {
         targets.forEach((target) => {
           tower.attack(target);
           tower.drawBeam(ctx, target);
-          // sendEvent 공격 패킷 요청 필요
+          // INCOMPLETE sendEvent 공격 패킷 요청 필요
         });
       } else {
         spawnedMonsters.forEach((monster) => {
@@ -337,7 +344,7 @@ function gameLoop() {
             tower.attack(monster);
             tower.drawBeam(ctx);
             console.log(monster.hp);
-            // sendEvent 공격 패킷 요청 필요
+            // INCOMPLETE sendEvent 공격 패킷 요청 필요
           }
         });
       }
@@ -521,8 +528,8 @@ sellButton.addEventListener('click', async () => {
     loadGoldBalance();
 
     selectedTower = null;
-    hideUpgradeButton();
-    hideSellButton();
+    hideButton(upgradeButton);
+    hideButton(sellButton);
     alert('타워가 판매되었습니다.');
   } catch (err) {
     console.error('Error occured in selling Tower:', err.message);
@@ -546,10 +553,8 @@ upgradeButton.addEventListener('click', async () => {
 
     loadGoldBalance();
 
-    // 최대 업그레이드 레벨에 도달하면 안보이게 하기
-    // INCOMPLETE constants.js 최대 레벨 상수로 만들기 + server도
-    if (selectedTower.level >= 3) {
-      hideUpgradeButton();
+    if (selectedTower.level >= MAX_TOWER_LEVEL) {
+      hideButton(upgradeButton);
     }
     alert('타워가 업그레이드되었습니다');
   } catch (err) {
@@ -574,15 +579,15 @@ canvas.addEventListener('click', (event) => {
     }
   } else {
     // 타워 선택 모드
-    selectedTower = getTowerAtLocation(x, y);
+    selectedTower = getTowerAtLocation(towers, x, y);
     if (selectedTower) {
       if (selectedTower.level < 3) {
-        showUpgradeButton();
+        showButton(upgradeButton);
       }
-      showSellButton();
+      showButton(sellButton);
     } else {
-      hideUpgradeButton();
-      hideSellButton();
+      hideButton(upgradeButton);
+      hideButton(sellButton);
     }
   }
 });
@@ -698,36 +703,4 @@ function initButton() {
   sellButton.style.cursor = 'pointer';
   sellButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
   document.body.appendChild(sellButton);
-}
-
-// 클릭한 타워를 얻는 함수
-function getTowerAtLocation(x, y) {
-  // distance = 클릭한 곳과 tower의 중심부와의 거리
-  for (const tower of towers) {
-    const distance = Math.hypot(tower.x + tower.width / 2 - x, tower.y + tower.height / 2 - y);
-    if (distance < tower.width / 2) {
-      return tower;
-    }
-  }
-  return null;
-}
-
-// 판매 버튼 보이기
-function showSellButton() {
-  sellButton.style.display = 'block';
-}
-
-// 판매 버튼 숨기기
-function hideSellButton() {
-  sellButton.style.display = 'none';
-}
-
-// 업그레이드 버튼 보이기
-function showUpgradeButton() {
-  upgradeButton.style.display = 'block';
-}
-
-// 업그레이드 버튼 숨기기
-function hideUpgradeButton() {
-  upgradeButton.style.display = 'none';
 }
