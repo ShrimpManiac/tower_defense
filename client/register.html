@@ -38,15 +38,19 @@
     <div class="form-container">
       <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
       <h2>회원가입</h2>
-      <input type="text" id="username" placeholder="아이디" />
+      <input type="text" id="id" placeholder="아이디" />
+      <input type="text" id="name" placeholder="닉네임" />
       <input type="password" id="password" placeholder="비밀번호" />
+      <input type="password" id="passwordCheck" placeholder="비밀번호확인" />
       <button id="register">회원가입</button>
       <button id="back">뒤로가기</button>
     </div>
     <script>
       document.getElementById('register').addEventListener('click', async () => {
-        const username = document.getElementById('username').value;
+        const id = document.getElementById('id').value;
+        const name = document.getElementById('name').value;
         const password = document.getElementById('password').value;
+        const passwordCheck = document.getElementById('passwordCheck').value;
 
         /* 
           회원가입 API 호출 후 회원가입 성공 시 index.html로 이동시켜주세요!
@@ -57,8 +61,10 @@
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({
-            id: username,
+            id,
+            name,
             password,
+            passwordCheck,
           }),
         });
         if (!res.ok) {
