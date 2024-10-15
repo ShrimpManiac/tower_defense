@@ -2,8 +2,10 @@ import { Monster } from '../classes/monster.class.js';
 
 /**
  * 소환된 몬스터 목록
+ * @key uuid
+ * @value Monster[]
  */
-const monsters = []; // 몬스터 목록
+let monsters = {}; // 몬스터 목록
 
 /**
  * 소환된 몬스터 목록을 비워서 초기화하는 함수
