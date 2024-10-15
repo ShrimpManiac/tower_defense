@@ -1,4 +1,4 @@
-export class MonsterModel {
+export class Monster {
   constructor(path, monsterData) {
     if (!path || path.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
