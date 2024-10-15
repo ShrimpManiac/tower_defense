@@ -1,5 +1,5 @@
 import { Tower } from './tower.class.js';
-import { ASSET_TYPE } from '../constants.js';
+import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants.js';
 import { findAssetDataById } from '../utils/assets.js';
 
 /**
@@ -58,6 +58,23 @@ export class SlowTower extends Tower {
       this.remainingBeamDuration = 30;
     }
   }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    this.skillValue += 0.1; // 슬로우 율 10% 씩 증가
+    this.skillDuration += 0.5; // 스킬 지속시간 0.5초씩 증가
+    // INCOMPLETE : 특수타워 업그레이드 차별화
+  }
 }
 
 export class MultiTower extends Tower {
@@ -66,5 +83,21 @@ export class MultiTower extends Tower {
     const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
     this.towerImage = new Image();
     this.towerImage.src = towerData.image;
+  }
+
+  applyUpgrades() {
+    // 비용 상승
+    this.sellCost += this.upgradeCost * SELL_PENALTY;
+    this.upgradeCost *= UPGRADE_COST_SCALER;
+
+    // 타워 강화
+    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
+    this.range *= UPGRADE_BONUS[this.level].range_bonus;
+
+    // 레벨 상승
+    this.level++;
+
+    this.skillValue += 1; // 멀티 타겟 1 증가
+    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }
