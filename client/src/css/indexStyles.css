@@ -39,6 +39,9 @@ img {
 }
 
 button {
+  width: 200px;
+  height: auto;
+  z-index: 2;
   padding: 15px 30px;
   font-size: 18px;
   color: #fff;
@@ -56,8 +59,51 @@ button {
 }
 
 #gameCanvas {
+  position: absolute;
+  z-index: 1;
   border: 2px solid #000;
   display: none;
   width: 80%;
   height: auto;
+}
+
+#clearStageDiv {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정중앙 배치 */
+  width: 1220px;
+  height: 170px;
+  background-image: url('../../assets/clear.png');
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  display: none; /* 처음엔 숨기기 */
+  z-index: 2; /* 캔버스보다 위에 표시되도록 설정 */
+}
+
+#allClearStageDiv {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정중앙 배치 */
+  width: 1221px;
+  height: 332px;
+  background-image: url('../../assets/allClear.png');
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  display: none; /* 처음엔 숨기기 */
+  z-index: 2; /* 캔버스보다 위에 표시되도록 설정 */
+}
+
+#gameEndButton {
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: auto;
+  display: none;
+  z-index: 3;
 }
