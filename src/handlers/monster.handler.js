@@ -2,8 +2,6 @@ import MonsterModel from '../models/monster.model.js';
 import { findAssetDataById } from '../init/assets.js';
 import { ASSET_TYPE } from '../constants.js';
 
-const monsters = []; // 몬스터 목록
-
 // 몬스터 소환
 export const spawnMonster = (path, monsterId) => {
   const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 ID로 몬스터 데이터를 찾음
