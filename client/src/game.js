@@ -9,6 +9,7 @@ import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
 
 const res = await fetch('http://localhost:3000/api/auth', {
+  method: 'get',
   credentials: 'include',
 });
 
