@@ -107,6 +107,8 @@ export const sellTower = (uuid, payload) => {
  */
 export const upgradeTower = (uuid, payload) => {
   try {
+    // INCOMPLETE 최대 레벨이 3인경우 업그레이드 불가
+
     const { towerId } = payload;
 
     // 업그레이드할 타워 검색

@@ -435,7 +435,9 @@ initButton(); // 버튼 세팅
 buyNormalTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
-  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+
+  // INCOMPLETE 타워 이미지 못가져오는 문제
+  canvas.style.cursor = 'url(../images/tower.png), crosshair'; // 커서를 변경
 });
 // 슬로우타워 설치 버튼 이벤트 리스너
 buySlowTowerButton.addEventListener('click', () => {
@@ -461,6 +463,7 @@ sellButton.addEventListener('click', async () => {
       return;
     }
 
+    // INCOMPLETE 서버측 deleteTower 응용하기
     // 판매 성공시 로직
     const index = towers.indexOf(selectedTower);
     if (index !== -1) {
@@ -469,6 +472,7 @@ sellButton.addEventListener('click', async () => {
 
     // INCOMPLETE CLIENT쪽 골드 업데이트
 
+    selectedTower = null;
     hideUpgradeButton();
     hideSellButton();
     alert('타워가 판매되었습니다.');
@@ -491,11 +495,13 @@ upgradeButton.addEventListener('click', async () => {
     }
 
     // 업그레이드 성공시 로직
+    // INCOMPLETE CLIENT용 applayUpgrade 만들기
     selectedTower.applyUpgrades();
 
-    // IMCOMPLTE CLIENT쪽 골드 업데이트
+    // IMCOMPLETE CLIENT쪽 골드 업데이트
 
     // 최대 업그레이드 레벨에 도달하면 안보이게 하기
+    // INCOMPLETE constants.js 최대 레벨 상수로 만들기 + server도
     if (selectedTower.level >= 3) {
       hideUpgradeButton();
     }
@@ -633,6 +639,7 @@ function initButton() {
   upgradeButton.style.fontSize = '16px';
   upgradeButton.style.cursor = 'pointer';
   upgradeButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
+
   document.body.appendChild(upgradeButton);
 
   // 타워 판매 버튼 처리
