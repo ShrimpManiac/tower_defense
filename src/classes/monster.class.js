@@ -44,45 +44,4 @@ export class Monster {
     this.width = monsterData.width; // 이미지 가로 크기
     this.height = monsterData.height; // 이미지 세로 크기
   }
-
-  move(base) {
-    // 기지에 도착했다면 기지 공격
-    if (this.currentPathIndex >= this.path.length - 1) {
-      // INCOMPLETE : base 클래스 서버측에 구현 필요
-      const isDestroyed = base.takeDamage(this.attackPower); // 기지를 공격
-      this.hp = 0; // 몬스터 소멸
-      return isDestroyed;
-    }
-
-    // 목적지까지의 거리 계산
-    const nextPoint = this.path[this.currentPathIndex + 1]; // 목적지
-    const deltaX = nextPoint.x - this.x;
-    const deltaY = nextPoint.y - this.y;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY); // 목적지까지의 거리
-
-    // 도착시 다음 목적지로 업데이트
-    if (distance < this.speed) {
-      this.currentPathIndex++;
-      // 목적지를 향해 이동
-    } else {
-      this.x += (deltaX / distance) * this.speed;
-      this.y += (deltaY / distance) * this.speed;
-    }
-    return false; // 기지에 도달하지 않음
-  }
-
-  getMonsterData() {
-    return {
-      id: this.id,
-      x: this.x,
-      y: this.y,
-      hp: this.hp,
-      attackPower: this.attackPower,
-      defense: this.defense,
-      speed: this.speed,
-      goldDrop: this.goldDrop,
-      score: this.score,
-      type: this.type,
-    };
-  }
 }
