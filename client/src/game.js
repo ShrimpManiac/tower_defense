@@ -308,7 +308,7 @@ function gameLoop() {
     tower.draw(ctx);
     tower.updateCooldown();
     if (isStageActive) {
-      if (tower.type === TOWER_TYPE.MULTI) {
+      if (tower.assetId === TOWER_TYPE.MULTI) {
         // MultiTower의 경우 사거리 내에서 최대 3개의 몬스터를 공격
         // IMCOMPLETE 사거리 계산 attack 함수 안으로 넣는 방법 고민
         const targets = [];
@@ -323,8 +323,10 @@ function gameLoop() {
           }
         }
         // 각 몬스터 한번에 공격
+        console.log(targets);
         targets.forEach((target) => {
           tower.attack(target);
+          tower.drawBeam(ctx, target);
           // sendEvent 공격 패킷 요청 필요
         });
       } else {
@@ -332,6 +334,7 @@ function gameLoop() {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
+            tower.drawBeam(ctx);
             console.log(monster.hp);
             // sendEvent 공격 패킷 요청 필요
           }

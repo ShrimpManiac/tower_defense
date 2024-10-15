@@ -15,6 +15,7 @@ export class Tower {
      * 타워 인스턴스 ID
      */
     this.id = instanceId;
+    this.assetId = assetId;
 
     // 타워 크기
     this.width = towerData.width; // 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
@@ -55,6 +56,9 @@ export class Tower {
 
   draw(ctx) {
     ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
+  }
+
+  drawBeam(ctx) {
     if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);

@@ -22,8 +22,7 @@ export class SlowTower extends Tower {
     this.towerImage.src = towerData.image;
   }
 
-  draw(ctx) {
-    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
+  drawBeam(ctx) {
     if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
@@ -83,6 +82,25 @@ export class MultiTower extends Tower {
     const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
     this.towerImage = new Image();
     this.towerImage.src = towerData.image;
+
+    this.targets = [];
+  }
+
+  draw(ctx) {
+    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
+  }
+
+  drawBeam(ctx, target) {
+    if (this.remainingBeamDuration > 0 && target) {
+      ctx.beginPath();
+      ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
+      ctx.lineTo(target.x + target.width / 2, target.y + target.height / 2);
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 10;
+      ctx.stroke();
+      ctx.closePath();
+      this.remainingBeamDuration--;
+    }
   }
 
   applyUpgrades() {
