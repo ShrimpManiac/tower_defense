@@ -1,6 +1,6 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
-import { Tower } from './tower.js';
+import { NormalTower, SlowTower, MultiTower } from './subTower.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
@@ -273,12 +273,14 @@ function gameLoop() {
         // 각 몬스터 한번에 공격
         targets.forEach((target) => {
           tower.attack(target);
+          const attackResult = sendEvent(301, tower.)
         });
       } else {
         monsters.forEach((monster) => {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
+
           }
         });
       }
