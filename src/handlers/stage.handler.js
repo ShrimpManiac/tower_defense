@@ -14,19 +14,15 @@ let endStageTime = 0;
  */
 export const initializeStage = (uuid) => {
   try {
-    const stages = getGameAsset(ASSET_TYPE.STAGE);
-    // stage asset에서 첫번째 스테이지 id 가져옴
-
     const createResult = createStage(uuid).status;
     if (createResult !== 'success') throw new Error('Failed to create stage');
 
-    const firstStageId = getFirstAsset(ASSET_TYPE.STAGE).id;
+    const firstStageId = getFirstAsset(ASSET_TYPE.STAGE);
 
     // 최초 스테이지 설정
     const setResult = setStage(uuid, firstStageId, Date.now());
     if (setResult.status !== 'success') throw new Error(setResult.message);
 
-    console.log(`[Stage] ${uuid} : Successfully initialized ${firstStageId} stage`);
     return { status: 'success', message: 'Successfully initialized stage' };
   } catch (err) {
     console.error(err.message);
@@ -42,8 +38,6 @@ export const initializeStage = (uuid) => {
  */
 export const getCurrentStage = (uuid) => {
   try {
-    const stages = getGameAsset(ASSET_TYPE.STAGE);
-
     // 저장된 스테이지 로드
     const currentStage = getStage(uuid);
     if (currentStage === undefined) throw new Error('Failed to get stage');
@@ -77,21 +71,27 @@ export const moveToNextStage = (uuid) => {
     // 최근 스테이지 아이디 획득
     const { stageId } = getCurrentStage(uuid);
     if (stageId === undefined) throw new Error('Failed to retrieve the current stage.');
+
     // 다음 스테이지 아이디 획득
-    const { id: nextStageId } = getNextAsset(ASSET_TYPE.STAGE, stageId);
-    if (nextStageId === undefined) {
-      return { status: 'failure', message: 'Last Stage' };
+    const nextAsset = getNextAsset(ASSET_TYPE.STAGE, stageId);
+    if (!nextAsset || nextAsset.id === undefined) {
+      return { status: 'failure', message: 'Last_Stage' };
     }
+
+    const { id: nextStageId } = nextAsset;
+
     // 다음 스테이지 설정
     const nextStageResult = setStage(uuid, nextStageId, Date.now());
 
     if (nextStageResult.status === 'failure') throw new Error(nextStageResult.message);
+
     return { status: 'success', message: nextStageResult.message };
   } catch (err) {
     console.error(err.message);
     return { status: 'failure', message: err.message };
   }
 };
+
 /**
  * 현 스테이지에서 나오는 몬스터 종류 가져오기
  *

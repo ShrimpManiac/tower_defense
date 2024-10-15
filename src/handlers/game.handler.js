@@ -7,11 +7,20 @@ import { deleteScore } from '../models/score.model.js';
 export const gameStart = (uuid) => {
   try {
     // 초기화 진행
-    initializeStage(uuid);
-    createAccount(uuid);
-    initScore(uuid);
-    // INCOMPLETE: 타워 초기화, 몬스터 초기화 추가해야 함
-    console.log(`[INIT] game execution completed - ${uuid}`);
+
+    const results = [
+      initializeStage(uuid),
+      createAccount(uuid),
+      initScore(uuid),
+      // INCOMPLETE: 타워 초기화, 몬스터 초기화 추가해야 함
+    ];
+
+    if (results.every((result) => result.status === 'success')) {
+      console.log(`[INIT] game execution completed - ${uuid}`);
+      console.log(getCurrentScore(uuid));
+    } else {
+      throw new Error(`[INIT-FAIL] game execution failed - ${uuid}`);
+    }
   } catch (err) {
     console.error(err.message);
     return { status: 'failure', message: err.message };
@@ -24,7 +33,7 @@ export const gameEnd = (uuid) => {
   try {
     // 최고 점수 여부 판단 후 기록
     const saveResult = saveHighScore(uuid);
-    if (saveResult.status === fail) throw new Error(saveResult.message);
+    if (saveResult.status === 'failure') throw new Error(saveResult.message);
     // 해당 uuid 삭제 진행
     deleteAccount(uuid);
     deleteStage(uuid);

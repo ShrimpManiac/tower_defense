@@ -1,8 +1,9 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
-import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
 import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
-import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
+// import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
+// import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
+// import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
@@ -21,7 +22,7 @@ let currentStageId = 0;
 let currentStageNumber = 0;
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
-let baseHp = 0; // 기지 체력
+let baseHp = 1000; // 기지 체력
 
 let towerCost = 0; // 타워 구입 비용
 let numOfInitialTowers = 0; // 초기 타워 개수
@@ -104,35 +105,35 @@ async function loadCurrentStage() {
     location.reload();
   }
 }
+// INCOMPLETE : 사용 안하는 함수. 확인 후 삭제 필요.
+// function generateRandomMonsterPath() {
+//   const path = [];
+//   let currentX = 0;
+//   let currentY = Math.floor(Math.random() * 21) + 500; // 500 ~ 520 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
 
-function generateRandomMonsterPath() {
-  const path = [];
-  let currentX = 0;
-  let currentY = Math.floor(Math.random() * 21) + 500; // 500 ~ 520 범위의 y 시작 (캔버스 y축 중간쯤에서 시작할 수 있도록 유도)
+//   path.push({ x: currentX, y: currentY });
 
-  path.push({ x: currentX, y: currentY });
+//   while (currentX < canvas.width) {
+//     currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
+//     // x 좌표에 대한 clamp 처리
+//     if (currentX > canvas.width) {
+//       currentX = canvas.width;
+//     }
 
-  while (currentX < canvas.width) {
-    currentX += Math.floor(Math.random() * 100) + 50; // 50 ~ 150 범위의 x 증가
-    // x 좌표에 대한 clamp 처리
-    if (currentX > canvas.width) {
-      currentX = canvas.width;
-    }
+//     currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
+//     // y 좌표에 대한 clamp 처리
+//     if (currentY < 0) {
+//       currentY = 0;
+//     }
+//     if (currentY > canvas.height) {
+//       currentY = canvas.height;
+//     }
 
-    currentY += Math.floor(Math.random() * 200) - 100; // -100 ~ 100 범위의 y 변경
-    // y 좌표에 대한 clamp 처리
-    if (currentY < 0) {
-      currentY = 0;
-    }
-    if (currentY > canvas.height) {
-      currentY = canvas.height;
-    }
+//     path.push({ x: currentX, y: currentY });
+//   }
 
-    path.push({ x: currentX, y: currentY });
-  }
-
-  return path;
-}
+//   return path;
+// }
 
 function initMap() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 그리기
@@ -176,6 +177,8 @@ function drawRotatedImage(image, x, y, width, height, angle) {
   ctx.restore();
 }
 
+// INCOMPLETE : monsterPath 지정 필요.
+
 function getRandomPositionNearPath(maxDistance) {
   // 타워 배치를 위한 몬스터가 지나가는 경로 상에서 maxDistance 범위 내에서 랜덤한 위치를 반환하는 함수!
   const segmentIndex = Math.floor(Math.random() * (monsterPath.length - 1));
@@ -197,6 +200,7 @@ function getRandomPositionNearPath(maxDistance) {
   };
 }
 
+// INCOMPLETE : Tower 찾을 수 없음
 function placeInitialTowers() {
   /* 
     타워를 초기에 배치하는 함수입니다.
@@ -209,25 +213,28 @@ function placeInitialTowers() {
   }
 }
 
-function placeNewTower() {
-  /* 
-    타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
-    빠진 코드들을 채워넣어주세요! 
-  */
-  const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
-  towers.push(tower);
-  tower.draw(ctx, towerImage);
-}
+// function placeNewTower() {
+//   /*
+//     타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치하면 됩니다.
+//     빠진 코드들을 채워넣어주세요!
+//   */
+//   const { x, y } = getRandomPositionNearPath(200);
+//   const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
+//   towers.push(tower);
+//   tower.draw(ctx, towerImage);
+// }
 
 function placeBase() {
-  const lastPoint = monsterPath1[monsterPath.length - 1];
+  const lastPoint = monsterPath1[monsterPath1.length - 1];
   base = new Base(lastPoint.x, lastPoint.y, baseHp);
   base.draw(ctx, baseImage);
 }
 
 function spawnMonster(assetId, instanceId, monsterPath) {
-  monsters.push(new Monster(assetId, instanceId, monsterPath[0]));
+  // INCOMPLETE : 몬스터 커밋되기 전이라 기존 한마리 생성으로 임시 대체
+  // monsters.push(new Monster(assetId, instanceId, monsterPath[0]));
+
+  monsters.push(new Monster(monsterPath1, monsterImages, monsterLevel));
 }
 
 function displayInfo() {
@@ -275,14 +282,14 @@ function gameLoop() {
         // 각 몬스터 한번에 공격
         targets.forEach((target) => {
           tower.attack(target);
-          const attackResult = sendEvent(301, tower.)
+          // INCOMPLETE: sendEvent payload 재설정 필요
+          // const attackResult = sendEvent(301, tower.)
         });
       } else {
         monsters.forEach((monster) => {
           const distance = Math.hypot(tower.x - monster.x, tower.y - monster.y);
           if (distance < tower.range) {
             tower.attack(monster);
-
           }
         });
       }
@@ -332,10 +339,10 @@ Promise.all([
   }
 });
 
-function initGame() {
+async function initGame() {
   if (isInitGame) return;
 
-  // INCOMPLETE: 해당 부분 gameStart 관련 sendEvent 추가 예정
+  await sendEvent(2);
 
   loadGoldBalance(); // 골드 잔액 동기화
   loadCurrentStage(); // 현재 스테이지 동기화
@@ -382,6 +389,7 @@ async function endStage() {
     isStageActive = false; // 스테이지 비활성화
     alert(`스테이지 ${currentStageNumber} 완료!`);
     const stageEndResult = await sendEvent(202);
+    if (stageEndResult.status === 'failure') throw new Error(stageEndResult.message);
     loadGoldBalance(); // 골드 잔액 동기화
     loadCurrentStage();
     console.log(stageEndResult);
@@ -438,7 +446,7 @@ canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    
+
     if (isValidPlacement(x, y)) {
       placeNewTower(towerTypeToPlace, x, y);
       isPlacingTower = false;
@@ -451,20 +459,19 @@ canvas.addEventListener('click', (event) => {
 
 /**
  * 타워 배치 함수
- * @param {Tower} TowerType 
- * @param {Number} x 
- * @param {Number} y 
- * @returns 
+ * @param {Tower} TowerType
+ * @param {Number} x
+ * @param {Number} y
+ * @returns
  */
-function placeNewTower(TowerType, x, y) {
- const newTower = null;
+async function placeNewTower(TowerType, x, y) {
+  const newTower = null;
   try {
-    // 타워 구매 요청 
-    const response = await sendEvent(21, {towerId: TowerType, spawnLocation: {x, y}});
+    // 타워 구매 요청
+    const response = await sendEvent(21, { towerId: TowerType, spawnLocation: { x, y } });
     const towerInstanceId = response.towerId;
-    
-    newTower = createTower(TowerType, towerInstanceId, {x, y});
-    
+
+    newTower = createTower(TowerType, towerInstanceId, { x, y });
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);
   }
@@ -477,7 +484,8 @@ function isValidPlacement(x, y) {
   // 타워 설치 위치 유효성 검증 함수. 일단은 타워끼리 겹치지 않도록
   for (const tower of towers) {
     const distance = Math.hypot(tower.x - x, tower.y - y);
-    if (distance < 100) { // 최소 거리 제한 (타워 간의 거리)
+    if (distance < 100) {
+      // 최소 거리 제한 (타워 간의 거리)
       return false;
     }
   }
