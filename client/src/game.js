@@ -4,10 +4,19 @@ import { Monster } from './monster.js';
 // import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
 // import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
 import '../init/socket.js';
-import { sendEvent } from '../init/socket.js';
+import { disconnectSocket, sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
 
+const res = await fetch('http://localhost:3000/api/auth', {
+  method: 'get',
+  credentials: 'include',
+});
+
+if (!res.ok) {
+  disconnectSocket();
+  location.reload();
+}
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
 */
