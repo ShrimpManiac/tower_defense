@@ -16,13 +16,13 @@ export class Tower {
      */
     this.id = instanceId;
 
-    // 타워 위치
-    this.x = spawnLocation.x; // x 좌표
-    this.y = spawnLocation.y; // y 좌표
-
     // 타워 크기
     this.width = towerData.width; // 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
     this.height = towerData.height; // 이미지 세로 길이
+
+    // 타워 위치
+    this.x = spawnLocation.x - this.width / 2; // x 좌표
+    this.y = spawnLocation.y - this.height / 2; // y 좌표
 
     // 기본스탯
     this.attackPower = towerData.attackPower; // 공격력
