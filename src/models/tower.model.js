@@ -19,8 +19,7 @@ export const clearTowers = (uuid) => {
  * @returns {Tower[]} 유저의 타워 보유목록
  */
 export const getTowers = (uuid) => {
-  // 예외처리: 타워 목록이 없거나 비어있음
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+  checkTowersExist(uuid);
   return towers[uuid];
 };
 
@@ -41,6 +40,7 @@ export const setTower = (uuid, tower) => {
  * @returns {Tower} 삭제한 타워 객체
  */
 export const deleteTower = (uuid, towerId) => {
+  checkTowersExist(uuid);
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
   if (towerIndex === -1) throw new Error(`Tower not found.`);
@@ -55,11 +55,21 @@ export const deleteTower = (uuid, towerId) => {
  * @param {number} towerId 검색할 타워의 인스턴스 ID
  * @returns {Tower} 검색한 타워 객체
  */
-export function getTowerById(uuid, towerId) {
-  // 예외처리: 타워 목록이 없거나 비어있음
-  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+export const getTowerById = (uuid, towerId) => {
+  checkTowersExist(uuid);
   let tower = towers[uuid].find((tower) => tower.id === towerId);
   // 예외처리: 타워를 찾지 못함
   if (!tower) throw new Error(`Tower not found.`);
   return tower;
-}
+};
+
+/**
+ * 유저의 타워 목록이 비어있거나 정의되어있지 않은지 확인하는 예외처리 함수
+ *
+ * 예외 발생시 에러 반환
+ * @param {number} uuid userId
+ */
+const checkTowersExist = (uuid) => {
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+};
