@@ -18,7 +18,7 @@ router.post('/account/signup', async (req, res, next) => {
     const validation = await schema.validateAsync(req.body);
     const { name, id, password, passwordCheck } = validation;
 
-    const accountCheck = await userPrisma.users.findUnique({
+    const accountCheck = await Prisma.account.findUnique({
       where: { id: id },
     });
 
@@ -34,18 +34,19 @@ router.post('/account/signup', async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newaccount = await Prisma.account.create({
+    const newAccount = await Prisma.account.create({
       data: {
         accountid: uuid,
         name: name,
         id: id,
         password: hashedPassword,
+        bestScore: 0,
       },
     });
 
-    res.status(201).json({ message: '회원가입 성공', account: newaccount });
+    res.status(201).json({ message: '회원가입 성공', account: newAccount });
   } catch (error) {
-    return res.status(500).json({ errorname: error.name, errormessage: error.message });
+    return res.status(500).json({ errorName: error.name, errorMessage: error.message });
   }
 });
 
@@ -70,17 +71,16 @@ router.post('/account/signin', async (req, res, next) => {
 
     const uuid = await Prisma.account.findUnique({
       where: { id: id },
-      select: { aaccountid: true },
+      select: { accountid: true },
     });
 
     const token = jwt.sign({ name: account.id }, process.env.SECRET_KEY, {
       expiresIn: '1d',
     });
     res.cookie('authorization', `Bearer ${token}`);
-    sessionStorage.setItem(uuid);
-    res.status(200).json({ message: '로그인 성공', token: token });
+    res.status(200).json({ message: '로그인 성공', uuid, token });
   } catch (error) {
-    return res.status(500).json({ errorname: error.name, errormessage: error.message });
+    return res.status(500).json({ errorName: error.name, errorMessage: error.message });
   }
 });
 
@@ -99,17 +99,19 @@ router.get('/auth', async (req, res, next) => {
     }
 
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    const id = decodedToken.id;
+
+    const id = decodedToken.name;
 
     const user = await Prisma.account.findUnique({
-      where: { id: id },
+      where: { id },
+      select: { accountid: true },
     });
     if (!user) {
       res.clearCookie('authorization');
       throw new Error('토큰 사용자가 존재하지 않습니다.');
     }
 
-    return res.status(200).json({ message: '토큰 사용자 인증이 완료되었습니다.', data: { id } });
+    return res.status(200).json({ message: '토큰 사용자 인증이 완료되었습니다.', data: { user } });
   } catch (err) {
     res.clearCookie('authorization');
 
@@ -117,7 +119,7 @@ router.get('/auth', async (req, res, next) => {
       case 'JsonWebTokenError':
         return res.status(400).json({ errorMessage: '토큰이 잘못되었습니다.' });
       default:
-        return res.status(500).json({ errorMessage: error.message ?? '비정상적인 요청입니다.' });
+        return res.status(500).json({ errorMessage: err.message ?? '비정상적인 요청입니다.' });
     }
   }
 });
