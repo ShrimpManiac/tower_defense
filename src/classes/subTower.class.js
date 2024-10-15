@@ -4,8 +4,8 @@ import { Tower } from '../tower.class.js';
  * 일반 타워 클래스
  */
 export class NormalTower extends Tower {
-  constructor(assetId, instanceId, spawnLocation) {
-    super(assetId, instanceId, spawnLocation);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 }
 
@@ -13,8 +13,8 @@ export class NormalTower extends Tower {
  * 슬로우 타워 클래스
  */
 export class SlowTower extends Tower {
-  constructor(assetId, instanceId, spawnLocation) {
-    super(assetId, instanceId, spawnLocation);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 
   attack(monster) {
@@ -41,8 +41,8 @@ export class SlowTower extends Tower {
 }
 
 export class MultiTower extends Tower {
-  constructor(assetId, instanceId, spawnLocation) {
-    super(assetId, instanceId, spawnLocation);
+  constructor(assetId, spawnLocation) {
+    super(assetId, spawnLocation);
   }
 
   attack(monster) {
