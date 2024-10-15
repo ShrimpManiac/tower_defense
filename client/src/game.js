@@ -237,7 +237,12 @@ export function spawnMonster(instanceId) {
   }
   const monsterId = monstersToSpawn.shift(); // 몬스터 큐에서 ID를 하나씩 가져옴
   const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
-  const monsterInstance = new Monster(monsterData.id, instanceId, monsterPath1); // Monster 인스턴스 생성
+
+  // 여러 몬스터 경로 중 하나를 랜덤 선택
+  const monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
+  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
+
+  const monsterInstance = new Monster(monsterData.id, instanceId, randomPath); // Monster 인스턴스 생성
   spawnedMonsters.push(monsterInstance); // 생성된 몬스터 인스턴스를 배열에 추가
   // console.log('몬스터 인스턴스: ', monsterImages);
 }
@@ -354,7 +359,6 @@ function gameLoop() {
         }
         monster.draw(ctx);
       } else {
-        userGold += monster.goldDrop; // 몬스터 죽을 때 골드 추가
         spawnedMonsters.splice(i, 1); // 몬스터 제거
       }
     }
