@@ -30,9 +30,6 @@ export const buyTower = (uuid, payload) => {
     // 타워 생성
     const newTower = new Tower(towerId, spawnLocation);
 
-    // 타워생성 잘 됨
-    console.log(newTower);
-
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
       return { status: 'failure', message: 'Not enough gold.' };
