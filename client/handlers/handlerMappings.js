@@ -1,4 +1,4 @@
-import { spawnMonster } from '../src/game.js';
+import { spawnMonster } from './monster.handler.js';
 
 const handlerMappings = {
   31: spawnMonster,
