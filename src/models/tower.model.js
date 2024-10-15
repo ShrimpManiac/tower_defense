@@ -1,4 +1,4 @@
-import { Tower } from '../classes/tower.class';
+import { Tower, NormalTower, SlowTower, MultiTower } from '../classes/subTower.class';
 
 /**
  * 유저가 보유한 타워목록
@@ -62,4 +62,21 @@ export function getTowerById(uuid, towerId) {
   // 예외처리: 타워를 찾지 못함
   if (!tower) throw new Error(`Tower not found.`);
   return tower;
+}
+
+export function createTower(assetId, x, y) {
+  switch (assetId) {
+    case TOWER_TYPE.NORMAL:
+      return new NormalTower(assetId, { x, y });
+      break;
+    case TOWER_TYPE.SLOW:
+      return new SlowTower(assetId, { x, y });
+      break;
+    case TOWER_TYPE.MULTI:
+      return new MultiTower(assetId, { x, y });
+      break;
+    default:
+      console.error('알 수 없는 타워 타입');
+      return;
+  }
 }

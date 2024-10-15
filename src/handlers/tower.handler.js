@@ -1,12 +1,16 @@
-// tower.handler.js
-
 // 해야할 것
 // client에서 받는 코드 만들기
 // 배치시 위치 유효한지 체크
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
 
-import { deleteTower, getTowerById, setTower, Tower } from '../models/tower.model.js';
+import {
+  createTower,
+  deleteTower,
+  getTowerById,
+  setTower,
+  createTower,
+} from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 import { updateIncreaseScore } from './score.handler.js';
 // INCOMPLETE: import monster (몬스터 클래스가 미구현)
@@ -23,15 +27,13 @@ import { updateIncreaseScore } from './score.handler.js';
  */
 export const buyTower = (uuid, payload) => {
   try {
-    const { towerId, spawnLocation } = payload;
-
-    // INCOMPLETE: 설치 좌표가 적합한지 검증
+    const { towerType, spawnLocation } = payload;
 
     // 타워 생성
-    const newTower = new Tower(towerId, spawnLocation);
-
+    const newTower = createTower(towerType, spawnLocation);
     // 골드가 충분한지 검증
     if (!hasSufficientBalance(uuid, newTower.buyCost)) {
+      newTower = null; // 객체 해제 -> 가비지 컬랙터로 메모리에서 제거됨
       return { status: 'failure', message: 'Not enough gold.' };
     }
 
@@ -40,15 +42,16 @@ export const buyTower = (uuid, payload) => {
 
     // 예외처리: 출금 실패
     if (withdrawalResult.status != 'success') {
+      newTower = null; // 객체 해제 -> 가비지 컬랙터로 메모리에서 제거됨
       console.log(withdrawalResult.message);
       return { status: 'failure', message: withdrawalResult.message };
     }
 
-    // (서버) 타워 설치
+    // (서버) 타워 목록 추가
     setTower(uuid, newTower);
 
     // 결과 반환
-    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
+    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${newTower.id}.`;
     console.log(message);
     return {
       status: 'success',
