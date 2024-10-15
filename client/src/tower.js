@@ -1,82 +1,82 @@
-import { ASSET_TYPE, BEAM_DURATION, SELL_PENALTY } from '../constants.js';
-import { findAssetDataById } from '../utils/assets.js';
+import { Tower, NormalTower, SlowTower, MultiTower } from '../classes/subTower.class';
 
-export class Tower {
-  /**
-   * @param {Number} assetId 타워 애셋 ID (데이터테이블 조회용)
-   * @param {Number} instanceId 타워 인스턴스 ID (서버에서 수신)
-   * @param {{x: Number, y: Number}} spawnLocation 설치 좌표
-   */
-  constructor(assetId, instanceId, spawnLocation) {
-    const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
-    const skillData = findAssetDataById(ASSET_TYPE.TOWER_SKILL, towerData.skillId);
-    /**
-     * 타워 인스턴스 ID
-     */
-    this.id = instanceId;
+/**
+ * 유저가 보유한 타워목록
+ */
+let towers = {};
 
-    // 타워 위치
-    this.x = spawnLocation.x; // x 좌표
-    this.y = spawnLocation.y; // y 좌표
+/**
+ * 유저가 보유한 타워목록을 비워서 초기화하는 함수
+ * @param {number} uuid userId
+ */
+export const clearTowers = (uuid) => {
+  towers[uuid] = [];
+};
 
-    // 타워 이미지 및 크기
-    this.image = towerData.image; // 이미지
-    this.width = towerData.width; // 이미지 가로 크기
-    this.height = towerData.height; // 이미지 세로 크기
+/**
+ * 유저가 보유한 타워목록 전체를 조회하는 함수
+ * @param {number} uuid userId
+ * @returns {Tower[]} 유저의 타워 보유목록
+ */
+export const getTowers = (uuid) => {
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+  return towers[uuid];
+};
 
-    // 기본스탯
-    this.attackPower = towerData.attackPower; // 공격력
-    this.range = towerData.range; // 사거리
+/**
+ * 타워를 유저의 타워목록에 추가하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 추가할 타워의 인스턴스 ID
+ * @returns {Tower} 추가한 타워 객체
+ */
+export const setTower = (uuid, tower) => {
+  return towers[uuid].push(tower);
+};
 
-    // 공격 쿨타임
-    this.cooldown = towerData.cooldown; // 공격 쿨타임
-    this.cooldownLeft = 0; // 남은 쿨타임
-    this.remainingBeamDuration = 0; // 광선 애니메이션 남은 지속 시간
+/**
+ * 유저가 보유한 타워목록에서 towerId와 일치하는 타워를 삭제하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 삭제할 타워의 인스턴스 ID
+ * @returns {Tower} 삭제한 타워 객체
+ */
+export const deleteTower = (uuid, towerId) => {
+  const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
+  // 예외처리: 타워를 찾지 못함
+  if (towerIndex === -1) throw new Error(`Tower not found.`);
+  const deletedTower = towers[uuid][towerIndex];
+  towers[uuid].splice(towerIndex, 1); // 타워 삭제
+  return deletedTower;
+};
 
-    // 특수타워 스킬
-    this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
-    this.skillValue = skillData.skillValue; // 스킬로 인해 감소되는 이동 속도 비율 (0.5는 50% 감소 의미)
-    this.antiAir = skillData.anti_air; // 공중 유닛 공격 가능 여부
+/**
+ * 유저가 보유한 타워목록에서 towerId와 일치하는 타워 객체를 반환하는 함수
+ * @param {number} uuid userId
+ * @param {number} towerId 검색할 타워의 인스턴스 ID
+ * @returns {Tower} 검색한 타워 객체
+ */
+export function getTowerById(uuid, towerId) {
+  // 예외처리: 타워 목록이 없거나 비어있음
+  if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
+  let tower = towers[uuid].find((tower) => tower.id === towerId);
+  // 예외처리: 타워를 찾지 못함
+  if (!tower) throw new Error(`Tower not found.`);
+  return tower;
+}
 
-    // 구매, 판매, 업그레이드 비용
-    this.buyCost = towerData.cost; // 구매 비용
-    this.sellPrice = this.buyCost * SELL_PENALTY; // 판매 가격
-    this.upgradeCost = Math.floor(this.buyCost * 1.5); // 업그레이드 비용
-
-    // 현재 업그레이드 레벨
-    this.level = 1;
-
-    // 현재 타겟
-    this.target = null;
-  }
-
-  draw(ctx, towerImage) {
-    ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
-    if (this.remainingBeamDuration > 0 && this.target) {
-      ctx.beginPath();
-      ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
-      ctx.lineTo(this.target.x + this.target.width / 2, this.target.y + this.target.height / 2);
-      ctx.strokeStyle = 'skyblue';
-      ctx.lineWidth = 10;
-      ctx.stroke();
-      ctx.closePath();
-      this.remainingBeamDuration--;
-    }
-  }
-
-  attack(monster) {
-    // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    if (this.cooldown <= 0) {
-      monster.hp -= this.attackPower;
-      this.cooldown = 60; // 1초 쿨타임 (초당 60프레임)
-      this.remainingBeamDuration = BEAM_DURATION; // 광선 지속 시간 (0.5초)
-      this.target = monster; // 광선의 목표 설정
-    }
-  }
-
-  updateCooldown() {
-    if (this.cooldown > 0) {
-      this.cooldown--;
-    }
+export function createTower(assetId, x, y) {
+  switch (assetId) {
+    case TOWER_TYPE.NORMAL:
+      return new NormalTower(assetId, { x, y });
+      break;
+    case TOWER_TYPE.SLOW:
+      return new SlowTower(assetId, { x, y });
+      break;
+    case TOWER_TYPE.MULTI:
+      return new MultiTower(assetId, { x, y });
+      break;
+    default:
+      console.error('알 수 없는 타워 타입');
+      return;
   }
 }
