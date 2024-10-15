@@ -1,4 +1,4 @@
-import { Tower } from '../classes/tower.class';
+import { Tower } from '../classes/tower.class.js';
 
 /**
  * 유저가 보유한 타워목록

@@ -1,4 +1,4 @@
-import { getAccount, updateAccount } from '../models/account.model';
+import { getAccount, updateAccount } from '../models/account.model.js';
 
 /**
  * 계좌 조회

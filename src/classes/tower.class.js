@@ -1,5 +1,5 @@
-import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants';
-import { findAssetDataById } from '../init/assets';
+import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants.js';
+import { findAssetDataById } from '../init/assets.js';
 
 export class Tower {
   static instanceId = 0;

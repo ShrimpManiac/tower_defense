@@ -5,8 +5,8 @@
 // 배치시 위치 유효한지 체크
 // 구매와 배치 나누기 (무료타워 배치 고려)
 // 함수에 ** 코드 컨벤션 맞추기
-
-import { deleteTower, getTowerById, setTower, Tower } from '../models/tower.model.js';
+import { Tower } from '../classes/tower.class.js';
+import { deleteTower, getTowerById, setTower } from '../models/tower.model.js';
 import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
 import { updateIncreaseScore } from './score.handler.js';
 // INCOMPLETE: import monster (몬스터 클래스가 미구현)

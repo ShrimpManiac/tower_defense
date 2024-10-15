@@ -1,4 +1,4 @@
-import { createScore, getScore, setScore } from '../models/score.model';
+import { createScore, getScore, setScore } from '../models/score.model.js';
 
 /**
  * 스코어 최초 초기화
