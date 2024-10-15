@@ -156,8 +156,8 @@ export const getFirstAsset = (assetType) => {
  * @returns {number} 스테이지 넘버 ( 예시: 1 )
  */
 export const getStageNumber = (stageId) => {
-  const stages = gameAssets;
-  const stageDataIndex = stages.findIndex((stage) => stage.id === stageId);
+  const { stages } = gameAssets;
+  const stageDataIndex = stages.data.findIndex((stage) => stage.id === stageId);
   if (stageDataIndex === -1) throw new Error('Not found stage');
   const stageNumber = stageDataIndex + 1;
   return stageNumber;

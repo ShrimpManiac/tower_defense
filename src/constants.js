@@ -51,3 +51,5 @@ export const UPGRADE_BONUS = Object.freeze({
   2: { attack_bonus: 1.35, range_bonus: 1.15 },
   3: { attack_bonus: 1.2, range_bonus: 1.1 },
 });
+
+export const START_GOLD = 300;
