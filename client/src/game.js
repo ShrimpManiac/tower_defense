@@ -568,8 +568,8 @@ upgradeButton.addEventListener('click', async () => {
 // 화면 클릭 이벤트 리스너
 canvas.addEventListener('click', (event) => {
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const x = (event.clientX - rect.left) * (1920 / rect.width);
+  const y = (event.clientY - rect.top) * (1080 / rect.height);
 
   // 타워 설치 모드일 경우 새 타워 설치
   if (isPlacingTower) {
