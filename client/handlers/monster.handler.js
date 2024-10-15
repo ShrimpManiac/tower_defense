@@ -4,7 +4,7 @@ import { findAssetDataById } from '../utils/assets.js';
 import { ASSET_TYPE } from '../constants.js';
 import { monsterPaths } from '../src/game.js';
 
-let spawnIntervalId; // 스폰될 시간
+let spawnIntervalId; // 소환 타이머
 
 /**
  * 클라이언트의 요청에 따라 몬스터를 소환하는 함수
@@ -13,9 +13,7 @@ let spawnIntervalId; // 스폰될 시간
  * @returns
  */
 export const spawnMonster = (instanceId) => {
-  console.log('HEAD');
   if (monstersToSpawn.length === 0) {
-    console.log('TAIL');
     clearInterval(spawnIntervalId); // 더 이상 소환할 몬스터가 없으면 타이머 중단
     return;
   }
@@ -36,7 +34,6 @@ export const startSpawningMonsters = () => {
   spawnIntervalId = setInterval(spawnMonster, 1000); // 1초마다 스폰
 };
 
-// 스테이지별 소환될 몬스터 monstersToSpawn에 push
 /**
  * 스테이지 시작 시 몬스터 소환 큐를 초기화하고 몬스터를 소환하는 함수
  * @param {number} StageId
@@ -67,6 +64,5 @@ export const initSpawnQueue = (StageId) => {
   if (StageId === 4005) {
     monstersToSpawn.push(3004);
   }
-  console.log(`${StageId}에 소환될 몬스터`, monstersToSpawn);
   startSpawningMonsters();
 };

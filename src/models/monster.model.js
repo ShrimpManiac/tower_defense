@@ -1,18 +1,26 @@
 import { Monster } from '../classes/monster.class.js';
 
 /**
- * 소환된 몬스터 목록
+ * 소환할 몬스터의 애셋ID 목록
+ * @key uuid
+ * @value number[]
+ */
+export let monstersToSpawn = {};
+
+/**
+ * 소환된 몬스터 객체 목록
  * @key uuid
  * @value Monster[]
  */
-let monsters = {}; // 몬스터 목록
+export let spawnedMonsters = {};
 
 /**
  * 소환된 몬스터 목록을 비워서 초기화하는 함수
  * @param {number} uuid userId
  */
 export const clearMonsters = (uuid) => {
-  monsters[uuid] = [];
+  monstersToSpawn[uuid] = [];
+  spawnedMonsters[uuid] = [];
 };
 
 /**
@@ -22,17 +30,26 @@ export const clearMonsters = (uuid) => {
  */
 export const getMonsters = (uuid) => {
   checkMonstersExist(uuid);
-  return monsters[uuid];
+  return monstersToSpawn[uuid];
 };
 
 /**
  * 몬스터를 소환된 몬스터 목록에 추가하는 함수
  * @param {number} uuid userId
- * @param {number} monster 추가할 몬스터 객체
+ * @param {Monster} monster 추가할 몬스터 객체
  * @returns {Monster} 추가한 몬스터 객체
  */
 export const setMonster = (uuid, monster) => {
-  return monsters[uuid].push(monster);
+  return monstersToSpawn[uuid].push(monster);
+};
+
+/**
+ * 몬스터를 소환 큐에 추가하는 함수
+ * @param {number} uuid userId
+ * @param {number} assetId 추가할 몬스터 애셋 ID
+ */
+export const addToSpawnQueue = (uuid, assetId) => {
+  monstersToSpawn[uuid].push(assetId);
 };
 
 /**
@@ -43,11 +60,11 @@ export const setMonster = (uuid, monster) => {
  */
 export const deleteMonster = (uuid, monsterId) => {
   checkMonstersExist(uuid);
-  const monsterIndex = monsters[uuid].findIndex((monster) => monster.id === monsterId);
+  const monsterIndex = monstersToSpawn[uuid].findIndex((monster) => monster.id === monsterId);
   // 예외처리: 몬스터를 찾지 못함
   if (monsterIndex === -1) throw new Error(`Monster not found.`);
-  const deletedMonster = monsters[uuid][monsterIndex];
-  monsters[uuid].splice(monsterIndex, 1); // 몬스터 삭제
+  const deletedMonster = monstersToSpawn[uuid][monsterIndex];
+  monstersToSpawn[uuid].splice(monsterIndex, 1); // 몬스터 삭제
   return deletedMonster;
 };
 
@@ -59,7 +76,7 @@ export const deleteMonster = (uuid, monsterId) => {
  */
 export const getMonsterById = (uuid, monsterId) => {
   checkMonstersExist(uuid);
-  let monster = monsters[uuid].find((monster) => monster.id === monsterId);
+  let monster = monstersToSpawn[uuid].find((monster) => monster.id === monsterId);
   // 예외처리: 몬스터를 찾지 못함
   if (!monster) throw new Error(`monster not found.`);
   return monster;
@@ -73,6 +90,6 @@ export const getMonsterById = (uuid, monsterId) => {
  */
 const checkMonstersExist = (uuid) => {
   // 예외처리: 타워 목록이 없거나 비어있음
-  if (!monsters[uuid] || monsters[uuid].length === 0)
+  if (!monstersToSpawn[uuid] || monstersToSpawn[uuid].length === 0)
     throw new Error(`No monsters are spawned for user ${uuid}.`);
 };
