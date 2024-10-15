@@ -2,6 +2,7 @@ import { Monster } from '../classes/monster.class.js';
 import { monstersToSpawn, spawnedMonsters, clearMonsters } from '../models/monster.model.js';
 import { findAssetDataById } from '../utils/assets.js';
 import { ASSET_TYPE } from '../constants.js';
+import { monsterPaths } from '../src/game.js';
 
 let spawnIntervalId; // 스폰될 시간
 
@@ -11,7 +12,7 @@ let spawnIntervalId; // 스폰될 시간
  * @param {{x: number, y: number}[]} paths 몬스터 경로
  * @returns
  */
-export const spawnMonster = (instanceId, paths) => {
+export const spawnMonster = (instanceId) => {
   console.log('HEAD');
   if (monstersToSpawn.length === 0) {
     console.log('TAIL');
@@ -22,7 +23,7 @@ export const spawnMonster = (instanceId, paths) => {
   const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId); // 몬스터 데이터 불러오기
 
   // 여러 몬스터 경로 중 하나를 랜덤 선택
-  const randomPath = paths[Math.floor(Math.random() * paths.length)];
+  const randomPath = monsterPaths[Math.floor(Math.random() * monsterPaths.length)];
 
   const monster = new Monster(monsterData.id, instanceId, randomPath); // Monster 인스턴스 생성
   spawnedMonsters.push(monster); // 생성된 몬스터 인스턴스를 배열에 추가

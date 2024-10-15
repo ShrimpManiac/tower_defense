@@ -1,6 +1,6 @@
 import { Base } from './base.js';
 import { Monster } from '../classes/monster.class.js';
-import { clearMonsters, spawnedMonsters } from '../models/monster.model.js';
+import { clearMonsters, spawnedMonsters, monstersToSpawn } from '../models/monster.model.js';
 import {
   spawnMonster,
   startSpawningMonsters,
@@ -53,7 +53,7 @@ let isInitGame = false;
 let monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
 let monsterPath2 = findAssetDataById(ASSET_TYPE.PATH, 5002).path;
 let monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
-let monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
+export let monsterPaths = [monsterPath1, monsterPath2, monsterPath3];
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
