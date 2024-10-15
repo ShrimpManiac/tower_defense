@@ -1,5 +1,5 @@
-import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants';
-import { findAssetDataById } from '../init/assets';
+import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants.js';
+import { findAssetDataById } from '../utils/assets.js';
 
 // 클라이언트 Tower Class
 export class Tower {
@@ -31,6 +31,7 @@ export class Tower {
     // 공격 쿨타임
     this.cooldown = towerData.cooldown; // 공격 쿨타임 (1초당 60프레임)
     this.cooldownLeft = 0; // 남은 쿨타임
+    this.remainingBeamDuration = 30;
 
     // 특수타워 스킬
     this.skillDuration = skillData.skillDuration; // 스킬 지속 시간
@@ -70,12 +71,6 @@ export class Tower {
       return;
     }
 
-    // 사거리 체크
-    // INCOMPLETE : withinRange 함수 미구현
-    if (!withinRange(tower, monster)) {
-      return { status: 'failure', message: 'Monster not within range' };
-    }
-
     // 쿨타임 체크
     if (this.cooldownLeft > 0) {
       console.log(`Tower ${this.id} 공격 쿨타임`);
@@ -86,6 +81,7 @@ export class Tower {
     monster.hp -= this.attackPower;
     this.cooldownLeft = this.cooldown;
     this.target = monster; // 광선의 목표 설정
+    this.remainingBeamDuration = 30;
   }
 
   updateCooldown() {
