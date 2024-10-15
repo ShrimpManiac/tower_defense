@@ -4,6 +4,7 @@ import {
   spawnedMonsters,
   clearMonsters,
   addToSpawnQueue,
+  setMonster,
 } from '../models/monster.model.js';
 import { findAssetDataById } from '../utils/assets.js';
 import { ASSET_TYPE } from '../constants.js';
@@ -28,7 +29,7 @@ export const spawnMonster = (payload) => {
   const randomPath = monsterPaths[pathIndex];
 
   const monster = new Monster(assetId, instanceId, randomPath); // Monster 인스턴스 생성
-  spawnedMonsters.push(monster); // 생성된 몬스터 인스턴스를 배열에 추가
+  setMonster(monster); // 생성된 몬스터 인스턴스를 배열에 추가
 };
 
 /**
@@ -46,6 +47,6 @@ export const initSpawnQueue = (stageId, spawnQueue) => {
 
   // 마지막 스테이지 보스 출현
   if (stageId === 4005) {
-    monsterSpawnQueue.push(3004);
+    addToSpawnQueue(3004);
   }
 };
