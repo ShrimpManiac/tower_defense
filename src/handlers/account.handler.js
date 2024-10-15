@@ -10,14 +10,14 @@ import { getAccount, updateAccount } from '../models/account.model.js';
 export const checkBalanceAccount = (uuid) => {
   try {
     const balance = getAccount(uuid);
+
     if (balance === undefined) {
       throw new Error('Account not found');
     }
 
     return { status: 'success', message: 'Successfully checked your account balance', balance };
   } catch (err) {
-    console.error('Fail to check account,', err.message);
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -45,7 +45,7 @@ export const depositAccount = (uuid, amount) => {
       throw new Error('Deposit failed');
     }
   } catch (err) {
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -75,7 +75,7 @@ export const withdrawAccount = (uuid, amount) => {
       throw new Error('Withdraw failed');
     }
   } catch (err) {
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };
 
@@ -97,6 +97,6 @@ export const hasSufficientBalance = (uuid, amount) => {
     // 충분한 잔액이 있는지 여부를 true/false로 반환
     return { status: 'success', sufficient: balance >= amount };
   } catch (err) {
-    return { status: 'fail', message: err.message };
+    return { status: 'failure', message: err.message };
   }
 };

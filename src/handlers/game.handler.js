@@ -1,40 +1,48 @@
-import { getGameAssets } from '../init/assets.js';
+import { createAccount, deleteAccount } from '../models/account.model.js';
+import { initializeStage } from './stage.handler.js';
+import { getCurrentScore, saveHighScore, initScore } from './score.handler.js';
+import { deleteStage } from '../models/stage.model.js';
+import { deleteScore } from '../models/score.model.js';
 
-import { getStage, setStage } from '../models/stage.model.js';
-// import { calculateScore, verifyScore } from './../utils/score.js';
+export const gameStart = (uuid) => {
+  try {
+    // 초기화 진행
 
-// Payload: { timestamp }
-export const gameStart = (uuid, payload) => {
-  const { stages } = getGameAssets();
+    const results = [
+      initializeStage(uuid),
+      createAccount(uuid),
+      initScore(uuid),
+      // INCOMPLETE: 타워 초기화, 몬스터 초기화 추가해야 함
+    ];
 
-  // stages 배열에서 0번째 = 첫번째 스테이지
-  setStage(uuid, stages.data[0].id, payload.timestamp);
-  console.log(`Stage: `, getStage(uuid));
+    if (results.every((result) => result.status === 'success')) {
+      console.log(`[INIT] game execution completed - ${uuid}`);
+      console.log(getCurrentScore(uuid));
+    } else {
+      throw new Error(`[INIT-FAIL] game execution failed - ${uuid}`);
+    }
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
+  }
 
   return { status: 'success', message: `Game started` };
 };
 
-// Payload: { timestamp, score }
-export const gameEnd = (uuid, payload) => {
-  // 클라이언트는 게임 종료 시 타임스탬프와 총 점수를 전달
-  const { timestamp: gameEndTime, score: clientScore } = payload;
-  const stages = getStage(uuid);
-
-  if (!stages.length) {
-    return { status: 'fail', message: 'No stages found for use' };
+export const gameEnd = (uuid) => {
+  try {
+    // 최고 점수 여부 판단 후 기록
+    const saveResult = saveHighScore(uuid);
+    if (saveResult.status === 'failure') throw new Error(saveResult.message);
+    // 해당 uuid 삭제 진행
+    deleteAccount(uuid);
+    deleteStage(uuid);
+    deleteScore(uuid);
+    //INCOMPLETE: 몬스터, 타워 삭제 추가해야 함.
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
   }
 
-  // 각 스테이지의 지속시간을 계산하여 총 점수 계산
-  // const serverScore = calculateScore(uuid, gameEndTime);
-
-  // 서버와 클라이언트의 점수가 오차범위 이내로 일치하는지 검증
-  // const scoreMatch = verifyScore(uuid, clientScore, serverScore);
-  // if (!scoreMatch) {
-  //   return { status: 'fail', message: 'Score verification failed' };
-  // }
-
-  // DB 저장한다고 가정한다면
-  // setResult(userId, score, timestamp);
-
-  return { status: 'success', message: 'Game ended', clientScore };
+  return { status: 'success', message: 'Game ended' };
 };

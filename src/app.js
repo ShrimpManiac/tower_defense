@@ -3,17 +3,22 @@ import dotenv from 'dotenv';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import initSocket from './init/socket.js';
 import { loadGameAssets } from './init/assets.js';
+import accountRouter from './router/account.js';
+import CookieParser from 'cookie-parser';
 
 dotenv.config();
 
 const app = express();
 const server = createServer(app);
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
+app.use(CookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('client'));
+app.use('/api', accountRouter);
+initSocket(server);
 
 server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
@@ -23,7 +28,6 @@ server.listen(PORT, async () => {
     const assets = await loadGameAssets();
     console.log(assets);
     console.log('Assets loaded successfully');
-    initSocket(server);
   } catch (e) {
     console.error('Failed to load game assets: ', e);
   }

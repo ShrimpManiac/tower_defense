@@ -4,10 +4,24 @@
   "data": [
     {
       "id": 2001,
+      "name": "Normal",
+      "skillDuration": 3,
+      "skillValue": 0.5,
+      "antiAir": false
+    },
+    {
+      "id": 2002,
       "name": "Slow",
-      "skill_duration": 3,
-      "skill_value": 0.5,
-      "anti_air": true
+      "skillDuration": 3,
+      "skillValue": 0.5,
+      "antiAir": true
+    },
+    {
+      "id": 2003,
+      "name": "Multi",
+      "skillDuration": 3,
+      "skillValue": 3,
+      "antiAir": true
     }
   ]
 }

@@ -44,18 +44,38 @@
       <button id="back">뒤로가기</button>
     </div>
     <script>
-      document.getElementById("login").addEventListener("click", () => {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+      document.getElementById('login').addEventListener('click', async () => {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
         /* 
           로그인 API 호출 후 로그인 성공 시 index.html로 이동시켜주세요!
           이 때, 엑세스 토큰은 어딘가에 저장을 해놔야겠죠?! 
         */
+        const res = await fetch('http://localhost:3000/api/account/signin', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            id: username,
+            password,
+          }),
+        });
+        if (!res.ok) {
+          alert('로그인 실패');
+          const result = await res.json();
+          console.log(result.errorMessage);
+          return;
+        }
+
+        const result = await res.json();
+
+        alert(result.message);
+        window.location.href = 'index.html';
       });
 
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html";
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html';
       });
     </script>
   </body>

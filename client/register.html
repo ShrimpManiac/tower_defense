@@ -38,23 +38,49 @@
     <div class="form-container">
       <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
       <h2>회원가입</h2>
-      <input type="text" id="username" placeholder="아이디" />
+      <input type="text" id="id" placeholder="아이디" />
+      <input type="text" id="name" placeholder="닉네임" />
       <input type="password" id="password" placeholder="비밀번호" />
+      <input type="password" id="passwordCheck" placeholder="비밀번호확인" />
       <button id="register">회원가입</button>
       <button id="back">뒤로가기</button>
     </div>
     <script>
-      document.getElementById("register").addEventListener("click", () => {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+      document.getElementById('register').addEventListener('click', async () => {
+        const id = document.getElementById('id').value;
+        const name = document.getElementById('name').value;
+        const password = document.getElementById('password').value;
+        const passwordCheck = document.getElementById('passwordCheck').value;
 
         /* 
           회원가입 API 호출 후 회원가입 성공 시 index.html로 이동시켜주세요!
         */
+
+        const res = await fetch('http://localhost:3000/api/account/signup', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            id,
+            name,
+            password,
+            passwordCheck,
+          }),
+        });
+        if (!res.ok) {
+          alert('회원 가입 실패');
+          const result = await res.json();
+          console.log(result.errorMessage);
+          return;
+        }
+
+        const result = await res.json();
+        alert(result.message);
+        window.location.href = 'index.html';
       });
 
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html";
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html';
       });
     </script>
   </body>

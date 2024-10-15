@@ -34,18 +34,27 @@ const readFileAsync = (filename) => {
 
 /**
  * 게임에셋을 불러오는 함수
+ *
+ * 게임 시작시 실행
  * @returns
  */
 export const loadGameAssets = async () => {
   try {
-    const [stage, monster, tower, tower_skill] = await Promise.all([
+    const [stages, monsters, towers, towerSkills, paths] = await Promise.all([
       readFileAsync('stage.json'),
       readFileAsync('monster.json'),
       readFileAsync('tower.json'),
       readFileAsync('tower_skill.json'),
+      readFileAsync('path.json'),
     ]);
 
-    gameAssets = { stage, monster, tower, tower_skill };
+    stages.data.sort((a, b) => a.id - b.id);
+    monsters.data.sort((a, b) => a.id - b.id);
+    towers.data.sort((a, b) => a.id - b.id);
+    towerSkills.data.sort((a, b) => a.id - b.id);
+    paths.data.sort((a, b) => a.id - b.id);
+
+    gameAssets = { stages, monsters, towers, towerSkills, paths };
     return gameAssets;
   } catch (e) {
     throw new Error('Failed to load game assets: ' + e.message);
@@ -54,30 +63,50 @@ export const loadGameAssets = async () => {
 
 /**
  * 로드한 게임에셋을 조회하는 함수
- * @returns {JSON} JSON화된 전체 게임에셋
+ *
+ * 호출 예시: const towers = getGameAsset(ASSET_TYPE.TOWER);
+ * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
+ * @returns {JSON} JSON화된 게임에셋
  */
-export const getGameAssets = () => {
-  return gameAssets;
+export const getGameAsset = (assetType) => {
+  switch (assetType) {
+    case ASSET_TYPE.MONSTER:
+      return gameAssets.monsters;
+    case ASSET_TYPE.STAGE:
+      return gameAssets.stages;
+    case ASSET_TYPE.TOWER:
+      return gameAssets.towers;
+    case ASSET_TYPE.TOWER_SKILL:
+      return gameAssets.towerSkills;
+    case ASSET_TYPE.PATH:
+      return gameAssets.paths;
+    default:
+      throw new Error('Invalid asset type: ' + assetType);
+  }
 };
 
 /**
  * 게임에셋의 특정 항목을 id로 조회하는 함수
+ *
+ * 호출 예시: const monsterData = findAssetDataById(ASSET_TYPE.MONSTER, monsterId);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
  * @param {number} id 조회할 항목의 id
- * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 1001, hp: 50 "} )
+ * @returns {JSON} 해당 id의 항목 ( 예시: { "id: 3004, maxHp: 50, ..."} )
  */
 export const findAssetDataById = (assetType, id) => {
-  const { stage, monster, tower, tower_Skill } = gameAssets;
+  const { stages, monsters, towers, towerSkills, paths } = gameAssets;
 
   switch (assetType) {
     case ASSET_TYPE.STAGE:
-      return stage.data.find((stage) => stage.id === id);
+      return stages.data.find((stage) => stage.id === id);
     case ASSET_TYPE.MONSTER:
-      return monster.data.find((monster) => monster.id === id);
+      return monsters.data.find((monster) => monster.id === id);
     case ASSET_TYPE.TOWER:
-      return tower.data.find((tower) => tower.id === id);
+      return towers.data.find((tower) => tower.id === id);
     case ASSET_TYPE.TOWER_SKILL:
-      return tower_Skill.data.find((towerSkill) => towerSkill.id === id);
+      return towerSkills.data.find((towerSkill) => towerSkill.id === id);
+    case ASSET_TYPE.PATH:
+      return paths.data.find((path) => path.id === id);
     default:
       throw new Error('Invalid asset type: ' + assetType);
   }
@@ -85,12 +114,51 @@ export const findAssetDataById = (assetType, id) => {
 
 /**
  * 특정 게임에셋의 다음 항목을 조회하는 함수
+ *
+ * 호출 예시: const nextStage = getNextAsset(ASSET_TYPE.STAGE, stageId);
  * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
- * @param {number} id 현재 항목의 id
- * @returns {JSON} 다음 id의 항목 ( 예시: { "id: 1002, hp: 60 "} )
+ * @param {number} id 현재 항목의 id ( 예시: 4002 )
+ * @returns {JSON} 다음 id의 항목 ( 예시: { "id: 4003, monsterIds: [...], ..."} )
  */
 export const getNextAsset = (assetType, id) => {
-  const result = findAssetDataById(assetType, id + 1);
-  if (result === undefined) throw new Error('Not Found Asset');
-  return result;
+  return findAssetDataById(assetType, id + 1);
+};
+
+/**
+ * 특정 게임에셋의 첫 항목을 조회하는 함수
+ *
+ * 호출 예시: const firstStage = getFirstAsset(ASSET_TYPE.STAGE);
+ * @param {ASSET_TYPE} assetType 조회할 게임에셋 타입
+ * @returns {JSON} 지정한 게임애셋의 첫 항목 ( 예시: { "id: 4001, monsterIds: [...], ..."} )
+ */
+export const getFirstAsset = (assetType) => {
+  const { stages, monsters, towers, towerSkills, paths } = gameAssets;
+
+  switch (assetType) {
+    case ASSET_TYPE.STAGE:
+      return stages.data[0].id;
+    case ASSET_TYPE.MONSTER:
+      return monsters.data[0].id;
+    case ASSET_TYPE.TOWER:
+      return towers.data[0].id;
+    case ASSET_TYPE.TOWER_SKILL:
+      return towerSkills.data[0].id;
+    case ASSET_TYPE.PATH:
+      return paths.data[0].id;
+    default:
+      throw new Error('Invalid asset type: ' + assetType);
+  }
+};
+
+/**
+ * 스테이지ID를 받아 스테이지 넘버를 리턴하는 함수 (1부터 시작)
+ * @param {number} stageId 스테이지 ID ( 예시: 4001 )
+ * @returns {number} 스테이지 넘버 ( 예시: 1 )
+ */
+export const getStageNumber = (stageId) => {
+  const { stages } = gameAssets;
+  const stageDataIndex = stages.data.findIndex((stage) => stage.id === stageId);
+  if (stageDataIndex === -1) throw new Error('Not found stage');
+  const stageNumber = stageDataIndex + 1;
+  return stageNumber;
 };
