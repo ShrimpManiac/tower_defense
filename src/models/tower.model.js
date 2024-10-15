@@ -42,11 +42,13 @@ export const setTower = (uuid, tower) => {
 export const deleteTower = (uuid, towerId) => {
   checkTowersExist(uuid);
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
+
   // 예외처리: 타워를 찾지 못함
   if (towerIndex === -1) throw new Error(`Tower not found.`);
-  const deletedTower = towers[uuid][towerIndex];
+
+  const deletedTowerSellPrice = towers[uuid][towerIndex].sellPrice;
   towers[uuid].splice(towerIndex, 1); // 타워 삭제
-  return deletedTower;
+  return deletedTowerSellPrice;
 };
 
 /**

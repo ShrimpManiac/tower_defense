@@ -78,10 +78,10 @@ export const sellTower = (uuid, payload) => {
     const { towerId } = payload;
 
     // 타워 삭제
-    const soldTower = deleteTower(uuid, towerId);
+    const sellPrice = deleteTower(uuid, towerId);
 
     // 골드 가산
-    depositAccount(uuid, soldTower.sellPrice);
+    depositAccount(uuid, sellPrice);
 
     // 결과 반환
     const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;

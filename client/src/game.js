@@ -4,6 +4,7 @@ import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
+import { func } from 'joi';
 
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
@@ -426,6 +427,7 @@ const buyNormalTowerButton = document.createElement('button');
 const buySlowTowerButton = document.createElement('button');
 const buyMultiTowerButton = document.createElement('button');
 const upgradeButton = document.createElement('button');
+const sellButton = document.createElement('button');
 
 initButton(); // 버튼 세팅
 
@@ -447,6 +449,34 @@ buyMultiTowerButton.addEventListener('click', () => {
   assetIdToPlace = TOWER_TYPE.MULTI; // 설치할 타워 종류
   canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
 });
+// 타워 판매 버튼 이벤트 리스너
+sellButton.addEventListener('click', async () => {
+  if (!selectedTower) return;
+
+  try {
+    // 서버에 타워 판매 요청
+    const response = await sendEvent(22, { towerId: selectedTower.id });
+    if (response.status === 'failure') {
+      alert(`판매 실패: ${response.message}`);
+      return;
+    }
+
+    // 판매 성공시 로직
+    const index = towers.indexOf(selectedTower);
+    if (index !== -1) {
+      towers.splice(index, 1);
+    }
+
+    // INCOMPLETE CLIENT쪽 골드 업데이트
+
+    hideUpgradeButton();
+    hideSellButton();
+    alert('타워가 판매되었습니다.');
+  } catch (err) {
+    console.error('Error occured selling Tower:', err.message);
+  }
+});
+
 // 타워 업그레이드 버튼 이벤트 리스너
 upgradeButton.addEventListener('click', async () => {
   // 선택된 타워가 없다면 종료 (방어코드)
@@ -462,6 +492,8 @@ upgradeButton.addEventListener('click', async () => {
 
     // 업그레이드 성공시 로직
     selectedTower.applyUpgrades();
+
+    // IMCOMPLTE CLIENT쪽 골드 업데이트
 
     // 최대 업그레이드 레벨에 도달하면 안보이게 하기
     if (selectedTower.level >= 3) {
@@ -495,8 +527,10 @@ canvas.addEventListener('click', (event) => {
       if (selectedTower.level < 3) {
         showUpgradeButton();
       }
+      showSellButton();
     } else {
       hideUpgradeButton();
+      hideSellButton();
     }
   }
 });
@@ -513,6 +547,8 @@ async function placeNewTower(assetId, spawnLocation) {
     // 타워 구매 요청
     const response = await sendEvent(21, { towerId: assetId, spawnLocation: spawnLocation });
 
+    // INCOMPLETE response 유효성 검사
+
     // 서버에서 생성된 타워의 Instance id
     const towerInstanceId = response.towerId;
 
@@ -520,6 +556,8 @@ async function placeNewTower(assetId, spawnLocation) {
     newTower = createTower(assetId, towerInstanceId, { x, y });
     towers.push(newTower);
     newTower.draw(ctx, towerImage);
+
+    // INCOMPLETE CLIENT쪽 골드 업데이트
   } catch (err) {
     console.error('Error occured buying Tower:', err.message);
   }
@@ -596,6 +634,17 @@ function initButton() {
   upgradeButton.style.cursor = 'pointer';
   upgradeButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
   document.body.appendChild(upgradeButton);
+
+  // 타워 판매 버튼 처리
+  sellButton.textContent = '판매';
+  sellButton.style.position = 'absolute';
+  sellButton.style.top = '100px';
+  sellButton.style.right = '150px';
+  sellButton.style.padding = '10px 20px';
+  sellButton.style.fontSize = '16px';
+  sellButton.style.cursor = 'pointer';
+  sellButton.style.display = 'none'; // 처음엔 버튼을 숨깁니다.
+  document.body.appendChild(sellButton);
 }
 
 // 클릭한 타워를 얻는 함수
@@ -608,6 +657,16 @@ function getTowerAtLocation(x, y) {
     }
   }
   return null;
+}
+
+// 판매 버튼 보이기
+function showSellButton() {
+  sellButton.style.display = 'block';
+}
+
+// 판매 버튼 숨기기
+function hideSellButton() {
+  sellButton.style.display = 'none';
 }
 
 // 업그레이드 버튼 보이기
