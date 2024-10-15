@@ -362,6 +362,7 @@ async function startStage() {
       throw new Error(startStageResult.message);
     }
     loadCurrentStage(); // 서버에서 스테이지 받아옴
+    cancelAnimationFrame(animationFrameId);
     isStageActive = true; // 스테이지 활성화
     await stageInit(currentStageId); // 스테이지 초기화 및 몬스터 생성 시작
     gameLoop();
