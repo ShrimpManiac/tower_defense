@@ -4,46 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Changmin Kang" />
-    <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임</title>
+    <title>TOWER DEFENSE</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
-    <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #2d2d2d;
-        color: white;
-        font-family: Arial, sans-serif;
-      }
-      .form-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .form-container input {
-        margin: 10px;
-        padding: 10px;
-        font-size: 16px;
-      }
-      .form-container button {
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-    </style>
+    <link rel="stylesheet" href="./src/css/registerStyles.css" />
   </head>
   <body>
     <div class="form-container">
-      <h1>내일배움캠프 Node.js 트랙 타워 디펜스 게임</h1>
+      <img src="assets/logo.png" />
       <h2>회원가입</h2>
       <input type="text" id="id" placeholder="아이디" />
       <input type="text" id="name" placeholder="닉네임" />
       <input type="password" id="password" placeholder="비밀번호" />
       <input type="password" id="passwordCheck" placeholder="비밀번호확인" />
-      <button id="register">회원가입</button>
-      <button id="back">뒤로가기</button>
+      <div class="button-container">
+        <button id="register">회원가입</button>
+        <button id="back">뒤로가기</button>
+      </div>
     </div>
     <script>
       document.getElementById('register').addEventListener('click', async () => {

@@ -1,5 +1,6 @@
 import { Tower } from '../classes/tower.class.js';
-
+import { NormalTower, SlowTower, MultiTower } from '../classes/subTower.class.js';
+import { TOWER_TYPE } from '../constants.js';
 /**
  * 유저가 보유한 타워목록
  */
@@ -11,7 +12,6 @@ let towers = {};
  */
 export const clearTowers = (uuid) => {
   towers[uuid] = [];
-  return { status: 'success', message: 'tower create successful' };
 };
 
 /**
@@ -27,7 +27,7 @@ export const getTowers = (uuid) => {
 /**
  * 타워를 유저의 타워목록에 추가하는 함수
  * @param {number} uuid userId
- * @param {number} tower 추가할 타워 객체
+ * @param {number} towerId 추가할 타워의 인스턴스 ID
  * @returns {Tower} 추가한 타워 객체
  */
 export const setTower = (uuid, tower) => {
@@ -43,13 +43,11 @@ export const setTower = (uuid, tower) => {
 export const deleteTower = (uuid, towerId) => {
   checkTowersExist(uuid);
   const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
-
   // 예외처리: 타워를 찾지 못함
   if (towerIndex === -1) throw new Error(`Tower not found.`);
-
-  const deletedTowerSellPrice = towers[uuid][towerIndex].sellPrice;
+  const deletedTower = towers[uuid][towerIndex];
   towers[uuid].splice(towerIndex, 1); // 타워 삭제
-  return deletedTowerSellPrice;
+  return deletedTower;
 };
 
 /**
@@ -76,3 +74,17 @@ const checkTowersExist = (uuid) => {
   // 예외처리: 타워 목록이 없거나 비어있음
   if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
 };
+
+export function createTower(assetId, instanceId, spawnLocation) {
+  switch (assetId) {
+    case TOWER_TYPE.NORMAL:
+      return new NormalTower(assetId, instanceId, spawnLocation);
+    case TOWER_TYPE.SLOW:
+      return new SlowTower(assetId, instanceId, spawnLocation);
+    case TOWER_TYPE.MULTI:
+      return new MultiTower(assetId, instanceId, spawnLocation);
+    default:
+      console.error(`알 수 없는 타워 타입: ${assetId}`);
+      return null;
+  }
+}
