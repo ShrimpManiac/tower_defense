@@ -72,6 +72,7 @@ export class Tower {
     monster.hp -= this.attackPower; // 몬스터 체력 감소
     this.cooldownLeft = this.cooldown; // 공격 쿨타임 시작
     this.target = monster; // 광선의 목표 설정
+    this.remainingBeamDuration = BEAM_DURATION; // 광선 애니메이션 가동 (남은시간 0초 -> 0.5초)
   }
 
   updateCooldown() {
