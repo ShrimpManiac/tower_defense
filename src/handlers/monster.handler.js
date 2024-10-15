@@ -17,15 +17,3 @@ export const spawnMonster = (path, monsterId) => {
   monsters.push(monster);
   return monster.getMonsterData(); // 클라이언트로 몬스터 데이터를 반환
 };
-
-// 몬스터 이동
-export const moveMonsters = (base) => {
-  monsters.forEach((monster, index) => {
-    const isDestroyed = monster.move(base);
-    if (isDestroyed || monster.hp <= 0) {
-      monsters.splice(index, 1); // 소멸된 몬스터 삭제
-    }
-  });
-
-  return monsters.map((monster) => monster.getMonsterData()); // 업데이트된 몬스터 데이터 반환
-};
