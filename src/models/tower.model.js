@@ -27,7 +27,7 @@ export const getTowers = (uuid) => {
 /**
  * 타워를 유저의 타워목록에 추가하는 함수
  * @param {number} uuid userId
- * @param {number} towerId 추가할 타워의 인스턴스 ID
+ * @param {number} tower 추가할 타워 객체
  * @returns {Tower} 추가한 타워 객체
  */
 export const setTower = (uuid, tower) => {

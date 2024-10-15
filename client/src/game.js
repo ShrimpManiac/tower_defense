@@ -1,13 +1,20 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
 import '../init/socket.js';
-import { sendEvent } from '../init/socket.js';
+import { disconnectSocket, sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';
 import { ASSET_TYPE, TOWER_TYPE } from '../constants.js';
 import { createTower } from './tower.js';
 
-// INCOMPLETE 몬스터 이미지 바꾸기
-// 타워 이미지 추가
+const res = await fetch('http://localhost:3000/api/auth', {
+  method: 'get',
+  credentials: 'include',
+});
+
+if (!res.ok) {
+  disconnectSocket();
+  location.reload();
+}
 /* 
   어딘가에 엑세스 토큰이 저장이 안되어 있다면 로그인을 유도하는 코드를 여기에 추가해주세요!
 */
