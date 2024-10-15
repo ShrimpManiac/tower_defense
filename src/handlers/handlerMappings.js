@@ -1,5 +1,5 @@
 import { gameStart, gameEnd } from './game.handler.js';
-import { buyTower, sellTower, upgradeTower } from './tower.handler.js';
+import { buyTower, sellTower, upgradeTower, attackMonster } from './tower.handler.js';
 import { checkBalanceAccount, hasSufficientBalance } from './account.handler.js';
 import { getCurrentStage, stageEnd, stageStart } from './stage.handler.js';
 
@@ -14,6 +14,7 @@ const handlerMappings = {
   200: getCurrentStage,
   201: stageStart,
   202: stageEnd,
+  301: attackMonster,
 };
 
 export default handlerMappings;

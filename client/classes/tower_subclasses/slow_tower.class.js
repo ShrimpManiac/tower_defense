@@ -1,6 +1,9 @@
 import { Tower } from '../tower.class.js';
 
-export class MultiTower extends Tower {
+/**
+ * 슬로우 타워 클래스
+ */
+export class SlowTower extends Tower {
   constructor(assetId, spawnLocation) {
     super(assetId, spawnLocation);
   }
@@ -15,19 +18,15 @@ export class MultiTower extends Tower {
         monster.isSlowed = true; // 슬로우 효과를 받고 있음을 표시
 
         // 일정 시간 후 몬스터의 속도 원상 복구
-        this.applySkillEffect(monster);
+        setTimeout(() => {
+          if (monster.isSlowed) {
+            monster.speed /= this.skillValue;
+            monster.isSlowed = false;
+          }
+        }, this.skillDuration * 1000); // 초 단위로
       }
 
       this.cooldownLeft = this.cooldown; // 공격 후 쿨타임 초기화
     }
-  }
-
-  applySkillEffect(monster) {
-    setTimeout(() => {
-      if (monster.isSlowed) {
-        monster.speed /= this.skillValue;
-        monster.isSlowed = false;
-      }
-    }, this.skillDuration * 1000); // 초 단위로
   }
 }
