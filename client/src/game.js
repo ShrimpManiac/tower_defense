@@ -1,6 +1,8 @@
 import { Base } from './base.js';
 import { Monster } from './monster.js';
-import { NormalTower, SlowTower, MultiTower } from './subTower.js';
+import { NormalTower } from '../../src/classes/towers/normal_tower.class.js';
+import { SlowTower } from '../../src/classes/towers/slow_tower.class.js';
+import { MultiTower } from '../../src/classes/towers/multi_tower.class.js';
 import '../init/socket.js';
 import { sendEvent } from '../init/socket.js';
 import { findAssetDataById, getGameAsset } from '../utils/assets.js';

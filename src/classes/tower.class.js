@@ -63,39 +63,21 @@ export class Tower {
     }
 
     // 쿨타임 체크
-    // INCOMPLETE : 서버에서는 매 프레임마다 attack()과 updateCooldown()을 호출하지 않기 때문에
-    // 공격 핸들러를 처리할 때마다 특정 타임스탬프를 기준으로 cooldownLeft를 계산할 방법이 필요함
     if (this.cooldownLeft > 0) {
       console.log(`Tower ${this.id} 공격 쿨타임`);
       return;
     }
+
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
-    //
     monster.hp -= this.attackPower; // 몬스터 체력 감소
     this.cooldownLeft = this.cooldown; // 공격 쿨타임 시작
     this.target = monster; // 광선의 목표 설정
+    this.remainingBeamDuration = BEAM_DURATION; // 광선 애니메이션 가동 (남은시간 0초 -> 0.5초)
   }
 
-  // INCOMPLETE: 쿨타임 체크와 비슷한 맥락으로, 이 함수가 필요한지, 필요하다면 어떤식으로 서버에
-  // 맞게 개조해야 할지 고민이 필요함
   updateCooldown() {
     if (this.cooldownLeft > 0) {
       this.cooldownLeft--;
     }
-  }
-
-  applyUpgrades() {
-    // 비용 상승
-    this.sellCost += this.upgradeCost * SELL_PENALTY;
-    this.upgradeCost *= UPGRADE_COST_SCALER;
-
-    // 타워 강화
-    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
-    this.range *= UPGRADE_BONUS[this.level].range_bonus;
-
-    // 레벨 상승
-    this.level++;
-
-    // INCOMPLETE : 특수타워 업그레이드 차별화
   }
 }
