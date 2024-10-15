@@ -3,9 +3,12 @@ import { generateEventId } from '../utils/generateEventId.js';
 import { io } from 'https://cdn.socket.io/4.8.0/socket.io.esm.min.js';
 import handlerMappings from '../handlers/handlerMappings.js';
 
+const sessionUUID = sessionStorage.getItem('uuid');
+
 const socket = io('http://localhost:3000', {
   query: {
     clientVersion: CLIENT_VERSION,
+    uuid: sessionUUID,
   },
 });
 
@@ -15,7 +18,7 @@ socket.on('response', (data) => {
 });
 
 socket.on('connection', (data) => {
-  console.log('connection: ', data);
+  console.log('connection: ', data.uuid);
   userId = data.uuid;
 });
 
@@ -61,4 +64,9 @@ const sendEvent = (handlerId, payload) => {
   });
 };
 
-export { sendEvent };
+function disconnectSocket() {
+  alert('서버와의 연결을 종료합니다.');
+  socket.disconnect();
+}
+
+export { sendEvent, disconnectSocket };

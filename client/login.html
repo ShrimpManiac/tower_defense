@@ -71,6 +71,8 @@
         const result = await res.json();
 
         alert(result.message);
+        console.log(result.uuid);
+        sessionStorage.setItem('uuid', result.uuid);
         window.location.href = 'index.html';
       });
 

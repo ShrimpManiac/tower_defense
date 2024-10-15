@@ -78,7 +78,7 @@ router.post('/account/signin', async (req, res, next) => {
       expiresIn: '1d',
     });
     res.cookie('authorization', `Bearer ${token}`);
-    res.status(200).json({ message: '로그인 성공', uuid, token });
+    res.status(200).json({ message: '로그인 성공', uuid: uuid.accountid });
   } catch (error) {
     return res.status(500).json({ errorName: error.name, errorMessage: error.message });
   }
