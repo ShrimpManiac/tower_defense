@@ -12,7 +12,7 @@ export const checkBalanceAccount = (uuid) => {
     const balance = getAccount(uuid);
 
     if (balance === undefined) {
-      throw new Error('Account not found');
+      throw new Error('Account not found in checkBalanceAccount');
     }
 
     return { status: 'success', message: 'Successfully checked your account balance', balance };
@@ -34,7 +34,7 @@ export const depositAccount = (uuid, amount) => {
     const balance = getAccount(uuid);
 
     if (balance === undefined) {
-      throw new Error('Account not found');
+      throw new Error('Account not found in depositAccount');
     }
 
     const result = updateAccount(uuid, balance + amount); // 잔액 최신화
@@ -42,7 +42,7 @@ export const depositAccount = (uuid, amount) => {
     if (result.status === 'success') {
       return result; // { status: 'success', message: 'Account update successful', balance: Accounts[uuid] }
     } else {
-      throw new Error('Deposit failed');
+      throw new Error('Deposit failed in depositAccount');
     }
   } catch (err) {
     return { status: 'failure', message: err.message };
@@ -62,17 +62,17 @@ export const withdrawAccount = (uuid, amount) => {
     const balance = getAccount(uuid);
 
     if (balance === undefined) {
-      throw new Error('Account not found');
+      throw new Error('Account not found in withdrawAccount');
     }
 
-    if (balance < amount) throw new Error('Insufficient Balance'); // 출금 가능 여부 확인
+    if (balance < amount) throw new Error('Insufficient Balance in withdrawAccount'); // 출금 가능 여부 확인
 
     const result = updateAccount(uuid, balance - amount); // 잔액 최신화
 
     if (result.status === 'success') {
       return result; // { status: 'success', message: 'Account update successful', balance: Accounts[uuid] }
     } else {
-      throw new Error('Withdraw failed');
+      throw new Error('Withdraw failed in withdrawAccount');
     }
   } catch (err) {
     return { status: 'failure', message: err.message };
@@ -92,7 +92,7 @@ export const hasSufficientBalance = (uuid, amount) => {
     const balance = getAccount(uuid);
 
     if (balance === undefined) {
-      throw new Error('Account not found');
+      throw new Error('Account not found in hasSufficientBalance');
     }
     // 충분한 잔액이 있는지 여부를 true/false로 반환
     return { status: 'success', sufficient: balance >= amount };

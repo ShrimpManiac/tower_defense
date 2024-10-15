@@ -3,6 +3,7 @@ import { initializeStage } from './stage.handler.js';
 import { getCurrentScore, saveHighScore, initScore } from './score.handler.js';
 import { deleteStage } from '../models/stage.model.js';
 import { deleteScore } from '../models/score.model.js';
+import { clearTowers } from '../models/tower.model.js';
 
 export const gameStart = (uuid) => {
   try {
@@ -12,6 +13,7 @@ export const gameStart = (uuid) => {
       initializeStage(uuid),
       createAccount(uuid),
       initScore(uuid),
+      clearTowers(uuid),
       // INCOMPLETE: 타워 초기화, 몬스터 초기화 추가해야 함
     ];
 

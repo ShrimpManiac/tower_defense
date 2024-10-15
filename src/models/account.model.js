@@ -8,7 +8,7 @@ export const createAccount = (uuid) => {
 };
 
 export const getAccount = (uuid) => {
-  if (Accounts[uuid] === undefined) throw new Error('Account Not Found'); // 계좌 존재 여부 확인
+  if (Accounts[uuid] === undefined) throw new Error('Account Not Found in getAccount'); // 계좌 존재 여부 확인
   return Accounts[uuid]; // uuid에 해당하는 계좌의 잔액 반환
 };
 
@@ -19,7 +19,7 @@ export const updateAccount = (uuid, amount) => {
 };
 
 export const deleteAccount = (uuid) => {
-  if (Accounts[uuid] === undefined) throw new Error('Account Not Found'); // 계좌 존재 여부 확인
+  if (Accounts[uuid] === undefined) throw new Error('Account Not Found in deleteAccount'); // 계좌 존재 여부 확인
   delete Accounts[uuid]; // 계좌 삭제
   return { status: 'success', message: 'Account delete successful' };
 };
