@@ -1,4 +1,6 @@
 import { Tower } from './tower.class.js';
+import { ASSET_TYPE } from '../constants.js';
+import { findAssetDataById } from '../utils/assets.js';
 
 /**
  * 일반 타워 클래스
@@ -15,10 +17,13 @@ export class NormalTower extends Tower {
 export class SlowTower extends Tower {
   constructor(assetId, instanceId, spawnLocation) {
     super(assetId, instanceId, spawnLocation);
+    const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
+    this.towerImage = new Image();
+    this.towerImage.src = towerData.image;
   }
 
-  draw(ctx, towerImage) {
-    ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
+  draw(ctx) {
+    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
     if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
@@ -58,5 +63,8 @@ export class SlowTower extends Tower {
 export class MultiTower extends Tower {
   constructor(assetId, instanceId, spawnLocation) {
     super(assetId, instanceId, spawnLocation);
+    const towerData = findAssetDataById(ASSET_TYPE.TOWER, assetId);
+    this.towerImage = new Image();
+    this.towerImage.src = towerData.image;
   }
 }

@@ -48,10 +48,13 @@ export class Tower {
 
     // 현재 타겟
     this.target = null; // 타워 광선의 목표
+
+    this.towerImage = new Image();
+    this.towerImage.src = towerData.image;
   }
 
-  draw(ctx, towerImage) {
-    ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
+  draw(ctx) {
+    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
     if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);

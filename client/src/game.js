@@ -52,9 +52,6 @@ let monsterPath3 = findAssetDataById(ASSET_TYPE.PATH, 5003).path;
 const backgroundImage = new Image();
 backgroundImage.src = 'images/bg.webp';
 
-const towerImage = new Image();
-towerImage.src = 'images/tower.png';
-
 const baseImage = new Image();
 baseImage.src = 'images/base.png';
 
@@ -217,7 +214,7 @@ function placeInitialTowers() {
   for (let i = 0; i < numOfInitialTowers; i++) {
     const { x, y } = getRandomPositionNearPath(200);
     const tower = new Tower(assetId, instanceId, { x, y }); // INCOMPLETE: 파라미터를 통해 타워 종류와 인스턴스ID 지정 필요
-    tower.draw(ctx, towerImage);
+    tower.draw(ctx);
   }
 }
 
@@ -308,7 +305,7 @@ function gameLoop() {
 
   // 타워 그리기 및 공격 처리
   towers.forEach((tower) => {
-    tower.draw(ctx, towerImage);
+    tower.draw(ctx);
     tower.updateCooldown();
     if (isStageActive) {
       if (tower.type === TOWER_TYPE.MULTI) {
@@ -372,10 +369,10 @@ function gameLoop() {
   animationFrameId = requestAnimationFrame(gameLoop);
 }
 
+// new Promise((resolve) => (towerImage.onload = resolve)),
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
 Promise.all([
   new Promise((resolve) => (backgroundImage.onload = resolve)),
-  new Promise((resolve) => (towerImage.onload = resolve)),
   new Promise((resolve) => (baseImage.onload = resolve)),
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
@@ -490,19 +487,19 @@ buyNormalTowerButton.addEventListener('click', () => {
   assetIdToPlace = TOWER_TYPE.NORMAL; // 설치할 타워 종류
 
   // INCOMPLETE 타워 이미지 못가져오는 문제
-  canvas.style.cursor = 'url(../images/tower.png), crosshair'; // 커서를 변경
+  canvas.style.cursor = 'crosshair'; // 커서를 변경
 });
 // 슬로우타워 설치 버튼 이벤트 리스너
 buySlowTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.SLOW; // 설치할 타워 종류
-  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+  canvas.style.cursor = 'crosshair'; // 커서를 변경
 });
 // 멀티타워 설치 버튼 이벤트 리스너
 buyMultiTowerButton.addEventListener('click', () => {
   isPlacingTower = true; // 타워 설치 모드 활성화
   assetIdToPlace = TOWER_TYPE.MULTI; // 설치할 타워 종류
-  canvas.style.cursor = 'url(images/tower.png), crosshair'; // 커서를 변경
+  canvas.style.cursor = 'crosshair'; // 커서를 변경
 });
 // 타워 판매 버튼 이벤트 리스너
 sellButton.addEventListener('click', async () => {
@@ -615,7 +612,7 @@ async function placeNewTower(assetId, spawnLocation) {
     // Client 측 타워 생성
     newTower = createTower(assetId, towerInstanceId, spawnLocation);
     towers.push(newTower);
-    newTower.draw(ctx, towerImage);
+    newTower.draw(ctx);
 
     // INCOMPLETE CLIENT쪽 골드 업데이트
     loadGoldBalance();
