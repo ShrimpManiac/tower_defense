@@ -12,6 +12,7 @@ export class MonsterModel {
     this.goldDrop = monsterData.goldDrop;
     this.score = monsterData.score;
     this.type = monsterData.type;
+    this.isSlowed = false;
 
     this.path = path;
     this.currentIndex = 0;

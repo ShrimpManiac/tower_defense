@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  accountid String @id
+  name      String
+  id        String @unique
+  password  String
+  bestScore Int
+}
+
+model monster {
+  id          Int    @id @default(autoincrement())
+  maxHp       Int
+  attackPower Int
+  defense     Int
+  speed       Int
+  goldDrop    Int
+  score       Int
+  type        String
+  image       String
+  width       Int
+  height      Int
+
+  stage stage[]
+}
+
+model tower {
+  id           Int    @id @default(autoincrement())
+  name         String
+  attackPower  Int
+  range        Int
+  beamDuration Int
+  cooldown     Int
+  cost         Int
+  skillid      Int
+  image        String
+  width        Int
+  height       Int
+}
+
+model stage {
+  id          Int     @id @default(autoincrement())
+  monsterids  Int
+  numMonsters Int
+  monster     monster @relation(fields: [monsterids], references: [id], onDelete: Cascade)
+}

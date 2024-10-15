@@ -1,131 +1,212 @@
 // tower.handler.js
-import { Tower } from '../models/tower.model.js';
 
-let towers = {}; // 타워 목록을 관리
+// 해야할 것
+// client에서 받는 코드 만들기
+// 배치시 위치 유효한지 체크
+// 구매와 배치 나누기 (무료타워 배치 고려)
+// 함수에 ** 코드 컨벤션 맞추기
+import { Tower } from '../classes/tower.class.js';
+import { deleteTower, getTowerById, setTower } from '../models/tower.model.js';
+import { hasSufficientBalance, withdrawAccount, depositAccount } from './account.handler.js';
+import { updateIncreaseScore } from './score.handler.js';
+// INCOMPLETE: import monster (몬스터 클래스가 미구현)
 
-// 타워 초기화
-export const clearTowers = (uuid) => {
-  towers[uuid] = [];
-};
-
-export const getTowers = (uuid) => {
-  return towers[uuid];
-};
-
-export const setTowers = (uuid, tower) => {
-  return towers[uuid].push(tower);
-};
-
-// Id로 타워 찾기
-function getTowerById(uuid, towerId) {
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return null;
-  }
-
-  let tower = towers[uuid].find((tower) => tower.id === towerId);
-  return tower;
-}
-
-// 타워 구매(배치) 핸들러
-// Payload: { towerType, x, y }
+/**
+ * 타워 구매(설치) 핸들러
+ *
+ * 수신 payload : { assetId, spawnLocation }
+ *
+ * 발신 payload : { instanceId }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const buyTower = (uuid, payload) => {
-  const { towerType, x, y } = payload;
+  try {
+    const { towerId, spawnLocation } = payload;
 
-  const newTower = new Tower(towerType, x, y);
-  const cost = newTower.cost;
-  const id = newTower.id;
+    // INCOMPLETE: 설치 좌표가 적합한지 검증
 
-  if (!hasEnoughGold(uuid, cost)) {
-    return { status: 'fail', message: 'Not enough gold' };
+    // 타워 생성
+    const newTower = new Tower(towerId, spawnLocation);
+
+    // 골드가 충분한지 검증
+    if (!hasSufficientBalance(uuid, newTower.buyCost)) {
+      return { status: 'failure', message: 'Not enough gold.' };
+    }
+
+    // 골드 차감
+    const withdrawalResult = withdrawAccount(uuid, newTower.buyCost);
+
+    // 예외처리: 출금 실패
+    if (withdrawalResult.status != 'success') {
+      console.log(withdrawalResult.message);
+      return { status: 'failure', message: withdrawalResult.message };
+    }
+
+    // (서버) 타워 설치
+    setTower(uuid, newTower);
+
+    // 결과 반환
+    const message = `Tower Purchase successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
+    console.log(message);
+    return {
+      status: 'success',
+      message: message,
+      payload: { towerId: newTower.id },
+    };
+
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
   }
-
-  const remainingGold = deductGold(uuid, cost); // 바로 handleEmitEvent
-
-  towers[uuid].push(newTower);
-  const towerPacketInfo = `${id},${towerType},${remainingGold}`; // 노션의 패킷 정보 수정해야함 towerId, dataId, 남은 골드 => json.stringify
-
-  console.log(`Buy tower successful for UUID: ${uuid}`);
-  return { status: 'success', message: 'Tower purchased', towerPacketInfo: towerPacketInfo };
 };
 
-// 타워 판매 핸들러
-// Payload: { towerId }
+/**
+ * 타워 판매 핸들러
+ *
+ * 수신 payload : { instanceId }
+ *
+ * 발신 payload : { }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const sellTower = (uuid, payload) => {
-  const { towerId } = payload;
+  try {
+    const { towerId } = payload;
 
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return { status: 'fail', message: `No towers found for UUID: ${uuid}` };
+    // 타워 삭제
+    const soldTower = deleteTower(uuid, towerId);
+
+    // 골드 가산
+    depositAccount(uuid, soldTower.sellPrice);
+
+    // 결과 반환
+    const message = `Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
+    console.log(message);
+    return { status: 'success', message: message };
+
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
   }
-
-  const towerIndex = towers[uuid].findIndex((tower) => tower.id === towerId);
-  if (towerIndex === -1) {
-    return { status: 'fail', message: 'Tower not found' };
-  }
-
-  const [soldTower] = towers[uuid].splice(towerIndex, 1); // 구조 분해 할당
-  const refundGold = Math.floor(soldTower.cost / 2); // 판매 시 원가의 절반 회수
-
-  const remainingGold = addGold(uuid, refundGold); // 유저 골드에 추가하고 보유골드 반환
-
-  const towerPacketInfo = `${remainingGold}`;
-
-  console.log(`Sell tower successful for UUID: ${uuid}, Tower ID: ${towerId}`);
-  return { status: 'success', message: 'Tower sold', towerPacketInfo: towerPacketInfo };
 };
 
-// 타워 업그레이드 핸들러
-// Payload: { towerId, upgradeCost }
+/**
+ * 타워 업그레이드 핸들러
+ *
+ * 수신 payload : { instanceId }
+ *
+ * 발신 payload : { towerInfo string }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ */
 export const upgradeTower = (uuid, payload) => {
-  const { towerId } = payload;
+  try {
+    const { towerId } = payload;
 
-  if (!towers[uuid] || towers[uuid].length === 0) {
-    return { status: 'fail', message: 'No towers available to upgrade' };
+    // 업그레이드할 타워 검색
+    const tower = getTowerById(uuid, towerId);
+
+    // 골드가 충분한지 검증
+    const upgradeCost = this.upgradeCost;
+    if (!hasSufficientBalance(uuid, upgradeCost)) {
+      return { status: 'failure', message: 'Not enough gold.' };
+    }
+
+    // 골드 차감
+    const withdrawalResult = withdrawAccount(uuid, upgradeCost);
+
+    // 예외처리: 출금 실패
+    if (withdrawalResult.status != 'success') {
+      console.log(withdrawalResult.message);
+      return { status: 'failure', message: withdrawalResult.message };
+    }
+
+    // 타워 업그레이드
+    tower.applyUpgrades();
+
+    // 결과 반환
+    const updatedTowerInfo = `${tower.level},${tower.attackPower},${tower.range},${tower.upgradeCost},${tower.sellCost},${tower.skillDuration},${tower.skillValue}`;
+    const message = `Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}.`;
+    console.log(message);
+    return {
+      status: 'success',
+      message: message,
+      payload: { towerInfo: updatedTowerInfo },
+    };
+
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
   }
-
-  // 보유중인 타워에서 찾기
-  const tower = towers[uuid].find((tower) => tower.id === towerId);
-  if (!tower) {
-    return { status: 'fail', message: 'Tower not found' };
-  }
-
-  const upgradeCost = tower.upgradeCost;
-  if (!hasEnoughGold(uuid, upgradeCost)) {
-    return { status: 'fail', message: 'Not enough gold' };
-  }
-
-  // 타워 업그레이드 (예: 공격력 및 범위 증가)
-  const id = tower.id;
-  tower.attackPower *= 1.5;
-  tower.range *= 1.2;
-  tower.level += 1; // 타워 레벨 증가
-  tower.upgradeCost *= 1.5;
-
-  const remainingGold = deductGold(uuid, upgradeCost);
-  const towerPacketInfo = `${id},${tower.attackPower},${tower.range},${tower.level},${tower.cost},${remainingGold}`; // 노션 패킷정보 수정 (타워정보 + 남은골드 한번에 보내는걸로)
-
-  console.log(`Upgrade tower successful for UUID: ${uuid}, Tower ID: ${towerId}`);
-  return {
-    status: 'success',
-    message: 'Tower upgraded',
-    towerPacketInfo: towerPacketInfo,
-  };
 };
 
-// Helper functions (for managing gold)
-function hasEnoughGold(uuid, amount) {
-  // gold.model.js 에서 현재 골드값 가져오기 getGold
-  // 현재 골드 - amount >= 0 이면 true 아니면 false
-  return true; // 실제로는 유저의 골드 상태를 확인해야 합니다.
-}
+/**
+ * 몬스터 공격 핸들러
+ *
+ * 수신 payload : { monsterId, towerId }
+ *
+ * 발신 payload : { killed, monsterInfo string }
+ * @param {number} uuid userId
+ * @param {json} payload 데이터
+ * @returns {{status: string, message: string, payload: json}}
+ * @param {uuid} number userId
+ * @param {json} payload 데이터
+ */
+export const attackMonster = (uuid, payload) => {
+  try {
+    const { monsterId, towerId } = payload;
 
-function deductGold(uuid, amount) {
-  // currentGold = gold.getGold()
-  // finalGold = currentGold - amount;
-  // gold.setGold(finalGold);
-  return remainingGold;
-}
+    // 공격할 타워 검색
+    const tower = getTowerById(uuid, towerId);
 
-function addGold(uuid, amount) {
-  // 유저의 골드를 추가하는 함수 (임시 구현)
-  return remainingGold;
-}
+    // 공격받을 몬스터 검색
+    // INCOMPLETE : getMonsterById 함수 미구현
+    const monster = getMonsterById(uuid, monsterId);
+
+    // 공격 로직 처리
+    tower.attack(monster);
+
+    // 몬스터 사망시:
+    if (monster.hp <= 0) {
+      // 몬스터 사망처리
+      // INCOMPLETE: deleteMonster 함수 미구현
+      deleteMonster(uuid, monsterId);
+
+      // 유저 점수 가산
+      updateIncreaseScore(uuid, monster.score);
+
+      // 유저 골드 가산
+      depositAccount(uuid, monster.goldDrop);
+
+      // 결과 반환
+      const message = `Monster ${monsterId} was killed by tower ${towerId}.`;
+      return {
+        status: 'success',
+        message: message,
+        payload: { killed: true },
+      };
+
+      // 몬스터 생존시:
+    } else {
+      // 결과 반환
+      const updatedMonsterInfo = `${monster.maxHp},${monster.defense},${monster.speed}`;
+      const message = `Monster ${monsterId} was attacked by tower ${towerId}.`;
+      return {
+        status: 'success',
+        message: message,
+        payload: { killed: false, monsterInfo: updatedMonsterInfo },
+      };
+    }
+    // 예외처리: 상정하지 못한 오류
+  } catch (err) {
+    console.error(err.message);
+    return { status: 'failure', message: err.message };
+  }
+};
