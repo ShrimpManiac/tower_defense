@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/ee127fd7-3d4f-46bc-a715-cb5cb4f3a42b)
+
 # TOWER DEFENSE
 
 ## 프로젝트 개요
@@ -5,11 +7,16 @@
 **TOWER DEFENSE**는 타워디펜스 게임을 모티브로 소켓통신을 공부하기 위하여 구현한 프로젝트입니다. 사용자는 포탑을 직접 설치하여 점수와 골드를 획득할 수 있습니다. 이 게임은 JavaScript, HTML, CSS로 작성되었으며, 재미있고 도전적인 경험을 제공합니다.
 
 ## 구현 기능 (도전 기능)
-
+![image](https://github.com/user-attachments/assets/f533af7c-2623-4069-bda1-15f39c983799)
 - **타워지정설치** - 타워의 위치를 랜덤이 아닌 플레이어가 지정한 위치에 설치
-- **업그레이드 및 환불** - 플레이어가 지정한 타워를 업그레이드와 환불
+![image](https://github.com/user-attachments/assets/e3eb216d-4eab-4f63-942c-1b8d72942ad4)
+- **업그레이드 및 환불** - 플레이어가 지정한 타워를 클릭하면 오른쪽 메뉴창에 업그레이드와 환불기능 활성화
+
 - **타워, 몬스터 종류의 세분화 및 스테이지 시스템** - 스테이지 별 몬스터 세분화 및 공중, 보스 몬스터 출현, 타워의 종류를 세분화하여 타워마다의 특색을 구현
+-![image](https://github.com/user-attachments/assets/4d768c83-3ec6-4cd3-9537-fceb7d367c2c)
+
 - **기존 랜덤 경로가 아닌 고정경로 및 여러갈래길 구현** - 스테이지 별 몬스터 스폰위치 변경
+![image](https://github.com/user-attachments/assets/7cff856b-3122-4958-b7d4-b7d300e3ef24)
 
 ## 게임 규칙
 
