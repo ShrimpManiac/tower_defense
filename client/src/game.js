@@ -43,7 +43,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 let currentStageId = 0;
 let currentStageNumber = 0;
 let base; // 기지 객체
-let baseHp = 0; // 기지 체력
+let baseHp = 100; // 기지 체력
 let numOfInitialTowers = 0; // 초기 타워 개수
 clearTowers();
 const towers = getTowers();
