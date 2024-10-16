@@ -56,6 +56,9 @@ export class Tower {
 
   draw(ctx) {
     ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
+    ctx.font = '36px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText(`${this.level}`, this.x + this.width / 2 - 2, this.y);
   }
 
   drawBeam(ctx) {

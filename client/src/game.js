@@ -46,11 +46,6 @@ let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 0; // 기지 체력
 let numOfInitialTowers = 0; // 초기 타워 개수
-let monsterLevel = 0; // 몬스터 레벨
-let monsterSpawnInterval = 3000; // 몬스터 생성 주기
-let spawnedMonsters = []; // 소환된 몬스터 목록
-let monstersToSpawn = []; // 소환할 몬스터 목록
-let spawnIntervalId; // 스폰될 시간
 clearTowers();
 const towers = getTowers();
 

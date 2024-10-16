@@ -60,7 +60,7 @@ export function initButton(normal, slow, multi, upgrade, sell) {
   upgrade.textContent = '업그레이드';
   upgrade.style.position = 'absolute';
   upgrade.style.top = '210px';
-  upgrade.style.right = '150px';
+  upgrade.style.right = '10px';
   upgrade.style.padding = '10px 20px';
   upgrade.style.fontSize = '16px';
   upgrade.style.cursor = 'pointer';
@@ -72,7 +72,7 @@ export function initButton(normal, slow, multi, upgrade, sell) {
   sell.textContent = '판매';
   sell.style.position = 'absolute';
   sell.style.top = '260px';
-  sell.style.right = '150px';
+  sell.style.right = '10px';
   sell.style.padding = '10px 20px';
   sell.style.fontSize = '16px';
   sell.style.cursor = 'pointer';

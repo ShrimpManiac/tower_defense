@@ -69,10 +69,6 @@ export class MultiTower extends Tower {
     this.targets = [];
   }
 
-  draw(ctx) {
-    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
-  }
-
   drawBeam(ctx, target) {
     if (this.remainingBeamDuration > 0 && target) {
       ctx.beginPath();
