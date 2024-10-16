@@ -1,4 +1,5 @@
 import { ASSET_TYPE, SELL_PENALTY, UPGRADE_BONUS, UPGRADE_COST_SCALER } from '../constants.js';
+import { userStats } from '../src/game.js';
 import { findAssetDataById } from '../utils/assets.js';
 
 // 클라이언트 Tower Class
@@ -92,6 +93,15 @@ export class Tower {
     this.cooldownLeft = this.cooldown;
     this.target = monster; // 광선의 목표 설정
     this.remainingBeamDuration = 30;
+
+    if (monster.hp <= 0) {
+      userStats.userGold += monster.goldDrop;
+      userStats.score += monster.score;
+    }
+
+    if (userStats.highScore < userStats.score) {
+      userStats.highScore = userStats.score;
+    }
   }
 
   updateCooldown() {

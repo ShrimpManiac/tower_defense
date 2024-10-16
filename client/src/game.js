@@ -42,16 +42,15 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 let currentStageId = 0;
 let currentStageNumber = 0;
-let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 0; // 기지 체력
 let numOfInitialTowers = 0; // 초기 타워 개수
 clearTowers();
 const towers = getTowers();
 
-let score = 0; // 게임 점수
-let highScore = 0; // 기존 최고 점수
 let isInitGame = false;
+
+export const userStats = { userGold: 0, score: 0, highScore: 0 };
 
 // 몬스터 경로
 let monsterPath1 = findAssetDataById(ASSET_TYPE.PATH, 5001).path;
@@ -89,7 +88,7 @@ async function loadGoldBalance() {
       location.reload();
     }
 
-    userGold = balance;
+    userStats.userGold = balance;
   } catch (err) {
     console.error('Error loading gold balance:', err.message);
     alert('Error loading gold balance', err.message);
@@ -238,13 +237,13 @@ function placeBase() {
 function displayInfo() {
   ctx.font = '25px Times New Roman';
   ctx.fillStyle = 'skyblue';
-  ctx.fillText(`최고 기록: ${highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillText(`최고 기록: ${userStats.highScore}`, 100, 50); // 최고 기록 표시
   ctx.fillStyle = 'skyblue';
   ctx.fillText(`현재 스테이지: ${currentStageNumber}`, 100, 100); // 최고 기록 표시
   ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${score}`, 100, 150); // 현재 스코어 표시
+  ctx.fillText(`점수: ${userStats.score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${userGold}`, 100, 200); // 골드 표시
+  ctx.fillText(`골드: ${userStats.userGold}`, 100, 200); // 골드 표시
 }
 let isStageActive = false; // 스테이지 진행 중 여부
 let animationFrameId;
