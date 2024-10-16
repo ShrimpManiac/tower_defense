@@ -37,7 +37,7 @@ export const depositAccount = (uuid, amount) => {
       throw new Error('Account not found in depositAccount');
     }
 
-    const result = updateAccount(uuid, balance + amount); // 잔액 최신화
+    const result = updateAccount(uuid, balance + Math.floor(amount)); // 잔액 최신화
 
     if (result.status === 'success') {
       return result; // { status: 'success', message: 'Account update successful', balance: Accounts[uuid] }
@@ -67,7 +67,7 @@ export const withdrawAccount = (uuid, amount) => {
 
     if (balance < amount) throw new Error('Insufficient Balance in withdrawAccount'); // 출금 가능 여부 확인
 
-    const result = updateAccount(uuid, balance - amount); // 잔액 최신화
+    const result = updateAccount(uuid, balance - Math.floor(amount)); // 잔액 최신화
 
     if (result.status === 'success') {
       return result; // { status: 'success', message: 'Account update successful', balance: Accounts[uuid] }

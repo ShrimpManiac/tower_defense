@@ -1,4 +1,6 @@
 import { Tower } from '../classes/tower.class.js';
+import { TOWER_TYPE } from '../constants.js';
+import { NormalTower, SlowTower, MultiTower } from '../classes/subTower.class.js';
 
 /**
  * 유저가 보유한 타워목록
@@ -47,9 +49,9 @@ export const deleteTower = (uuid, towerId) => {
   // 예외처리: 타워를 찾지 못함
   if (towerIndex === -1) throw new Error(`Tower not found.`);
 
-  const deletedTowerSellPrice = towers[uuid][towerIndex].sellPrice;
+  const deletedTower = towers[uuid][towerIndex];
   towers[uuid].splice(towerIndex, 1); // 타워 삭제
-  return deletedTowerSellPrice;
+  return deletedTower;
 };
 
 /**
@@ -76,3 +78,43 @@ const checkTowersExist = (uuid) => {
   // 예외처리: 타워 목록이 없거나 비어있음
   if (!towers[uuid] || towers[uuid].length === 0) throw new Error(`User ${uuid} has no tower.`);
 };
+
+export const upgradeTowerById = (uuid, towerId) => {
+  checkTowersExist(uuid);
+  let tower = getTowerById(uuid, towerId);
+  // 타워 업그레이드
+
+  tower.applyUpgrades();
+  // 결과 반환
+  const updatedTowerInfo = `${tower.level},${tower.attackPower},${tower.range},${tower.upgradeCost},${tower.sellCost},${tower.skillDuration},${tower.skillValue}`;
+  return updatedTowerInfo;
+};
+
+export function createTower(assetId, spawnLocation) {
+  switch (assetId) {
+    case TOWER_TYPE.NORMAL:
+      return new NormalTower(assetId, spawnLocation);
+    case TOWER_TYPE.SLOW:
+      return new SlowTower(assetId, spawnLocation);
+    case TOWER_TYPE.MULTI:
+      return new MultiTower(assetId, spawnLocation);
+    default:
+      console.error(`알 수 없는 타워 타입: ${assetId}`);
+      return null;
+  }
+}
+
+export function isValidPlacement(uuid, x, y) {
+  if (!towers[uuid]) {
+    return true; // 타워 목록이 없으면 설치 위치가 유효함
+  }
+
+  for (const tower of towers[uuid]) {
+    const distance = Math.hypot(tower.x - x, tower.y - y);
+    if (distance < 100) {
+      // 최소 거리 제한 (타워 간의 거리)
+      return false;
+    }
+  }
+  return true;
+}

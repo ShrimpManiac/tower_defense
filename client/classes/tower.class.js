@@ -15,6 +15,7 @@ export class Tower {
      * 타워 인스턴스 ID
      */
     this.id = instanceId;
+    this.assetId = assetId;
 
     // 타워 크기
     this.width = towerData.width; // 이미지 가로 길이 (이미지 파일 길이에 따라 변경 필요하며 세로 길이와 비율을 맞춰주셔야 합니다!)
@@ -48,10 +49,19 @@ export class Tower {
 
     // 현재 타겟
     this.target = null; // 타워 광선의 목표
+
+    this.towerImage = new Image();
+    this.towerImage.src = towerData.image;
   }
 
-  draw(ctx, towerImage) {
-    ctx.drawImage(towerImage, this.x, this.y, this.width, this.height);
+  draw(ctx) {
+    ctx.drawImage(this.towerImage, this.x, this.y, this.width, this.height);
+    ctx.font = '36px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText(`${this.level}`, this.x + this.width / 2 - 2, this.y);
+  }
+
+  drawBeam(ctx) {
     if (this.remainingBeamDuration > 0 && this.target) {
       ctx.beginPath();
       ctx.moveTo(this.x + this.width / 2, this.y + this.height / 2);
@@ -90,18 +100,18 @@ export class Tower {
     }
   }
 
-  applyUpgrades() {
-    // 비용 상승
-    this.sellCost += this.upgradeCost * SELL_PENALTY;
-    this.upgradeCost *= UPGRADE_COST_SCALER;
+  applyUpgrades(payload) {
+    const dataString = payload.towerInfo;
+    const dataArray = dataString.split(',').map(Number);
+    // 배열의 각 값을 변수로 할당
+    const [level, attackPower, range, upgradeCost, sellCost, skillDuration, skillValue] = dataArray;
 
-    // 타워 강화
-    this.attackPower *= UPGRADE_BONUS[this.level].attack_bonus;
-    this.range *= UPGRADE_BONUS[this.level].range_bonus;
-
-    // 레벨 상승
-    this.level++;
-
-    // INCOMPLETE : 특수타워 업그레이드 차별화
+    this.level = level;
+    this.attackPower = attackPower;
+    this.range = range;
+    this.upgradeCost = upgradeCost;
+    this.sellCost = sellCost;
+    this.skillDuration = skillDuration;
+    this.skillValue = skillValue;
   }
 }

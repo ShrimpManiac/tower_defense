@@ -75,7 +75,7 @@ export class Monster {
 
   draw(ctx) {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-    ctx.font = '12px Arial';
+    ctx.font = '24px Arial';
     ctx.fillStyle = 'white';
     ctx.fillText(`${this.hp}/${this.maxHp}`, this.x, this.y - 5);
   }

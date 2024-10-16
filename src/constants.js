@@ -52,4 +52,5 @@ export const UPGRADE_BONUS = Object.freeze({
   3: { attack_bonus: 1.2, range_bonus: 1.1 },
 });
 
-export const START_GOLD = 300;
+export const START_GOLD = 30000;
+export const MAX_TOWER_LEVEL = 3;
